@@ -33,6 +33,7 @@ class LandstalkerWorld(World):
     options_dataclass = LandstalkerOptions
     options: LandstalkerOptions
     required_client_version = (0, 4, 4)
+    data_version = 1
     web = LandstalkerWeb()
 
     item_name_to_id = build_item_name_to_id_table()
