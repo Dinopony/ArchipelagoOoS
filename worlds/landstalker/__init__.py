@@ -62,7 +62,7 @@ class LandstalkerWorld(World):
             "combat_difficulty", "teleport_tree_requirements", "shuffle_trees", "ensure_ekeeke_in_shops",
             "remove_gumi_boulder", "allow_whistle_usage_behind_trees", "handle_damage_boosting_in_logic",
             "handle_enemy_jumping_in_logic", "handle_tree_cutting_glitch_in_logic", "hint_count", "death_link",
-            "revive_using_ekeeke",
+            "revive_using_ekeeke", "open_greenmaze_shortcut"
         ]
 
         slot_data = self.options.as_dict(*options)

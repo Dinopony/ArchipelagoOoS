@@ -61,6 +61,10 @@ def add_specific_paths(world: "LandstalkerWorld", regions_table: Dict[str, Lands
     if world.options.remove_gumi_boulder == 1:
         create_entrance("route_gumi_ryuma", "gumi", False, regions_table)
 
+    # If "Open Greenmaze Shortcut" is enabled, add a path from Massan/Gumi sector to Greenmaze back entrance
+    if world.options.open_greenmaze_shortcut == 1:
+        create_entrance("route_massan_gumi", "greenmaze_post_whistle", False, regions_table)
+
     # If enemy jumping is in logic, Mountainous Area can be reached from route to Lake Shrine by doing a "ghost jump"
     # at crossroads map
     if world.options.handle_enemy_jumping_in_logic == 1:

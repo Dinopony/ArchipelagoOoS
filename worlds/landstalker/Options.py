@@ -95,11 +95,21 @@ class DamageBoostingInLogic(Toggle):
     display_name = "Damage Boosting in Logic"
 
 
+class OpenGreenmazeShortcut(Toggle):
+    """
+    At the end of Greenmaze, a one-way shortcut can be opened to go back to the early region between Massan & Gumi.
+    Enabling this opens this shortcut on game start, giving the opportunity to reach Greenmaze from the back.
+    This is especially interesting reouting-wise if you also enable "Allow Using Einstein Whistle Behind Trees".
+    """
+    display_name = "Open Greenmaze Shortcut"
+
+
 class WhistleUsageBehindTrees(DefaultOnToggle):
     """
     In Greenmaze, Einstein Whistle can only be used to call Cutter from the intended side by default.
     Enabling this allows using Einstein Whistle from both sides of the magic trees.
-    This is only useful in seeds starting in the "waterfall" spawn region or where teleportation trees are made open from the start.
+    This is only useful in seeds where you have access to Greenmaze from the back ("Open Greenmaze Shortcut" active /
+    "Waterfall" spawn region / teleportation trees open from the start)
     """
     display_name = "Allow Using Einstein Whistle Behind Trees"
 
@@ -218,6 +228,7 @@ class LandstalkerOptions(PerGameCommonOptions):
     ensure_ekeeke_in_shops: EnsureEkeEkeInShops
     remove_gumi_boulder: RemoveGumiBoulder
     allow_whistle_usage_behind_trees: WhistleUsageBehindTrees
+    open_greenmaze_shortcut: OpenGreenmazeShortcut
     handle_damage_boosting_in_logic: DamageBoostingInLogic
     handle_enemy_jumping_in_logic: EnemyJumpingInLogic
     handle_tree_cutting_glitch_in_logic: TreeCuttingGlitchInLogic
