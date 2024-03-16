@@ -31,14 +31,23 @@ def create_connections(multiworld: MultiWorld, player: int):
         portal_connections,
     ]
 
+    def add_entrance(rules, start, end, rule):
+        old_rule = rules[(start,end)]
+        if rule is None:
+            rule = lambda _: True
+        rules[(start, end)] = lambda state: (old_rule(state) or rule(state))
+
+    logic_rules = defaultdict(lambda: lambda _: False)
+
     # Create connections
     for logic_array in all_logic:
-        for entrance_desc in logic_array:
-            region_1 = multiworld.get_region(entrance_desc[0], player)
-            region_2 = multiworld.get_region(entrance_desc[1], player)
-            is_two_way = entrance_desc[2]
-            rule = entrance_desc[3]
-
-            region_1.connect(region_2, None, rule)
+        for start, end, is_two_way, rule in logic_array:
+            add_entrance(logic_rules, start, end, rule)
             if is_two_way:
-                region_2.connect(region_1, None, rule)
+                add_entrance(logic_rules, end, start, rule)
+
+    for (start, end), rule in logic_rules.items():
+        region_1 = multiworld.get_region(start, player)
+        region_2 = multiworld.get_region(end, player)
+
+        region_1.connect(region_2, None, rule)
