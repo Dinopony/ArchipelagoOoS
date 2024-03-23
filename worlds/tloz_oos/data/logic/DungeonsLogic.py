@@ -556,6 +556,7 @@ def make_d6_logic(player: int):
             any([
                 oos_has_small_keys(state, player, 6, 3),
                 all([
+                    # Go through the beamos room
                     oos_has_small_keys(state, player, 6, 2),
                     oos_has_feather(state, player),
                     oos_has_bombs(state, player)
@@ -563,14 +564,28 @@ def make_d6_logic(player: int):
             ])
         ])],
 
-        ["d6 vire chest", "enter vire", False, lambda state: oos_has_small_keys(state, player, 6, 3)],
-        ["enter vire", "d6 pre-boss room", False, lambda state: all([
+        ["d6 vire chest", "kill vire", False, lambda state: any([
+            # Do not require keys yet because this logic is used to get to d6 spinner north
+            oos_has_sword(state, player, False),
+            oos_has_fools_ore(state, player),
+            # state.has("expert's ring", player)
+        ])]
+        ["kill vire", "d6 spinner north", False, lambda state: all([
+            # Go north by putting taking the spinner once then teleport to the miniboss and walk to the spinner from the left
+            oos_can_break_crystal(state, player),
+            oos_has_magnet_gloves(state, player),
             any([
-                # Kill Vire
-                oos_has_sword(state, player, False),
-                oos_has_fools_ore(state, player),
-                # state.has("expert's ring", player)
-            ]),
+                oos_has_small_keys(state, player, 6, 2),
+                all([
+                    # Go through the beamos room
+                    oos_has_small_keys(state, player, 6, 1),
+                    oos_has_feather(state, player),
+                    oos_has_bombs(state, player)
+                ])
+            ])
+        ])],
+        ["kill vire", "d6 pre-boss room", False, lambda state: all([
+            oos_has_small_keys(state, player, 6, 3),  # This wasn't taken in account yet because of the spinner north
             any([
                 # Kill hardhats
                 oos_has_magnet_gloves(state, player),
