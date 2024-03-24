@@ -569,7 +569,7 @@ def make_d6_logic(player: int):
             oos_has_sword(state, player, False),
             oos_has_fools_ore(state, player),
             # state.has("expert's ring", player)
-        ])]
+        ])],
         ["kill vire", "d6 spinner north", False, lambda state: all([
             # Go north by putting taking the spinner once then teleport to the miniboss and walk to the spinner from the left
             oos_can_break_crystal(state, player),

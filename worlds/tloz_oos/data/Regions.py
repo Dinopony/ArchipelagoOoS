@@ -291,6 +291,7 @@ REGIONS = [
     "d6 armos hall",
     "d6 spinner north",
     "enter vire",
+    "kill vire",
     "d6 pre-boss room",
     "d6 boss",
     "enter d7",
