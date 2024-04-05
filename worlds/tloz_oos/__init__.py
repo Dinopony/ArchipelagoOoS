@@ -244,7 +244,6 @@ class OracleOfSeasonsWorld(World):
         elif self.options.goal == OracleOfSeasonsGoal.option_beat_ganon:
             self.create_event("ganon beaten", "_beaten_game")
 
-        self.create_event("maple trade", "Ghastly Doll")
         self.create_event("spool stump", "_reached_spool_stump")
         self.create_event("temple remains lower stump", "_reached_remains_stump")
         self.create_event("temple remains upper stump", "_reached_remains_stump")
