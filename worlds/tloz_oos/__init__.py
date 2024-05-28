@@ -521,7 +521,7 @@ class OracleOfSeasonsWorld(World):
             self.multiworld.get_location(location_name, self.player).place_locked_item(seed_item)
             self.pre_fill_items.append(seed_item)
 
-        seeds_to_place = set([name for name in SEED_ITEMS])
+        seeds_to_place = list(SEED_ITEMS)
 
         manually_placed_trees = ["Horon Village: Seed Tree", duplicate_tree_name]
         trees_to_process = [name for name in TREES_TABLE.values() if name not in manually_placed_trees]
@@ -531,7 +531,7 @@ class OracleOfSeasonsWorld(World):
 
         # If duplicate tree is not Horon's, remove Horon seed from the pool of placeable seeds
         if duplicate_tree_name != "Horon Village: Seed Tree":
-            seeds_to_place.remove(SEED_ITEMS[self.options.default_seed.value])
+            del seeds_to_place[self.options.default_seed.value]
             place_seed(self.random.choice(SEED_ITEMS), duplicate_tree_name)
 
         # Place remaining seeds on remaining trees
