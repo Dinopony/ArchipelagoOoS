@@ -62,7 +62,7 @@ def make_d1_logic(player: int):
             oos_can_kill_stalfos(state, player)
         ])],
 
-        ["d1 stalfos chest", "d1 goriya chest", False, lambda state: any([
+        ["d1 stalfos chest", "d1 goriya chest", False, lambda state: all([
             oos_can_use_ember_seeds(state, player, True),
             oos_can_kill_normal_enemy(state, player, True)
         ])],
@@ -111,6 +111,7 @@ def make_d2_logic(player: int):
             # Backwards path is one-way if we don't have ember seeds, so ensure we have a way to warp out in case
             # something goes wrong
             oos_can_use_ember_seeds(state, player, True),
+            oos_can_kill_normal_enemy(state, player),
             oos_can_warp(state, player)
         ])],
         ["d2 arrow room", "d2 rupee room", False, lambda state: oos_has_bombs(state, player)],
