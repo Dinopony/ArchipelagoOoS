@@ -571,12 +571,36 @@ def make_d6_logic(player: int):
             oos_can_break_crystal(state, player),
             oos_has_magnet_gloves(state, player),
             any([
-                oos_has_small_keys(state, player, 6, 3),
+                all([
+                    oos_has_small_keys(state, player, 6, 1),
+
+                    # Go through beamos room
+                    oos_has_feather(state, player),
+                    oos_has_bombs(state, player),
+
+                    any([
+                        # Kill Vire
+                        oos_has_sword(state, player, False),
+                        oos_has_fools_ore(state, player),
+                        # state.has("expert's ring", player)
+                    ])
+                ]),
                 all([
                     oos_has_small_keys(state, player, 6, 2),
-                    oos_has_feather(state, player),
-                    oos_has_bombs(state, player)
-                ])
+                    any([
+                        all([
+                            # Go through beamos room
+                            oos_has_feather(state, player),
+                            oos_has_bombs(state, player),
+                        ]),
+
+                        # Kill Vire
+                        oos_has_sword(state, player, False),
+                        oos_has_fools_ore(state, player),
+                        # state.has("expert's ring", player)
+                    ])
+                ]),
+                oos_has_small_keys(state, player, 6, 3),
             ])
         ])],
 
