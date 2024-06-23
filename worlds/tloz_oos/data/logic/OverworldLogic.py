@@ -109,7 +109,7 @@ def make_holodrum_logic(player: int):
         ["d7 entrance", "graveyard (summer or spring)", False, lambda state: \
             oos_get_default_season(state, player, "WESTERN_COAST") in ["summer", "spring"]],
 
-        ["graveyard (autumn)", "graveyard heart piece", False, lambda state: oos_has_bracelet(state, player)],
+        ["graveyard (autumn)", "graveyard heart piece", False, lambda state: oos_can_break_mushroom(state, player, False)],
 
         # EASTERN SUBURBS #############################################################################################
 
