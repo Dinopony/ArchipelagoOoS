@@ -1477,7 +1477,9 @@ LOCATIONS_DATA: dict[str, dict[str, Any]] = {
         "room": 0x0391,
         "collect": COLLECT_TOUCH,
         "map_tile": 0xe8,
-        "symbolic_name": "vasuGift"
+        "symbolic_name": "vasuGift",
+        "remote_flag_byte": 0xC6CB, # This is the flag for the "first visit" that we'll set for remote items
+        "remote_bit_mask": 0x01,
     },
     "Goron Mountain: Lonely Goron's Gift": {
         "region_id": "goron's gift",

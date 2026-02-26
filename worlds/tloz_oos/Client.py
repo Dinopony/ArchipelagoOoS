@@ -75,9 +75,11 @@ class OracleOfSeasonsClient(BizHawkClient):
             loc_id = self.location_name_to_id.get(name)
             if loc_id is not None:
                 self.location_id_data_mapping[loc_id] = {
-                    "flag_byte": location["flag_byte"],
+                    "local": location.get("local"),
+                    "flag_byte": location.get("flag_byte"),
                     "bit_mask": location.get("bit_mask", 0x20),
-                    "local": location.get("local")
+                    "remote_flag_byte": location.get("remote_flag_byte"),
+                    "remote_bit_mask": location.get("remote_bit_mask"),
                 }
         self.local_scouted_locations = defaultdict(lambda: set())
         self.local_tracker = {}
@@ -286,7 +288,9 @@ class OracleOfSeasonsClient(BizHawkClient):
                         ])
                         return
                     # However, if the player has NOT checked the location, then set the flag for it
-                    writes.append((flag_byte, [flag_bytes[byte_offset] | bit_mask], "System Bus"))
+                    writing_flag_byte = loc_data["remote_flag_byte"] or flag_byte
+                    writing_bit_mask = loc_data["remote_bit_mask"] or bit_mask
+                    writes.append((writing_flag_byte, [flag_bytes[byte_offset] | writing_bit_mask], "System Bus"))
 
         writes.append((RAM_ADDRS["received_item"][0], [item_id, item_subid], "System Bus"))
         await bizhawk.write(ctx.bizhawk_ctx, writes)
