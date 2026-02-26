@@ -700,6 +700,16 @@ class OracleOfSeasonsLinkedHerosCave(Choice):
     include_in_slot_data = True
 
 
+class OracleOfSeasonsRemoteItems(Toggle):
+    """
+    When enabled, any location that was previously checked in a prior session (e.g., after a save file reset)
+    will have its item automatically delivered when reconnecting. This also restores gasha plot state.
+    Seed tree locations are never included in this mechanism.
+    """
+    display_name = "Remote Items"
+    include_in_slot_data = True
+
+
 class OracleOfSeasonsDeathLink(DeathLink):
     """
     When you die, everyone who enabled death link dies. Of course, the reverse is true too.
@@ -748,6 +758,7 @@ class OracleOfSeasonsOptions(PerGameCommonOptions):
     goal: OracleOfSeasonsGoal
     logic_difficulty: OracleOfSeasonsLogicDifficulty
     death_link: OracleOfSeasonsDeathLink
+    remote_items: OracleOfSeasonsRemoteItems
 
     # Optional locations
     advance_shop: OracleOfSeasonsAdvanceShop
@@ -825,6 +836,7 @@ oos_option_groups = [
         OracleOfSeasonsGoal,
         OracleOfSeasonsLogicDifficulty,
         OracleOfSeasonsDeathLink,
+        OracleOfSeasonsRemoteItems,
     ]),
     OptionGroup("Items", [
         OracleOfSeasonsIncludeCrossItems,

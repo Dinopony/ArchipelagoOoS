@@ -64,11 +64,21 @@ class OracleOfSeasonsClient(BizHawkClient):
     local_tracker: Dict[str, Any]
     item_id_to_name: Dict[int, str]
     location_name_to_id: Dict[str, int]
+    location_id_data_mapping: Dict[int, Dict[str, Any]]
 
     def __init__(self) -> None:
         super().__init__()
         self.item_id_to_name = build_item_id_to_name_dict(ITEMS_DATA)
         self.location_name_to_id = build_location_name_to_id_dict(LOCATIONS_DATA)
+        self.location_id_data_mapping = {}
+        for name, location in LOCATIONS_DATA.items():
+            loc_id = self.location_name_to_id.get(name)
+            if loc_id is not None:
+                self.location_id_data_mapping[loc_id] = {
+                    "flag_byte": location["flag_byte"],
+                    "bit_mask": location.get("bit_mask", 0x20),
+                    "local": location.get("local")
+                }
         self.local_scouted_locations = defaultdict(lambda: set())
         self.local_tracker = {}
 
@@ -110,6 +120,9 @@ class OracleOfSeasonsClient(BizHawkClient):
                 ctx.tags.add("MoveLink")
                 self.move_link = []
                 async_start(ctx.send_msgs([{"cmd": "ConnectUpdate", "tags": ctx.tags}]))
+            if args["slot_data"]["options"].get("remote_items"):
+                ctx.items_handling = 0b011
+                async_start(ctx.send_msgs([{"cmd": "ConnectUpdate", "items_handling": ctx.items_handling}]))
         if cmd == "Bounced":
             if ctx.slot_data["options"]["move_link"] and "tags" in args and args["tags"][0] == "MoveLink":
                 data = args["data"]
@@ -159,7 +172,7 @@ class OracleOfSeasonsClient(BizHawkClient):
 
             # Process received items (only if we aren't in Blaino's Gym to prevent him from calling us cheaters)
             if received_item_is_empty and current_room != ROOM_BLAINOS_GYM:
-                await self.process_received_items(ctx, num_received_items)
+                await self.process_received_items(ctx, num_received_items, flag_bytes)
 
             if not ctx.finished_game:
                 await self.process_game_completion(ctx, flag_bytes, current_room)
@@ -239,16 +252,44 @@ class OracleOfSeasonsClient(BizHawkClient):
             }])
             # We could use _read_hints_{self.ctx.team}_{player} to check if the hint was created
 
-    async def process_received_items(self, ctx: "BizHawkClientContext", num_received_items: int):
+    async def process_received_items(self, ctx: "BizHawkClientContext", num_received_items: int,
+                                    flag_bytes: bytes) -> None:
         # If the game hasn't received all items yet and the received item struct doesn't contain an item, then
         # fill it with the next item
-        if num_received_items < len(ctx.items_received):
-            next_item = ctx.items_received[num_received_items].item
-            item_id = next_item // 0x100
-            item_subid = next_item % 0x100
-            if item_id == 0x30:  # Small or master key
-                item_subid = item_subid & 0x7F  # TODO: Remove this if/when both master and small can be obtained in the same world
-            await bizhawk.write(ctx.bizhawk_ctx, [(0xCBFB, [item_id, item_subid], "System Bus")])
+        if num_received_items >= len(ctx.items_received):
+            return
+        network_item = ctx.items_received[num_received_items]
+        item_id = network_item.item // 0x100
+        item_subid = network_item.item % 0x100
+        if item_id == 0x30:  # Small or master key
+            item_subid = item_subid & 0x7F  # TODO: Remove this if/when both master and small can be obtained in the same world
+        writes = []
+
+        if ctx.slot_data["options"]["remote_items"]:
+            loc_data = self.location_id_data_mapping.get(network_item.location)
+            if loc_data is not None:
+                flag_byte, bit_mask = loc_data["flag_byte"], loc_data["bit_mask"]
+                # We skip delivery if the location is "local" (seed trees)...
+                if loc_data["local"]:
+                    await bizhawk.write(ctx.bizhawk_ctx, [
+                        (RAM_ADDRS["received_item_index"][0], list((num_received_items + 1).to_bytes(2, "little")),
+                        "System Bus")
+                    ])
+                    return
+                if flag_byte is not None:
+                    byte_offset = flag_byte - RAM_ADDRS["location_flags"][0]
+                    # ... or if the player already checked it
+                    if flag_bytes[byte_offset] & bit_mask == bit_mask:
+                        await bizhawk.write(ctx.bizhawk_ctx, [
+                            (RAM_ADDRS["received_item_index"][0], list((num_received_items + 1).to_bytes(2, "little")),
+                            "System Bus")
+                        ])
+                        return
+                    # However, if the player has NOT checked the location, then set the flag for it
+                    writes.append((flag_byte, [flag_bytes[byte_offset] | bit_mask], "System Bus"))
+
+        writes.append((RAM_ADDRS["received_item"][0], [item_id, item_subid], "System Bus"))
+        await bizhawk.write(ctx.bizhawk_ctx, writes)
 
     async def process_game_completion(self, ctx: "BizHawkClientContext", flag_bytes, current_room: int):
         game_clear = False
