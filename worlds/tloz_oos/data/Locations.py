@@ -1906,6 +1906,7 @@ LOCATIONS_DATA: dict[str, dict[str, Any]] = {
         "flag_byte": None,
         "id": 0xC64900,
         "room": [],
+        "gasha_nut_index": 1,
     },
     "Gasha Nut #2": {
         "region_id": "gasha tree 2",
@@ -1914,6 +1915,7 @@ LOCATIONS_DATA: dict[str, dict[str, Any]] = {
         "flag_byte": None,
         "id": 0xC64901,
         "room": [],
+        "gasha_nut_index": 2,
     },
     "Gasha Nut #3": {
         "region_id": "gasha tree 3",
@@ -1922,6 +1924,7 @@ LOCATIONS_DATA: dict[str, dict[str, Any]] = {
         "flag_byte": None,
         "id": 0xC64902,
         "room": [],
+        "gasha_nut_index": 3,
     },
     "Gasha Nut #4": {
         "region_id": "gasha tree 4",
@@ -1930,6 +1933,7 @@ LOCATIONS_DATA: dict[str, dict[str, Any]] = {
         "flag_byte": None,
         "id": 0xC64903,
         "room": [],
+        "gasha_nut_index": 4,
     },
     "Gasha Nut #5": {
         "region_id": "gasha tree 5",
@@ -1938,6 +1942,7 @@ LOCATIONS_DATA: dict[str, dict[str, Any]] = {
         "flag_byte": None,
         "id": 0xC64904,
         "room": [],
+        "gasha_nut_index": 5,
     },
     "Gasha Nut #6": {
         "region_id": "gasha tree 6",
@@ -1946,6 +1951,7 @@ LOCATIONS_DATA: dict[str, dict[str, Any]] = {
         "flag_byte": None,
         "id": 0xC64905,
         "room": [],
+        "gasha_nut_index": 6,
     },
     "Gasha Nut #7": {
         "region_id": "gasha tree 7",
@@ -1954,6 +1960,7 @@ LOCATIONS_DATA: dict[str, dict[str, Any]] = {
         "flag_byte": None,
         "id": 0xC64906,
         "room": [],
+        "gasha_nut_index": 7,
     },
     "Gasha Nut #8": {
         "region_id": "gasha tree 8",
@@ -1962,6 +1969,7 @@ LOCATIONS_DATA: dict[str, dict[str, Any]] = {
         "flag_byte": None,
         "id": 0xC64907,
         "room": [],
+        "gasha_nut_index": 8,
     },
     "Gasha Nut #9": {
         "region_id": "gasha tree 9",
@@ -1970,6 +1978,7 @@ LOCATIONS_DATA: dict[str, dict[str, Any]] = {
         "flag_byte": None,
         "id": 0xC64908,
         "room": [],
+        "gasha_nut_index": 9,
     },
     "Gasha Nut #10": {
         "region_id": "gasha tree 10",
@@ -1978,6 +1987,7 @@ LOCATIONS_DATA: dict[str, dict[str, Any]] = {
         "flag_byte": None,
         "id": 0xC64909,
         "room": [],
+        "gasha_nut_index": 10,
     },
     "Gasha Nut #11": {
         "region_id": "gasha tree 11",
@@ -1986,6 +1996,7 @@ LOCATIONS_DATA: dict[str, dict[str, Any]] = {
         "flag_byte": None,
         "id": 0xC6490A,
         "room": [],
+        "gasha_nut_index": 11,
     },
     "Gasha Nut #12": {
         "region_id": "gasha tree 12",
@@ -1994,6 +2005,7 @@ LOCATIONS_DATA: dict[str, dict[str, Any]] = {
         "flag_byte": None,
         "id": 0xC6490B,
         "room": [],
+        "gasha_nut_index": 12,
     },
     "Gasha Nut #13": {
         "region_id": "gasha tree 13",
@@ -2002,6 +2014,7 @@ LOCATIONS_DATA: dict[str, dict[str, Any]] = {
         "flag_byte": None,
         "id": 0xC6490C,
         "room": [],
+        "gasha_nut_index": 13,
     },
     "Gasha Nut #14": {
         "region_id": "gasha tree 14",
@@ -2010,6 +2023,7 @@ LOCATIONS_DATA: dict[str, dict[str, Any]] = {
         "flag_byte": None,
         "id": 0xC6490D,
         "room": [],
+        "gasha_nut_index": 14,
     },
     "Gasha Nut #15": {
         "region_id": "gasha tree 15",
@@ -2018,6 +2032,7 @@ LOCATIONS_DATA: dict[str, dict[str, Any]] = {
         "flag_byte": None,
         "id": 0xC6490E,
         "room": [],
+        "gasha_nut_index": 15,
     },
     "Gasha Nut #16": {
         "region_id": "gasha tree 16",
@@ -2026,6 +2041,7 @@ LOCATIONS_DATA: dict[str, dict[str, Any]] = {
         "flag_byte": None,
         "id": 0xC6490F,
         "room": [],
+        "gasha_nut_index": 16,
     },
     "Spool Swamp: Business Scrub": {
         "region_id": "spool swamp scrub",

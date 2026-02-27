@@ -80,6 +80,7 @@ class OracleOfSeasonsClient(BizHawkClient):
                     "bit_mask": location.get("bit_mask", 0x20),
                     "remote_flag_byte": location.get("remote_flag_byte"),
                     "remote_bit_mask": location.get("remote_bit_mask"),
+                    "gasha_nut_index": location.get("gasha_nut_index"),
                 }
         self.local_scouted_locations = defaultdict(lambda: set())
         self.local_tracker = {}
@@ -124,7 +125,12 @@ class OracleOfSeasonsClient(BizHawkClient):
                 async_start(ctx.send_msgs([{"cmd": "ConnectUpdate", "tags": ctx.tags}]))
             if args["slot_data"]["options"].get("remote_items"):
                 ctx.items_handling = 0b011
-                async_start(ctx.send_msgs([{"cmd": "ConnectUpdate", "items_handling": ctx.items_handling}]))
+                ds_key = f"OoS_{args['team']}_{args['slot']}"
+                async_start(ctx.send_msgs([
+                    {"cmd": "ConnectUpdate", "items_handling": ctx.items_handling},
+                    {"cmd": "Get", "keys": [ds_key]},
+                    {"cmd": "SetNotify", "keys": [ds_key]},
+                ]))
         if cmd == "Bounced":
             if ctx.slot_data["options"]["move_link"] and "tags" in args and args["tags"][0] == "MoveLink":
                 data = args["data"]
@@ -171,6 +177,7 @@ class OracleOfSeasonsClient(BizHawkClient):
             await self.process_checked_locations(ctx, flag_bytes)
             await self.process_scouted_locations(ctx, flag_bytes)
             await self.process_tracker_updates(ctx, flag_bytes, current_room)
+            await self.sync_gasha_spot_flags(ctx, flag_bytes)
 
             # Process received items (only if we aren't in Blaino's Gym to prevent him from calling us cheaters)
             if received_item_is_empty and current_room != ROOM_BLAINOS_GYM:
@@ -271,7 +278,7 @@ class OracleOfSeasonsClient(BizHawkClient):
             loc_data = self.location_id_data_mapping.get(network_item.location)
             if loc_data is not None:
                 flag_byte, bit_mask = loc_data["flag_byte"], loc_data["bit_mask"]
-                # We skip delivery if the location is "local" (seed trees)...
+                # We skip delivery if the location is flagged as local...
                 if loc_data["local"]:
                     await bizhawk.write(ctx.bizhawk_ctx, [
                         (RAM_ADDRS["received_item_index"][0], list((num_received_items + 1).to_bytes(2, "little")),
@@ -290,10 +297,45 @@ class OracleOfSeasonsClient(BizHawkClient):
                     # However, if the player has NOT checked the location, then set the flag for it
                     writing_flag_byte = loc_data["remote_flag_byte"] or flag_byte
                     writing_bit_mask = loc_data["remote_bit_mask"] or bit_mask
-                    writes.append((writing_flag_byte, [flag_bytes[byte_offset] | writing_bit_mask], "System Bus"))
+                    writing_byte_offset = writing_flag_byte - RAM_ADDRS["location_flags"][0]
+                    writes.append((writing_flag_byte, [flag_bytes[writing_byte_offset] | writing_bit_mask], "System Bus"))
+                # Gasha Nuts aren't tied to a specific in game location, so we handle them separately
+                elif loc_data["gasha_nut_index"] is not None:
+                    counter_addr = 0xC649
+                    counter_offset = counter_addr - RAM_ADDRS["location_flags"][0]
+                    gasha_counter = flag_bytes[counter_offset] >> 2
+                    gasha_nut_index = loc_data["gasha_nut_index"]
+                    if gasha_counter >= gasha_nut_index:
+                        await bizhawk.write(ctx.bizhawk_ctx, [
+                            (RAM_ADDRS["received_item_index"][0], list((num_received_items + 1).to_bytes(2, "little")),
+                            "System Bus")
+                        ])
+                        return
+                    # Increment counter by 1 (stored in bits 2-7, so add 0x04 to the raw byte)
+                    new_byte = (flag_bytes[counter_offset] & 0x03) | ((gasha_counter + 1) << 2)
+                    writes.append((counter_addr, [new_byte], "System Bus"))
 
         writes.append((RAM_ADDRS["received_item"][0], [item_id, item_subid], "System Bus"))
         await bizhawk.write(ctx.bizhawk_ctx, writes)
+
+    async def sync_gasha_spot_flags(self, ctx: "BizHawkClientContext", flag_bytes: bytes) -> None:
+        """Sync harvested room flags for gasha spots based on DataStorage.
+
+        Setting room flag bit 0x20 triggers the tile replacement system,
+        which replaces the soft soil tile with ground, preventing the gasha spot from appearing.
+        """
+        if not ctx.slot_data["options"].get("remote_items"):
+            return
+        ds_data = ctx.stored_data.get(f"OoS_{ctx.team}_{ctx.slot}") or {}
+        writes = []
+        for spot_name, (room_flag_addr, _planted_bit) in GASHA_ADDRS.items():
+            if not ds_data.get(f"Harvested {spot_name}"):
+                continue
+            room_offset = room_flag_addr - RAM_ADDRS["location_flags"][0]
+            if not (flag_bytes[room_offset] & 0x20):
+                writes.append((room_flag_addr, [flag_bytes[room_offset] | 0x20], "System Bus"))
+        if writes:
+            await bizhawk.write(ctx.bizhawk_ctx, writes)
 
     async def process_game_completion(self, ctx: "BizHawkClientContext", flag_bytes, current_room: int):
         game_clear = False
