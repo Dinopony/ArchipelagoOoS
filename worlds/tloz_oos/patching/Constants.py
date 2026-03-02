@@ -27,6 +27,7 @@ CAVE_DATA: list[int | list[int | list[int]]] = [
         0x3f4e,  # 09
     ],
     [  # 0a
+        # Some space could be gotten by blanking code on the Vasu snakes
         [0x3bba, 0x3bd0],  # Blank from removing the spin upon obtaining the sword in d0
         0x3be9,
     ],
@@ -46,7 +47,8 @@ CAVE_DATA: list[int | list[int | list[int]]] = [
     0x3bd2,  # 13
     0x2fc9,  # 14 - ton of free space here
     [  # 15
-        [0x1435, 0x1464], # Trade item (0x41) data
+        [0x1435, 0x1464],  # Trade item (0x41) data
+        [0x1e5d, 0x1edd],  # Strange bros stealing feathers, companions in swamp
         0x392d
     ],
     0x3a07,  # 16
@@ -323,7 +325,7 @@ DEFINES = {
     "TREASURE_MAKU_SEED": "$36",
     "TREASURE_ORE_CHUNKS": "$37",
     "TREASURE_ESSENCE": "$40",
-    "TREASURE_ARCHIPELAGO_ITEM": "$41", # (ex trade item)
+    "TREASURE_ARCHIPELAGO_ITEM": "$41",  # (ex trade item)
     "TREASURE_GNARLED_KEY": "$42",
     "TREASURE_FLOODGATE_KEY": "$43",
     "TREASURE_DRAGON_KEY": "$44",

@@ -5,6 +5,7 @@ from typing import Any
 
 import Utils
 from ...common.patching.RomData import RomData
+from ...common.patching.Util import simple_hex
 from ...common.patching.data_manager.text import get_text_data
 from ...common.patching.text import normalize_text
 
@@ -46,6 +47,8 @@ def save_seasons_edited_text_data(texts: dict[str, str]) -> None:
 
 
 def apply_text_edits(texts: dict[str, str]) -> None:
+    texts_to_blank = []
+
     # New items
     # Replace ring box 1
     texts["TX_0034"] = ("You got 🟥Ember\n"
@@ -108,15 +111,15 @@ def apply_text_edits(texts: dict[str, str]) -> None:
 
     # Cross items
     # Obtain text
-    texts["TX_003b"] = ""  # Strange flute
-    texts["TX_0051"] = ""  # Warrior child heart
-    texts["TX_0053"] = ""  # Warrior child heart refill
-    texts["TX_0054"] = ""  # Unappraised ring
+    texts_to_blank.append("TX_003b")  # Strange flute
+    texts_to_blank.append("TX_0051")  # Warrior child heart
+    texts_to_blank.append("TX_0053")  # Warrior child heart refill
+    texts_to_blank.append("TX_0054")  # Unappraised ring
     # Inventory text
-    texts["TX_091d"] = ""  # Replaces ring box 1
-    texts["TX_091e"] = ""  # Replaces ring box 2
-    texts["TX_0917"] = ""  # Replaces unappraised ring
-    texts["TX_092e"] = ""  # Replaces strange flute
+    texts_to_blank.append("TX_091d")  # Replaces ring box 1
+    texts_to_blank.append("TX_091e")  # Replaces ring box 2
+    texts_to_blank.append("TX_0917")  # Replaces unappraised ring
+    texts_to_blank.append("TX_092e")  # Replaces strange flute
     # Note: 3 other seemingly unused seeds follow
 
     # Map stuff, replaces the group 05 since it's all linked game dialogues
@@ -203,6 +206,31 @@ def apply_text_edits(texts: dict[str, str]) -> None:
                         "start, you\n"
                         "can do it\n"
                         "everywhere")
+
+    # Remove ring fortune
+    texts["TX_301f"] = normalize_text("Ring fortunes are disabled in randomizer.")
+    texts_to_blank.append("TX_3024")
+    texts_to_blank.append("TX_302e")
+    texts_to_blank.append("TX_300f")
+    texts_to_blank.append("TX_3031")
+    texts_to_blank.append("TX_302a")
+    texts_to_blank.append("TX_3020")
+    texts_to_blank.append("TX_3025")
+    texts_to_blank.append("TX_303d")
+    texts_to_blank.append("TX_3026")
+    texts_to_blank.append("TX_3023")
+    # There is probably more, and the red snake could also be attacked
+
+    # Maku tree talking texts are too big to be left there (unused)
+    texts_to_blank.append("TX_1704")
+    for i in range(0x06, 0x16):
+        texts_to_blank.append(f"TX_17{simple_hex(i)}")
+    texts_to_blank.append("TX_1717")
+    for i in range(0x19, 0x3a):
+        texts_to_blank.append(f"TX_17{simple_hex(i)}")
+
+    for text in texts_to_blank:
+        texts[text] = ""
 
 
 def apply_ages_edits(seasons_texts: dict[str, str], ages_rom: RomData) -> None:
