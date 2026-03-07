@@ -549,7 +549,11 @@ def make_holodrum_logic(origin_name: str, options: OracleOfSeasonsOptions):
                 oos_can_use_pegasus_seeds(),
                 oos_has_cape(),
                 oos_has_flippers(),
-                oos_has_cane(),
+                And(
+                    # The cane doesn't hold the button
+                    oos_option_medium_logic(),
+                    oos_has_cane()
+                ),
                 And(
                     oos_option_medium_logic(),
                     oos_has_feather(),
@@ -1239,12 +1243,20 @@ def make_holodrum_logic(origin_name: str, options: OracleOfSeasonsOptions):
             Or(
                 oos_has_sword(),
                 oos_has_fools_ore(),
-                oos_can_summon_dimitri()
+                oos_can_summon_dimitri(),
+                And(
+                    oos_option_hard_logic(),
+                    oos_has_cane()
+                )
             )
         )],
         ["lost woods top statue", "golden lynel", False, Or(
             oos_has_sword(),
-            oos_has_fools_ore()
+            oos_has_fools_ore(),
+            And(
+                oos_option_hard_logic(),
+                oos_has_cane()
+            )
         )],
         ["lost woods stump", "golden lynel", False, And(
             # We can assume coming from d6 or pedestal otherwise rule above applies
@@ -1253,7 +1265,11 @@ def make_holodrum_logic(origin_name: str, options: OracleOfSeasonsOptions):
             oos_has_winter(),
             Or(
                 oos_has_sword(),
-                oos_has_fools_ore()
+                oos_has_fools_ore(),
+                And(
+                    oos_option_hard_logic(),
+                    oos_has_cane()
+                )
             )
         )],
         ["d2 entrance", "golden moblin", False, And(
@@ -1266,13 +1282,21 @@ def make_holodrum_logic(origin_name: str, options: OracleOfSeasonsOptions):
                     oos_option_medium_logic(),
                     oos_can_use_ember_seeds(True)
                 ),
-                oos_can_summon_dimitri()
+                oos_can_summon_dimitri(),
+                And(
+                    oos_option_hard_logic(),
+                    oos_has_cane()
+                )
             )
         )],
         ["spool swamp south (summer)", "golden octorok", False, Or(
             oos_has_sword(),
             oos_has_fools_ore(),
-            oos_can_summon_dimitri()
+            oos_can_summon_dimitri(),
+            And(
+                oos_option_hard_logic(),
+                oos_has_cane()
+            )
         )],
 
         # GASHA TREES #############################################################################################
