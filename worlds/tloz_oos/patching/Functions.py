@@ -672,22 +672,20 @@ def set_old_men_rupee_values(rom: RomData, patch_data: dict[str, Any]) -> None:
 def apply_miscellaneous_options(rom: RomData, patch_data: dict[str, Any]) -> None:
     # If companion is Dimitri, allow calling him using the Flute inside Sunken City
     if patch_data["options"]["animal_companion"] == OracleOfSeasonsAnimalCompanion.option_dimitri:
-        rom.write_byte(0x24f39, 0xa7)
-        rom.write_byte(0x24f3b, 0xe7)
+        rom.write_byte(GameboyAddress(0x09, 0x4f39).address_in_rom(), 0xa7)
+        rom.write_byte(GameboyAddress(0x09, 0x4f3b).address_in_rom(), 0xe7)
 
     # If horon shop 3 is set to be a renewable Potion, manually edit the shop flag for
     # that slot to zero to make it stay after buying
     if patch_data["options"]["enforce_potion_in_shop"]:
-        rom.write_byte(0x20cfb, 0x00)
+        rom.write_byte(GameboyAddress(0x08, 0x4cfb).address_in_rom(), 0x00)
 
     if patch_data["options"]["master_keys"] != OracleOfSeasonsMasterKeys.option_disabled:
         # Remove small key consumption on keydoor opened
-        rom.write_byte(0x18357, 0x00)
-        # Change obtention text
-        rom.write_bytes(0x7546f, [0x02, 0xe5, 0x20, 0x4b, 0x65, 0x79, 0x05, 0xD8, 0x00])
+        rom.write_byte(GameboyAddress(0x06, 0x6357).address_in_rom(), 0x00)
     if patch_data["options"]["master_keys"] == OracleOfSeasonsMasterKeys.option_all_dungeon_keys:
         # Remove boss key consumption on boss keydoor opened
-        rom.write_word(0x1834f, 0x0000)
+        rom.write_word(GameboyAddress(0x06, 0x634f).address_in_rom(), 0x0000)
     rom.write_byte(GameboyAddress(0x0a, 0x46ed).address_in_rom(),
                    patch_data["options"]["gasha_nut_kill_requirement"])
     rom.write_byte(GameboyAddress(0x04, 0x6a31).address_in_rom(),
@@ -1133,6 +1131,9 @@ def define_dungeon_items_text_constants(texts: dict[str, str], patch_data: dict[
             compasses_text += dungeon_precision
         compasses_text += "⬜!"
         texts[f"TX_00{simple_hex(base_id + i + 25)}"] = compasses_text
+
+    if patch_data["options"]["master_keys"]:
+        texts["TX_001a"] = texts["TX_001a"].replace("Small", "Master")
 
 
 def define_essence_sparkle_constants(assembler: Z80Assembler, patch_data: dict[str, Any], dungeon_entrances: dict[str, Any]) -> None:
