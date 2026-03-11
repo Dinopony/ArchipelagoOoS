@@ -142,7 +142,7 @@ def make_d2_logic():
         ["d2 spinner", "d2 wild bombs", False, And(
             Or(
                 oos_can_remove_rockslide(False),
-                oos_has_small_keys(2, 3) # spin the spinner to access the pol's voice room
+                oos_has_small_keys(2, 3)  # spin the spinner to access the pol's voice room
             ),
             Or(
                 oos_can_harvest_regrowing_bush(),
@@ -1190,8 +1190,16 @@ def make_d8_logic():
                 oos_has_cane()
             )
         )],
-        ["d8 armos chest", "d8 spinner chest", False, None],
-        ["d8 spinner chest", "frypolar entrance", False, oos_has_magnet_gloves()],
+        ["d8 spinner", "d8 spinner chest", False, oos_has_magnet_gloves()],
+        ["d8 spinner", "frypolar entrance", False, Or(
+            oos_has_magnet_gloves(),
+            And(
+                oos_option_hell_logic(),
+                oos_can_use_pegasus_seeds(),
+                oos_has_cape(),
+                oos_has_bombs_for_bombjump()
+            )
+        )],
         ["frypolar entrance", "frypolar owl", False, oos_can_use_mystery_seeds()],
         ["frypolar entrance", "d8 darknut chest", False, And(
             Or(
@@ -1233,36 +1241,37 @@ def make_d8_logic():
             # oos_can_kill_armored_enemy(),
             oos_can_remove_rockslide(False),
         )],
-        ["frypolar entrance", "frypolar room", False, oos_has_small_keys(8, 3)],
-        ["frypolar room", "frypolar room wild mystery", False, oos_can_harvest_regrowing_bush()],
 
         # 3 keys
-        ["frypolar room", "d8 ice puzzle room", False, And(
-            # Hard-require HSS since we need it in the room right after Frypolar to hit the torches anyway
-            oos_has_hyper_slingshot(),
-
+        ["frypolar entrance", "frypolar room", False, oos_has_small_keys(8, 3)],
+        ["frypolar room", "frypolar room wild mystery", False, oos_can_harvest_regrowing_bush()],
+        ["frypolar room", "beat frypolar", False, Or(
             # Requirements to kill Frypolar
-            Or(
-                And(
-                    # Casual logic: mystery seeds method is considered mandatory since it's the easiest one
-                    oos_has_mystery_seeds(),
-                    oos_has_bracelet()
-                ),
-                And(
-                    # Medium logic: allow killing Frypolar with ember only, but with at least a Lv2 satchel
-                    # (the miniboss require 15 embers to die, so 20 max is a bit tight)
-                    oos_option_medium_logic(),
-                    oos_can_use_ember_seeds(False),
-                    oos_has_satchel(2),
-                ),
-                And(
-                    # Hard logic: yolo
-                    oos_option_hard_logic(),
-                    oos_can_use_ember_seeds(False)
-                ),
+            And(
+                # Casual logic: mystery seeds method is considered mandatory since it's the easiest one
+                oos_has_mystery_seeds(),
+                oos_has_bracelet()
             ),
-
-            # Requirements to pass the room after Frypolar
+            And(
+                # Medium logic: allow killing Frypolar with ember only, but with at least a Lv2 satchel
+                # (the miniboss require 15 embers to die, so 20 max is a bit tight)
+                oos_option_medium_logic(),
+                oos_can_use_ember_seeds(False),
+                oos_has_satchel(2),
+            ),
+            And(
+                # Hard logic: yolo
+                oos_option_hard_logic(),
+                oos_can_use_ember_seeds(False)
+            )
+            # The means of throwing the seeds do not matter:
+            # beat frypolar only leads to d8 ice puzzle room in hard-, which requires a HSS.
+            # In hell, this is the only place where this region is used without HSS, but then, even satchel is enough
+            # (In all honesty, hell players are probably doing HSS skip to come here, so the route is not *that* bad)
+        )],
+        ["frypolar room", "d8 spinner chest", False, None],
+        ["beat frypolar", "d8 ice puzzle room", False, And(
+            oos_has_hyper_slingshot(),
             oos_can_use_ember_seeds(False),
         )],
 
