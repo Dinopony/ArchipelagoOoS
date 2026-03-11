@@ -207,9 +207,14 @@ class OracleOfSeasonsClient(BizHawkClient):
                 checked_locations.add(location_id)
 
         # Check how many deterministic Gasha Nuts have been opened, and mark their matching locations as checked
-        byte_offset = 0xC649 - RAM_ADDRS["location_flags"][0]
-        gasha_counter = flag_bytes[byte_offset] >> 2
-        for i in range(gasha_counter):
+        # For this we count how many gasha spots have room flag bit 0x20 set. Room flags are only set by the game's
+        # own COLLECT_PICKUP mechanism during physical harvests, so this count is immune to inflation
+        # by remote item delivery (unlike the counter at $C649).
+        gasha_spots_harvested = sum(
+            1 for (room_flag_addr, _) in GASHA_ADDRS.values()
+            if flag_bytes[room_flag_addr - RAM_ADDRS["location_flags"][0]] & 0x20
+        )
+        for i in range(gasha_spots_harvested):
             name = f"Gasha Nut #{i + 1}"
             location_id = self.location_name_to_id[name]
             checked_locations.add(location_id)
@@ -274,7 +279,7 @@ class OracleOfSeasonsClient(BizHawkClient):
             item_subid = item_subid & 0x7F  # TODO: Remove this if/when both master and small can be obtained in the same world
         writes = []
 
-        if ctx.slot_data["options"]["remote_items"]:
+        if ctx.slot_data["options"]["remote_items"] and network_item.player == ctx.slot:
             loc_data = self.location_id_data_mapping.get(network_item.location)
             if loc_data is not None:
                 flag_byte, bit_mask = loc_data["flag_byte"], loc_data["bit_mask"]
@@ -299,21 +304,21 @@ class OracleOfSeasonsClient(BizHawkClient):
                     writing_bit_mask = loc_data["remote_bit_mask"] or bit_mask
                     writing_byte_offset = writing_flag_byte - RAM_ADDRS["location_flags"][0]
                     writes.append((writing_flag_byte, [flag_bytes[writing_byte_offset] | writing_bit_mask], "System Bus"))
-                # Gasha Nuts aren't tied to a specific in game location, so we handle them separately
-                elif loc_data["gasha_nut_index"] is not None:
-                    counter_addr = 0xC649
-                    counter_offset = counter_addr - RAM_ADDRS["location_flags"][0]
-                    gasha_counter = flag_bytes[counter_offset] >> 2
+                # If we're handling Gasha Nuts locations, we simply skip the delivery if the location has already been harvested.
+                # Updates to the counter are done in process_checked_locations, and setting the planted/harvested flag
+                # is done in game_watcher (with sync_gasha_spot_flags)
+                elif loc_data["gasha_nut_index"] is not None and ctx.slot_data["options"]["deterministic_gasha_locations"] > 0:
                     gasha_nut_index = loc_data["gasha_nut_index"]
-                    if gasha_counter >= gasha_nut_index:
+                    spots_harvested = sum(
+                        1 for (room_flag_addr, _) in GASHA_ADDRS.values()
+                        if flag_bytes[room_flag_addr - RAM_ADDRS["location_flags"][0]] & 0x20
+                    )
+                    if spots_harvested >= gasha_nut_index:
                         await bizhawk.write(ctx.bizhawk_ctx, [
                             (RAM_ADDRS["received_item_index"][0], list((num_received_items + 1).to_bytes(2, "little")),
                             "System Bus")
                         ])
                         return
-                    # Increment counter by 1 (stored in bits 2-7, so add 0x04 to the raw byte)
-                    new_byte = (flag_bytes[counter_offset] & 0x03) | ((gasha_counter + 1) << 2)
-                    writes.append((counter_addr, [new_byte], "System Bus"))
 
         writes.append((RAM_ADDRS["received_item"][0], [item_id, item_subid], "System Bus"))
         await bizhawk.write(ctx.bizhawk_ctx, writes)
