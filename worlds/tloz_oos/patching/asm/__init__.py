@@ -12,6 +12,7 @@ asm_files = {
         "asm/cutscenes.yaml",
         "asm/faq_room.yaml",
         "asm/file_select_custom_string.yaml",
+        "asm/foreign_items.yaml",
         "asm/gasha_loot.yaml",
         "asm/get_item_behavior.yaml",
         "asm/gfx.yaml",

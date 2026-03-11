@@ -209,15 +209,15 @@ class OracleOfSeasonsWorld(World):
         from .generation.OrderPool import order_pool
         order_pool(multiworld, progitempool)
 
-    def generate_output(self, output_directory: str):
-        from .generation.PatchWriter import oos_create_ap_procedure_patch
-
+    def pre_output(self) -> None:
         if self.options.bird_hint.know_it_all():
             self.region_hints = create_region_hints(self)
 
         if self.options.bird_hint.owl():
             self.item_hints = create_item_hints(self)
-        self.made_hints.set()
+
+    def generate_output(self, output_directory: str) -> None:
+        from .generation.PatchWriter import oos_create_ap_procedure_patch
         patch = oos_create_ap_procedure_patch(self)
         rom_path = os.path.join(output_directory, f"{self.multiworld.get_out_file_name_base(self.player)}"
                                                   f"{patch.patch_file_ending}")
@@ -242,7 +242,6 @@ class OracleOfSeasonsWorld(World):
             "shop_costs": self.shop_prices,
         }
 
-        self.made_hints.wait()
         # The structure is made to make it easy to call CreateHints
         slot_data_item_hints = []
         for item_hint in self.item_hints:

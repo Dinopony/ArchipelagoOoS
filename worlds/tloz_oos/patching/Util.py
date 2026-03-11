@@ -1,15 +1,13 @@
+from typing import Any
+
 from ..data import ITEMS_DATA
 
 
-def get_item_id_and_subid(item: dict):
-    # Remote item, use the generic "Archipelago Item"
-    if item["item"] == "Archipelago Item" or ("player" in item and not item["progression"]):
-        return 0x41, 0x00
-    if item["item"] == "Archipelago Progression Item" or ("player" in item and item["progression"]):
-        return 0x41, 0x01
-
-    # Local item, put the real item in there
-    item_data = ITEMS_DATA[item["item"]]
+def get_item_id_and_subid(item_data: dict[str, dict[str, Any]], item: dict[str, str | bool]) -> tuple[int, int]:
+    item_name = item["item"]
+    if "player" in item:
+        item_name += f"|{item["player"]}"
+    item_data = item_data[item_name]
     item_id = item_data["id"]
     item_subid = item_data["subid"] if "subid" in item_data else 0x00
     if item_id == 0x30:

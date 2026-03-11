@@ -156,5 +156,16 @@
   ld (hl),$fa ; shallow water
   ret
 
-05/49cc/: db $18 ; jr, avoids the code that puts you in the animal companion's coord
-# 05:49ce to 05:49e5 is free, TODO: might be needed in ER
+05/49c9/: db $18 ; jr, avoids the code that puts you in the animal companion's coord
+# 05:49cb to 05:49e5 is free, TODO: might be needed in ER, also this makes dimitri clipping stronger
+
+# Disable ring link
+0b/4ac4/: |
+  db showtextlowindex,$1f
+  db scriptend
+# 0b:4ac6 to 0b:4ae1 is free
+# Disable the ring link help book
+0b/4b4a/: |
+  db $1f ; reuse the text from the blue snake
+  dwbe $4b44
+# 0b:4b4d to 0b:4b68 is free

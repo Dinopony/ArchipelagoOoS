@@ -2,7 +2,6 @@ import os
 import random
 from collections import defaultdict
 from pathlib import Path
-from typing import Any
 
 import Utils
 from settings import get_settings
@@ -17,12 +16,40 @@ from ..common.patching.Util import get_available_random_colors_from_sprite_name,
 from ..common.patching.text import normalize_text
 from ..common.patching.z80asm.Assembler import Z80Assembler
 from ..common.patching.z80asm.Util import parse_hex_string_to_value
-from ..data.Locations import LOCATIONS_DATA
 from ..data.Constants import *
+from ..data.Locations import LOCATIONS_DATA
 from ..generation.Hints import make_hint_texts
 
 
-def get_asm_files(patch_data):
+def define_foreign_item_data(assembler: Z80Assembler, texts: dict[str, str], patch_data: dict[str, Any]) -> dict[str, dict[str, Any]]:
+    # Register all foreign items and save their text as TX_0cxx, id 0x41, subid xx
+    item_data = ITEMS_DATA.copy()
+    current_subid = 0
+    foreign_item_data = []
+
+    all_locations = patch_data["locations"]
+    for location in all_locations:
+        location_content = all_locations[location]
+        if "player" not in location_content:
+            continue
+        texts[f"TX_0c{simple_hex(current_subid)}"] = normalize_text(f"You got a 🟥{location_content["item"]}⬜ for 🟦{location_content["player"]}⬜!")
+        foreign_item_data.extend([
+            0x00, # grab mode, doesn't really matter
+            current_subid, # parameter, not sure it matters
+            current_subid, # text id, will need special handling
+            0x52 if location_content["progression"] else 0x53 # sprite
+        ])
+        item_data[f"{location_content["item"]}|{location_content["player"]}"] = {
+            "id": 0x41,
+            "subid": current_subid,
+        }
+        current_subid += 1
+
+    assembler.add_floating_chunk("archipelago_items", foreign_item_data)
+    return item_data
+
+
+def get_asm_files(patch_data: dict[str, Any]) -> list[str]:
     files = list(asm_files["base"])
     if patch_data["options"]["quick_flute"]:
         files += asm_files["quick_flute"]
@@ -53,7 +80,7 @@ def get_asm_files(patch_data):
     return files
 
 
-def write_chest_contents(rom: RomData, patch_data):
+def write_chest_contents(rom: RomData, patch_data: dict[str, Any], item_data: dict[str, dict[str, Any]]) -> None:
     """
     Chest locations are packed inside several big tables in the ROM, unlike other more specific locations.
     This puts the item described in the patch data inside each chest in the game.
@@ -64,12 +91,12 @@ def write_chest_contents(rom: RomData, patch_data):
             continue
         chest_addr = rom.get_chest_addr(location_data["room"], 0x15, 0x4f6c)
         item = locations_data[location_name]
-        item_id, item_subid = get_item_id_and_subid(item)
+        item_id, item_subid = get_item_id_and_subid(item_data, item)
         rom.write_byte(chest_addr, item_id)
         rom.write_byte(chest_addr + 1, item_subid)
 
 
-def define_samasa_combination(assembler: Z80Assembler, patch_data):
+def define_samasa_combination(assembler: Z80Assembler, patch_data: dict[str, Any]) -> None:
     samasa_combination = [int(number) for number in patch_data["samasa_gate_sequence"].split(" ")]
 
     # 1) Define the combination itself and its length for the gate check
@@ -114,10 +141,10 @@ def define_samasa_combination(assembler: Z80Assembler, patch_data):
     assembler.add_floating_chunk("showSamasaCutscene", cutscene)
 
 
-def define_compass_rooms_table(assembler: Z80Assembler, patch_data):
+def define_compass_rooms_table(assembler: Z80Assembler, patch_data: dict[str, Any], item_data: dict[str, dict[str, Any]]) -> None:
     table = []
     for location_name, item in patch_data["locations"].items():
-        item_id, item_subid = get_item_id_and_subid(item)
+        item_id, item_subid = get_item_id_and_subid(item_data, item)
         dungeon = 0xff
         if item_id == 0x30:  # Small Key or Master Key
             dungeon = item_subid
@@ -137,7 +164,7 @@ def define_compass_rooms_table(assembler: Z80Assembler, patch_data):
     assembler.add_floating_chunk("compassRoomsTable", table)
 
 
-def define_collect_properties_table(assembler: Z80Assembler, patch_data):
+def define_collect_properties_table(assembler: Z80Assembler, patch_data: dict[str, Any], item_data: dict[str, dict[str, Any]]) -> None:
     """
     Defines a table of (group, room, collect mode) entries for randomized items
     to determine how they spawn, how they are grabbed and whether they set
@@ -151,7 +178,7 @@ def define_collect_properties_table(assembler: Z80Assembler, patch_data):
         mode = location_data["collect"]
 
         # Use no pickup animation for drop or diving small keys
-        item_id, _ = get_item_id_and_subid(item)
+        item_id, _ = get_item_id_and_subid(item_data, item)
         if item_id == 0x30 and (mode == COLLECT_DROP or mode == COLLECT_DIVE):
             mode &= 0xf8  # Set grab mode to TREASURE_GRAB_INSTANT
 
@@ -174,7 +201,7 @@ def define_collect_properties_table(assembler: Z80Assembler, patch_data):
     assembler.add_floating_chunk("collectPropertiesTable", table)
 
 
-def define_additional_tile_replacements(assembler: Z80Assembler, patch_data):
+def define_additional_tile_replacements(assembler: Z80Assembler, patch_data: dict[str, Any]) -> None:
     """
     Define a list of entries following the format of `tileReplacementsTable` (see ASM for more info) which end up
     being tile replacements on various rooms in the game.
@@ -197,29 +224,29 @@ def define_additional_tile_replacements(assembler: Z80Assembler, patch_data):
     # Remove Gasha spots when harvested once if deterministic Gasha locations are enabled
     if patch_data["options"]["deterministic_gasha_locations"] > 0:
         table.extend([
-            0x00, 0xa6, 0x20, 0x54, 0x04,  # North Horon: Gasha Spot Above Impa
-            0x00, 0xc8, 0x20, 0x67, 0x04,  # Horon Village: Gasha Spot Near Mayor's House
-            0x00, 0xac, 0x20, 0x27, 0x04,  # Eastern Suburbs: Gasha Spot
-            0x00, 0x95, 0x20, 0x32, 0x04,  # Holodrum Plain: Gasha Spot Near Mrs. Ruul's House
-            0x00, 0x75, 0x20, 0x34, 0x04,  # Holodrum Plain: Gasha Spot on Island Above D1
-            0x00, 0x80, 0x20, 0x53, 0x04,  # Spool Swamp: Gasha Spot Near Floodgate Keyhole
-            0x00, 0xc0, 0x20, 0x61, 0x04,  # Spool Swamp: Gasha Spot Near Portal
-            0x00, 0x3f, 0x20, 0x44, 0x04,  # Sunken City: Gasha Spot
-            0x00, 0x1f, 0x20, 0x21, 0x12,  # Mt. Cucco: Gasha Spot
-            0x00, 0x38, 0x20, 0x25, 0x04,  # Goron Mountain: Gasha Spot Left of Entrance
-            0x00, 0x3b, 0x20, 0x53, 0x12,  # Goron Mountain: Gasha Spot Right of Entrance
-            0x00, 0x89, 0x20, 0x24, 0x04,  # Eyeglass Lake: Gasha Spot Near D5
-            0x00, 0x22, 0x20, 0x45, 0x04,  # Tarm Ruins: Gasha Spot
-            0x00, 0xf0, 0x20, 0x22, 0x12,  # Western Coast: Gasha Spot South of Graveyard
-            0x00, 0xef, 0x20, 0x66, 0xaf,  # Samasa Desert: Gasha Spot
-            0x00, 0x44, 0x20, 0x44, 0x04,  # Path to Onox Castle: Gasha Spot
+            0x00, 0xa6, 0x20, 0x54, 0xe1,  # North Horon: Gasha Spot Above Impa
+            0x00, 0xc8, 0x20, 0x67, 0xe1,  # Horon Village: Gasha Spot Near Mayor's House
+            0x00, 0xac, 0x20, 0x27, 0xe1,  # Eastern Suburbs: Gasha Spot
+            0x00, 0x95, 0x20, 0x32, 0xe1,  # Holodrum Plain: Gasha Spot Near Mrs. Ruul's House
+            0x00, 0x75, 0x20, 0x34, 0xe1,  # Holodrum Plain: Gasha Spot on Island Above D1
+            0x00, 0x80, 0x20, 0x53, 0xe1,  # Spool Swamp: Gasha Spot Near Floodgate Keyhole
+            0x00, 0xc0, 0x20, 0x61, 0xe1,  # Spool Swamp: Gasha Spot Near Portal
+            0x00, 0x3f, 0x20, 0x44, 0xe1,  # Sunken City: Gasha Spot
+            0x00, 0x1f, 0x20, 0x21, 0xe1,  # Mt. Cucco: Gasha Spot
+            0x00, 0x38, 0x20, 0x25, 0xe1,  # Goron Mountain: Gasha Spot Left of Entrance
+            0x00, 0x3b, 0x20, 0x53, 0xe1,  # Goron Mountain: Gasha Spot Right of Entrance
+            0x00, 0x89, 0x20, 0x24, 0xe1,  # Eyeglass Lake: Gasha Spot Near D5
+            0x00, 0x22, 0x20, 0x45, 0xe1,  # Tarm Ruins: Gasha Spot
+            0x00, 0xf0, 0x20, 0x22, 0xe1,  # Western Coast: Gasha Spot South of Graveyard
+            0x00, 0xef, 0x20, 0x66, 0xe1,  # Samasa Desert: Gasha Spot
+            0x00, 0x44, 0x20, 0x44, 0xe1,  # Path to Onox Castle: Gasha Spot
         ])
     if patch_data["options"]["linked_heros_cave"] & OracleOfSeasonsLinkedHerosCave.no_alt_entrance:
         table.extend([0x05, 0x2c, 0x00, 0x42, 0x52])
     assembler.add_floating_chunk("additionalTileReplacements", table)
 
 
-def define_location_constants(assembler: Z80Assembler, patch_data):
+def define_location_constants(assembler: Z80Assembler, patch_data: dict[str, Any], item_data: dict[str, dict[str, Any]]):
     # If "Enforce potion in shop" is enabled, put a Potion in a specific location in Horon Shop that was
     # disabled at generation time to prevent trackers from tracking it
     if patch_data["options"]["enforce_potion_in_shop"]:
@@ -245,7 +272,7 @@ def define_location_constants(assembler: Z80Assembler, patch_data):
             # Put a fake item for disabled locations, since they are unreachable anwyway
             item = {"item": "Friendship Ring"}
 
-        item_id, item_subid = get_item_id_and_subid(item)
+        item_id, item_subid = get_item_id_and_subid(item_data, item)
         assembler.define_byte(f"locations.{symbolic_name}.id", item_id)
         assembler.define_byte(f"locations.{symbolic_name}.subid", item_subid)
         assembler.define_word(f"locations.{symbolic_name}", (item_id << 8) + item_subid)
@@ -254,12 +281,12 @@ def define_location_constants(assembler: Z80Assembler, patch_data):
     deterministic_gasha_table = []
     for i in range(int(patch_data["options"]["deterministic_gasha_locations"])):
         item = patch_data["locations"][f"Gasha Nut #{i + 1}"]
-        item_id, item_subid = get_item_id_and_subid(item)
+        item_id, item_subid = get_item_id_and_subid(item_data, item)
         deterministic_gasha_table.extend([item_id, item_subid])
     assembler.add_floating_chunk("deterministicGashaLootTable", deterministic_gasha_table)
 
 
-def define_option_constants(assembler: Z80Assembler, patch_data):
+def define_option_constants(assembler: Z80Assembler, patch_data: dict[str, Any]) -> None:
     options = patch_data["options"]
 
     assembler.define_byte("option.startingGroup", 0x00)
@@ -343,12 +370,12 @@ def define_option_constants(assembler: Z80Assembler, patch_data):
         assembler.define_byte("showDungeonWithMap", 0x01)
 
 
-def define_season_constants(assembler: Z80Assembler, patch_data):
+def define_season_constants(assembler: Z80Assembler, patch_data: dict[str, Any]) -> None:
     for region_name, season_byte in patch_data["default_seasons"].items():
         assembler.define_byte(f"defaultSeason.{region_name}", season_byte)
 
 
-def define_lost_woods_sequences(assembler: Z80Assembler, texts: dict[str, str], patch_data):
+def define_lost_woods_sequences(assembler: Z80Assembler, texts: dict[str, str], patch_data: dict[str, Any]) -> None:
     pedestal_sequence = patch_data["lost_woods_item_sequence"]
     pedestal_bytes, pedestal_text = process_lost_woods_sequence(pedestal_sequence)
     assembler.add_floating_chunk("lostWoodsPedestalSequence", pedestal_bytes)
@@ -363,13 +390,13 @@ def define_lost_woods_sequences(assembler: Z80Assembler, texts: dict[str, str], 
     texts["TX_4500"] = texts["TX_4500"][:travel_index] + "\\stop\n" + main_text
 
 
-def process_lost_woods_sequence(sequence):
+def process_lost_woods_sequence(sequence: list[list[int]]) -> tuple[list[int], str]:
     """
     Process a sequence of directions + seasons, and outputs two byte arrays:
     - one to use as a technical data array to check the sequence being done
     - one to use as text hint
     """
-    sequence_bytes = []
+    sequence_bytes: list[int] = []
     text = ""
     for i in range(4):
         direction = sequence[i][0]
@@ -384,7 +411,7 @@ def process_lost_woods_sequence(sequence):
     return sequence_bytes, text
 
 
-def define_tree_sprites(assembler: Z80Assembler, patch_data):
+def define_tree_sprites(assembler: Z80Assembler, patch_data: dict[str, Any], item_data: dict[str, dict[str, Any]]) -> None:
     tree_data = {  # Name: (map, position)
         "Horon Village: Seed Tree": (0xf8, 0x48),
         "Woods of Winter: Seed Tree": (0x9e, 0x88),
@@ -398,7 +425,7 @@ def define_tree_sprites(assembler: Z80Assembler, patch_data):
         seed = patch_data["locations"][tree_name]
         if seed["item"] == "Ember Seeds":
             continue
-        seed_id, _ = get_item_id_and_subid(seed)
+        seed_id, _ = get_item_id_and_subid(item_data, seed)
         assembler.define_byte(f"seedTree{i}.map", tree_data[tree_name][0])
         assembler.define_byte(f"seedTree{i}.position", tree_data[tree_name][1])
         assembler.define_byte(f"seedTree{i}.gfx", seed_id - 26)
@@ -415,19 +442,19 @@ def define_tree_sprites(assembler: Z80Assembler, patch_data):
         assembler.define_byte("seedTree5.enabled", 0x0d)
 
 
-def get_treasure_addr(rom: RomData, item_name: str):
-    item_id, item_subid = get_item_id_and_subid({"item": item_name})
+def get_treasure_addr(rom: RomData, item_name: str, item_data: dict[str, dict[str, Any]]) -> int:
+    item_id, item_subid = get_item_id_and_subid(item_data, {"item": item_name})
     addr = 0x55129 + (item_id * 4)
     if rom.read_byte(addr) & 0x80 != 0:
         addr = 0x50000 + rom.read_word(addr + 1)
     return addr + (item_subid * 4)
 
 
-def set_treasure_data(rom: RomData,
+def set_treasure_data(rom: RomData, item_data: dict[str, dict[str, Any]],
                       item_name: str, text_id: int | None,
                       sprite_id: int | None = None,
-                      param_value: int | None = None):
-    addr = get_treasure_addr(rom, item_name)
+                      param_value: int | None = None) -> None:
+    addr = get_treasure_addr(rom, item_name, item_data)
     if text_id is not None:
         rom.write_byte(addr + 0x02, text_id)
     if sprite_id is not None:
@@ -436,7 +463,7 @@ def set_treasure_data(rom: RomData,
         rom.write_byte(addr + 0x01, param_value)
 
 
-def set_player_start_inventory(assembler: Z80Assembler, patch_data):
+def set_player_start_inventory(assembler: Z80Assembler, patch_data: dict[str, Any]) -> None:
     obtained_treasures_address = parse_hex_string_to_value(DEFINES["wObtainedTreasureFlags"])
     start_inventory_changes = defaultdict(int)
 
@@ -604,34 +631,30 @@ def set_player_start_inventory(assembler: Z80Assembler, patch_data):
     assembler.add_floating_chunk("startingInventory", start_inventory)
 
 
-def alter_treasure_types(rom: RomData):
+def alter_treasure_types(rom: RomData, item_data: dict[str, dict[str, Any]]) -> None:
     # Some treasures don't exist as interactions in base game, we need to add
     # text & sprite references for them to work properly in a randomized context
-    set_treasure_data(rom, "Fool's Ore", 0x36, 0x4a)
-    set_treasure_data(rom, "Rare Peach Stone", None, 0x3f)
-    set_treasure_data(rom, "Ribbon", 0x41, 0x4c)
-    set_treasure_data(rom, "Treasure Map", 0x6c, 0x49)
-    set_treasure_data(rom, "Member's Card", 0x45, 0x48)
-    set_treasure_data(rom, "Potion", 0x6d, 0x4b)
-
-    # Set data for remote Archipelago items
-    set_treasure_data(rom, "Archipelago Item", 0x57, 0x53)
-    set_treasure_data(rom, "Archipelago Progression Item", 0x57, 0x52)
+    set_treasure_data(rom, item_data, "Fool's Ore", 0x36, 0x4a)
+    set_treasure_data(rom, item_data, "Rare Peach Stone", None, 0x3f)
+    set_treasure_data(rom, item_data, "Ribbon", 0x41, 0x4c)
+    set_treasure_data(rom, item_data, "Treasure Map", 0x6c, 0x49)
+    set_treasure_data(rom, item_data, "Member's Card", 0x45, 0x48)
+    set_treasure_data(rom, item_data, "Potion", 0x6d, 0x4b)
 
     # Make bombs increase max carriable quantity when obtained from treasures,
     # not drops (see asm/seasons/bomb_bag_behavior)
-    set_treasure_data(rom, "Bombs (10)", None, None, 0x90)
-    set_treasure_data(rom, "Bombs (20)", 0x94, None, 0xa0)
-    set_treasure_data(rom, "Bombchus (10)", None, None, 0x90)
-    set_treasure_data(rom, "Bombchus (20)", None, None, 0xa0)
+    set_treasure_data(rom, item_data, "Bombs (10)", None, None, 0x90)
+    set_treasure_data(rom, item_data, "Bombs (20)", 0x94, None, 0xa0)
+    set_treasure_data(rom, item_data, "Bombchus (10)", None, None, 0x90)
+    set_treasure_data(rom, item_data, "Bombchus (20)", None, None, 0xa0)
 
     # Colored Rod of Seasons to make them recognizable
-    set_treasure_data(rom, "Rod of Seasons (Spring)", None, 0x4f)
-    set_treasure_data(rom, "Rod of Seasons (Autumn)", None, 0x50)
-    set_treasure_data(rom, "Rod of Seasons (Winter)", None, 0x51)
+    set_treasure_data(rom, item_data, "Rod of Seasons (Spring)", None, 0x4f)
+    set_treasure_data(rom, item_data, "Rod of Seasons (Autumn)", None, 0x50)
+    set_treasure_data(rom, item_data, "Rod of Seasons (Winter)", None, 0x51)
 
 
-def set_old_men_rupee_values(rom: RomData, patch_data):
+def set_old_men_rupee_values(rom: RomData, patch_data: dict[str, Any]) -> None:
     if patch_data["options"]["shuffle_old_men"] == OracleOfSeasonsOldMenShuffle.option_turn_into_locations:
         return
     for i, name in enumerate(OLD_MAN_RUPEE_VALUES.keys()):
@@ -646,32 +669,30 @@ def set_old_men_rupee_values(rom: RomData, patch_data):
                 rom.write_word(0x2987b + (i * 2), 0x7488)  # Take rupees
 
 
-def apply_miscellaneous_options(rom: RomData, patch_data):
+def apply_miscellaneous_options(rom: RomData, patch_data: dict[str, Any]) -> None:
     # If companion is Dimitri, allow calling him using the Flute inside Sunken City
     if patch_data["options"]["animal_companion"] == OracleOfSeasonsAnimalCompanion.option_dimitri:
-        rom.write_byte(0x24f39, 0xa7)
-        rom.write_byte(0x24f3b, 0xe7)
+        rom.write_byte(GameboyAddress(0x09, 0x4f39).address_in_rom(), 0xa7)
+        rom.write_byte(GameboyAddress(0x09, 0x4f3b).address_in_rom(), 0xe7)
 
     # If horon shop 3 is set to be a renewable Potion, manually edit the shop flag for
     # that slot to zero to make it stay after buying
     if patch_data["options"]["enforce_potion_in_shop"]:
-        rom.write_byte(0x20cfb, 0x00)
+        rom.write_byte(GameboyAddress(0x08, 0x4cfb).address_in_rom(), 0x00)
 
     if patch_data["options"]["master_keys"] != OracleOfSeasonsMasterKeys.option_disabled:
         # Remove small key consumption on keydoor opened
-        rom.write_byte(0x18357, 0x00)
-        # Change obtention text
-        rom.write_bytes(0x7546f, [0x02, 0xe5, 0x20, 0x4b, 0x65, 0x79, 0x05, 0xD8, 0x00])
+        rom.write_byte(GameboyAddress(0x06, 0x6357).address_in_rom(), 0x00)
     if patch_data["options"]["master_keys"] == OracleOfSeasonsMasterKeys.option_all_dungeon_keys:
         # Remove boss key consumption on boss keydoor opened
-        rom.write_word(0x1834f, 0x0000)
+        rom.write_word(GameboyAddress(0x06, 0x634f).address_in_rom(), 0x0000)
     rom.write_byte(GameboyAddress(0x0a, 0x46ed).address_in_rom(),
                    patch_data["options"]["gasha_nut_kill_requirement"])
     rom.write_byte(GameboyAddress(0x04, 0x6a31).address_in_rom(),
                    patch_data["options"]["gasha_nut_kill_requirement"] // 2)
 
 
-def set_fixed_subrosia_seaside_location(rom: RomData, patch_data):
+def set_fixed_subrosia_seaside_location(rom: RomData, patch_data: dict[str, Any]) -> None:
     """
     Make the location for Subrosia Seaside fixed among the 4 possible locations from the vanilla game.
     This is done to compensate for the poor in-game randomness and potential unfairness in races.
@@ -682,7 +703,7 @@ def set_fixed_subrosia_seaside_location(rom: RomData, patch_data):
         rom.write_word(addr, spot)
 
 
-def set_file_select_text(assembler: Z80Assembler, slot_name: str):
+def set_file_select_text(assembler: Z80Assembler, slot_name: str) -> None:
     def char_to_tile(c: str) -> int:
         if "0" <= c <= "9":
             return ord(c) - 0x20
@@ -715,7 +736,7 @@ def set_file_select_text(assembler: Z80Assembler, slot_name: str):
     assembler.add_floating_chunk("dma_FileSelectStringTiles", text_tiles)
 
 
-def process_item_name_for_shop_text(item: dict) -> str:
+def process_item_name_for_shop_text(item: dict[str, str | bool]) -> str:
     if "player" in item:
         player_name = item["player"]
         if len(player_name) > 14:
@@ -729,7 +750,7 @@ def process_item_name_for_shop_text(item: dict) -> str:
     return item_name
 
 
-def make_text_data(assembler: Z80Assembler, text: dict[str, str], patch_data):
+def make_text_data(assembler: Z80Assembler, text: dict[str, str], patch_data: dict[str, Any]) -> None:
     # Process shops
     OVERWORLD_SHOPS = [
         "Horon Village: Shop",
@@ -893,7 +914,7 @@ def make_text_data(assembler: Z80Assembler, text: dict[str, str], patch_data):
     make_hint_texts(text, patch_data)
 
 
-def set_heart_beep_interval_from_settings(rom: RomData):
+def set_heart_beep_interval_from_settings(rom: RomData) -> None:
     heart_beep_interval = get_settings()["tloz_oos_options"]["heart_beep_interval"]
     if heart_beep_interval == "half":
         rom.write_byte(0x9116, 0x3f * 2)
@@ -903,7 +924,7 @@ def set_heart_beep_interval_from_settings(rom: RomData):
         rom.write_bytes(0x9116, [0x00, 0xc9])  # Put a return to avoid beeping entirely
 
 
-def set_character_sprite_from_settings(rom: RomData):
+def set_character_sprite_from_settings(rom: RomData) -> None:
     sprite = get_settings()["tloz_oos_options"]["character_sprite"]
     sprite_dir = Path(Utils.local_path(os.path.join("data", "sprites", "oos_ooa")))
     if sprite == "random":
@@ -955,8 +976,10 @@ def set_character_sprite_from_settings(rom: RomData):
         sprite_bytes = list(Path(sprite_path).read_bytes())
         rom.write_bytes(0x68000, sprite_bytes)
 
+    # noinspection PyUnboundLocalVariable
     if palette == "green":
         return  # Nothing to change
+    # noinspection PyUnboundLocalVariable
     if palette not in PALETTE_BYTES:
         raise ValueError(f"Palette color '{palette}' doesn't exist (must be 'green', 'blue', 'red' or 'orange')")
     palette_byte = PALETTE_BYTES[palette]
@@ -976,13 +999,13 @@ def set_character_sprite_from_settings(rom: RomData):
     rom.write_byte(0x8d5c, 0x20 | palette_byte)
 
 
-def inject_slot_name(rom: RomData, slot_name: str):
+def inject_slot_name(rom: RomData, slot_name: str) -> None:
     slot_name_as_bytes = list(str.encode(slot_name))
     slot_name_as_bytes += [0x00] * (0x40 - len(slot_name_as_bytes))
     rom.write_bytes(0xfffc0, slot_name_as_bytes)
 
 
-def set_dungeon_warps(rom: RomData, patch_data: dict[str, Any], dungeon_entrances: dict[str, Any], dungeon_exits: dict[str, Any]):
+def set_dungeon_warps(rom: RomData, patch_data: dict[str, Any], dungeon_entrances: dict[str, Any], dungeon_exits: dict[str, Any]) -> None:
     warp_matchings = patch_data["dungeon_entrances"]
     enter_values = {name: rom.read_word(dungeon["addr"]) for name, dungeon in dungeon_entrances.items()}
     exit_values = {name: rom.read_word(addr) for name, addr in dungeon_exits.items()}
@@ -1033,7 +1056,7 @@ def set_dungeon_warps(rom: RomData, patch_data: dict[str, Any], dungeon_entrance
         rom.write_byte(0xaa19 + map_tile, 0x81 | (dungeon_index << 3))
 
 
-def set_portal_warps(rom: RomData, patch_data):
+def set_portal_warps(rom: RomData, patch_data: dict[str, Any]) -> None:
     warp_matchings = patch_data["subrosia_portals"]
 
     values = {}
@@ -1060,7 +1083,7 @@ def set_portal_warps(rom: RomData, patch_data):
         rom.write_byte(portal_text_addr, 0x80 | (portal_1["text_index"] << 3))
 
 
-def define_dungeon_items_text_constants(texts: dict[str, str], patch_data):
+def define_dungeon_items_text_constants(texts: dict[str, str], patch_data: dict[str, Any]) -> None:
     base_id = 0x73
     for i in range(10):
         if i == 0:
@@ -1109,8 +1132,11 @@ def define_dungeon_items_text_constants(texts: dict[str, str], patch_data):
         compasses_text += "⬜!"
         texts[f"TX_00{simple_hex(base_id + i + 25)}"] = compasses_text
 
+    if patch_data["options"]["master_keys"]:
+        texts["TX_001a"] = texts["TX_001a"].replace("Small", "Master")
 
-def define_essence_sparkle_constants(assembler: Z80Assembler, patch_data: dict[str, Any], dungeon_entrances: dict[str, Any]):
+
+def define_essence_sparkle_constants(assembler: Z80Assembler, patch_data: dict[str, Any], dungeon_entrances: dict[str, Any]) -> None:
     byte_array = []
     show_dungeons_with_essence = patch_data["options"]["show_dungeons_with_essence"]
 
@@ -1132,7 +1158,7 @@ def define_essence_sparkle_constants(assembler: Z80Assembler, patch_data: dict[s
     assembler.define_byte("option.essenceSparklesRequireCompass", 1 if require_compass else 0)
 
 
-def set_faq_trap(assembler: Z80Assembler):
+def set_faq_trap(assembler: Z80Assembler) -> None:
     assembler.define_byte("option.startingGroup", 0x04, True)
     assembler.define_byte("option.startingRoom", 0xec, True)
     assembler.define_byte("option.startingPosY", 0x50, True)

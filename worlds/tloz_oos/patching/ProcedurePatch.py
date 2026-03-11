@@ -63,18 +63,19 @@ class OoSPatchExtensions(APPatchExtension):
             dungeon_exits["d11"] = GameboyAddress(0x04, 0x7b35).address_in_rom()
 
         # Define assembly constants & floating chunks
-        define_location_constants(assembler, patch_data)
+        item_data = define_foreign_item_data(assembler, texts, patch_data)
+        define_location_constants(assembler, patch_data, item_data)
         define_option_constants(assembler, patch_data)
         define_season_constants(assembler, patch_data)
         make_text_data(assembler, texts, patch_data)
-        define_compass_rooms_table(assembler, patch_data)
-        define_collect_properties_table(assembler, patch_data)
+        define_compass_rooms_table(assembler, patch_data, item_data)
+        define_collect_properties_table(assembler, patch_data, item_data)
         define_additional_tile_replacements(assembler, patch_data)
         define_samasa_combination(assembler, patch_data)
         define_dungeon_items_text_constants(texts, patch_data)
         define_essence_sparkle_constants(assembler, patch_data, dungeon_entrances)
         define_lost_woods_sequences(assembler, texts, patch_data)
-        define_tree_sprites(assembler, patch_data)
+        define_tree_sprites(assembler, patch_data, item_data)
         set_file_select_text(assembler, caller.player_name)
         set_player_start_inventory(assembler, patch_data)
         if not hasattr(get_settings().tloz_oos_options, "beat_tutorial"):
@@ -95,8 +96,8 @@ class OoSPatchExtensions(APPatchExtension):
             dungeon_entrances["d11"]["addr"] = assembler.global_labels["warpSourceDesert"].address_in_rom() + 2
 
         # Perform direct edits on the ROM
-        alter_treasure_types(rom_data)
-        write_chest_contents(rom_data, patch_data)
+        alter_treasure_types(rom_data, item_data)
+        write_chest_contents(rom_data, patch_data, item_data)
         set_old_men_rupee_values(rom_data, patch_data)
         set_dungeon_warps(rom_data, patch_data, dungeon_entrances, dungeon_exits)
         set_portal_warps(rom_data, patch_data)
