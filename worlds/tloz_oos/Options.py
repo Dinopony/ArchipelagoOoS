@@ -666,7 +666,7 @@ class OracleOfSeasonsRemoveItemsFromPool(ItemDict):
 
 class OracleOfSeasonsIncludeCrossItems(Toggle):
     """
-    When enabled, add the cane of somaria to the item pool
+    When enabled, adds the Cane of Somaria, the Switch Hook and the Seed Shooter to the item pool
     ⚠ Requires the Oracles of Ages US ROM on patch, you won't be able to play without
     """
     display_name = "Cross Items"
