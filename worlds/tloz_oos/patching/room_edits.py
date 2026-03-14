@@ -130,7 +130,7 @@ def apply_anti_softlock_edits(room_data: list[bytearray]) -> None:
         room_data[room_id][14] = 0x12
 
         # Remove bush next to rosa portal
-        room_data[room_id][34] = 0x12
+        room_data[room_id][34] = 0x04
 
     # Add rock at bottom of cliff to block ricky
     for room_id in range(0x08a, 0x400, 0x100):
