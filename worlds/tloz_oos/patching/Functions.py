@@ -207,20 +207,6 @@ def define_additional_tile_replacements(assembler: Z80Assembler, patch_data: dic
     being tile replacements on various rooms in the game.
     """
     table = []
-    # Reveal hidden subrosia digging spots if required
-    if get_settings()["tloz_oos_options"]["reveal_hidden_subrosia_digging_spots"]:
-        table.extend([
-            0x01, 0x06, 0x00, 0x18, 0x2f,  # Bath digging spot
-            0x01, 0x57, 0x00, 0x38, 0x2f,  # Market portal digging spot
-            0x01, 0x47, 0x00, 0x33, 0x2f,  # Hard-working Subrosian digging spot
-            0x01, 0x3a, 0x00, 0x46, 0x2f,  # Temple of Seasons digging spot
-            0x01, 0x07, 0x00, 0x13, 0x2f,  # Northern volcanoes digging spot
-            0x01, 0x20, 0x00, 0x68, 0x2f,  # D8 portal digging spot
-            0x01, 0x42, 0x00, 0x14, 0x2f  # Western volcanoes digging spot
-        ])
-    # If D0 alternate entrance is removed, put stairs inside D0 to make chest reachable without the alternate entrance
-    if patch_data["options"]["remove_d0_alt_entrance"] > 0:
-        table.extend([0x04, 0x05, 0x00, 0x5a, 0x53])
     # Remove Gasha spots when harvested once if deterministic Gasha locations are enabled
     if patch_data["options"]["deterministic_gasha_locations"] > 0:
         table.extend([
@@ -241,8 +227,6 @@ def define_additional_tile_replacements(assembler: Z80Assembler, patch_data: dic
             0x00, 0xef, 0x20, 0x66, 0xe1,  # Samasa Desert: Gasha Spot
             0x00, 0x44, 0x20, 0x44, 0xe1,  # Path to Onox Castle: Gasha Spot
         ])
-    if patch_data["options"]["linked_heros_cave"] & OracleOfSeasonsLinkedHerosCave.no_alt_entrance:
-        table.extend([0x05, 0x2c, 0x00, 0x42, 0x52])
     assembler.add_floating_chunk("additionalTileReplacements", table)
 
 
@@ -342,8 +326,6 @@ def define_option_constants(assembler: Z80Assembler, patch_data: dict[str, Any])
     if patch_data["options"]["linked_heros_cave"] & OracleOfSeasonsLinkedHerosCave.samasa:
         assembler.define_byte("d11", 0x01)
         assembler.define_byte("d11InSamasa", 0x01)
-        if patch_data["options"]["linked_heros_cave"] & OracleOfSeasonsLinkedHerosCave.no_alt_entrance:
-            assembler.define_byte("d11_no_alt_entrance", 0x01)
 
         chest_dict = {
             "d0": 0x75,

@@ -6,6 +6,8 @@ import yaml
 from worlds.Files import APProcedurePatch, APTokenMixin, APPatchExtension
 from .Functions import *
 from .data_manager.text import apply_ages_edits, get_modded_seasons_text_data
+from .room_edits import apply_room_edits
+from ..common.patching.rooms.decoding import decompress_rooms
 from ..common.patching.text.encoding import write_text_data
 from ..common.patching.z80asm.Assembler import Z80Assembler, Z80Block, GameboyAddress
 
@@ -84,6 +86,7 @@ class OoSPatchExtensions(APPatchExtension):
         # Parse assembler files, compile them and write the result in the ROM
         print("Compiling ASM files...")
         write_text_data(rom_data, dictionary, texts, True)
+        apply_room_edits(rom_data, patch_data)
         for file_path in get_asm_files(patch_data):
             data_loaded = yaml.safe_load(pkgutil.get_data(__name__, file_path))
             for metalabel, contents in data_loaded.items():
