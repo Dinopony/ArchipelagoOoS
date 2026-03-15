@@ -255,9 +255,9 @@ def make_holodrum_logic(origin_name: str, options: OracleOfSeasonsOptions):
             oos_can_remove_snow(True)
         )],
 
-        ["central woods of winter", "suburbs fairy fountain", False, oos_is_default_season("WOODS_OF_WINTER", SEASON_WINTER, False)],
+        ["central woods of winter", "suburbs fairy fountain", False, oos_is_default_season("EASTERN_SUBURBS", SEASON_WINTER, False)],
         ["central woods of winter", "suburbs fairy fountain (winter)", False, And(
-            oos_is_default_season("WOODS_OF_WINTER", SEASON_WINTER),
+            oos_is_default_season("EASTERN_SUBURBS", SEASON_WINTER),
             Or(
                 And(
                     oos_can_jump_1_wide_pit(True),
