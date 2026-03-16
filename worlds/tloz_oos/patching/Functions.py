@@ -665,10 +665,10 @@ def apply_miscellaneous_options(rom: RomData, patch_data: dict[str, Any]) -> Non
 
     if patch_data["options"]["master_keys"] != OracleOfSeasonsMasterKeys.option_disabled:
         # Remove small key consumption on keydoor opened
-        rom.write_byte(GameboyAddress(0x06, 0x6357).address_in_rom(), 0x00)
+        rom.write_byte(GameboyAddress(0x06, 0x4357).address_in_rom(), 0x00)
     if patch_data["options"]["master_keys"] == OracleOfSeasonsMasterKeys.option_all_dungeon_keys:
         # Remove boss key consumption on boss keydoor opened
-        rom.write_word(GameboyAddress(0x06, 0x634f).address_in_rom(), 0x0000)
+        rom.write_word(GameboyAddress(0x06, 0x434f).address_in_rom(), 0x0000)
     rom.write_byte(GameboyAddress(0x0a, 0x46ed).address_in_rom(),
                    patch_data["options"]["gasha_nut_kill_requirement"])
     rom.write_byte(GameboyAddress(0x04, 0x6a31).address_in_rom(),
