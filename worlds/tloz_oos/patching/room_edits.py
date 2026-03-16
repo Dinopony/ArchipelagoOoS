@@ -19,7 +19,7 @@ from ..common.patching.rooms.encoding import write_room_data
 # Positions in small rooms are written in decimal, as a line is 10 tiles long
 # Positions in big rooms are written in hew, as a line is 16 tiles long (last tile is always 0)
 
-def apply_room_edits(rom_data: RomData, patch_data: dict[str, Any]) -> None:
+def apply_room_edits(rom_data: RomData, patch_data: dict[str, Any]) -> list[bytearray]:
     room_data = decompress_rooms(rom_data, True)
 
     apply_d0_alt_entrance_edits(room_data, patch_data)
@@ -28,7 +28,7 @@ def apply_room_edits(rom_data: RomData, patch_data: dict[str, Any]) -> None:
     apply_anti_softlock_edits(room_data)
     apply_misc_edits(room_data)
 
-    write_room_data(rom_data, room_data, True)
+    return room_data
 
 
 def apply_d0_alt_entrance_edits(room_data: list[bytearray], patch_data: dict[str, Any]) -> None:

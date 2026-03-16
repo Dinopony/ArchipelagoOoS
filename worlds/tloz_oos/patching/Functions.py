@@ -77,6 +77,7 @@ def get_asm_files(patch_data: dict[str, Any]) -> list[str]:
         files += asm_files["d11"]
         if patch_data["options"]["linked_heros_cave"] & OracleOfSeasonsLinkedHerosCave.samasa:
             files += asm_files["d11_in_samasa"]
+    files += asm_files["random_puzzles"]
     return files
 
 

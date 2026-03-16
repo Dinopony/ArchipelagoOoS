@@ -6,8 +6,9 @@ import yaml
 from worlds.Files import APProcedurePatch, APTokenMixin, APPatchExtension
 from .Functions import *
 from .data_manager.text import apply_ages_edits, get_modded_seasons_text_data
+from .puzzle_rando.armos_puzzle import randomize_armos_puzzle
 from .room_edits import apply_room_edits
-from ..common.patching.rooms.decoding import decompress_rooms
+from ..common.patching.rooms.encoding import write_room_data
 from ..common.patching.text.encoding import write_text_data
 from ..common.patching.z80asm.Assembler import Z80Assembler, Z80Block, GameboyAddress
 
@@ -63,6 +64,7 @@ class OoSPatchExtensions(APPatchExtension):
                 "position": 0x55
             }
             dungeon_exits["d11"] = GameboyAddress(0x04, 0x7b35).address_in_rom()
+        room_data = apply_room_edits(rom_data, patch_data)
 
         # Define assembly constants & floating chunks
         item_data = define_foreign_item_data(assembler, texts, patch_data)
@@ -80,13 +82,14 @@ class OoSPatchExtensions(APPatchExtension):
         define_tree_sprites(assembler, patch_data, item_data)
         set_file_select_text(assembler, caller.player_name)
         set_player_start_inventory(assembler, patch_data)
+        randomize_armos_puzzle(rom_data, assembler, room_data, patch_data)
         if not hasattr(get_settings().tloz_oos_options, "beat_tutorial"):
             set_faq_trap(assembler)
 
         # Parse assembler files, compile them and write the result in the ROM
         print("Compiling ASM files...")
         write_text_data(rom_data, dictionary, texts, True)
-        apply_room_edits(rom_data, patch_data)
+        write_room_data(rom_data, room_data, True)
         for file_path in get_asm_files(patch_data):
             data_loaded = yaml.safe_load(pkgutil.get_data(__name__, file_path))
             for metalabel, contents in data_loaded.items():
