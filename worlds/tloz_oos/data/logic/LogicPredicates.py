@@ -2,7 +2,7 @@ from rule_builder.rules import And, Or, CanReachRegion
 from .Rulebuilder import *
 from ..Constants import *
 from ...Options import OracleOfSeasonsLogicDifficulty, OracleOfSeasonsDefaultSeedType, OracleOfSeasonsMasterKeys, OracleOfSeasonsDungeonShuffle, \
-    OracleOfSeasonsD0AltEntrance, OracleOfSeasonsD2AltEntrance, OracleOfSeasonsAnimalCompanion, OracleOfSeasonsLostWoodsItemSequence, \
+    OracleOfSeasonsRemoveD0AltEntrance, OracleOfSeasonsRemoveD2AltEntrance, OracleOfSeasonsAnimalCompanion, OracleOfSeasonsLostWoodsItemSequence, \
     OracleOfSeasonsLostWoodsMainSequence, OracleOfSeasonsHoronSeason
 
 
@@ -205,11 +205,11 @@ def oos_option_shuffled_dungeons() -> Rule:
 
 
 def oos_option_no_d0_alt_entrance() -> Rule:
-    return from_option(OracleOfSeasonsD0AltEntrance, OracleOfSeasonsD0AltEntrance.option_false)
+    return from_option(OracleOfSeasonsRemoveD0AltEntrance, OracleOfSeasonsRemoveD0AltEntrance.option_true)
 
 
 def oos_option_no_d2_alt_entrance() -> Rule:
-    return from_option(OracleOfSeasonsD2AltEntrance, OracleOfSeasonsD2AltEntrance.option_false)
+    return from_option(OracleOfSeasonsRemoveD2AltEntrance, OracleOfSeasonsRemoveD2AltEntrance.option_true)
 
 
 def oos_is_companion_ricky() -> Rule:

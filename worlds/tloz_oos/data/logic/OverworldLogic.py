@@ -112,7 +112,7 @@ def make_holodrum_logic(origin_name: str, options: OracleOfSeasonsOptions):
 
         ["western coast", "d0 entrance", True, None],
         ["western coast", "d0 rupee chest", False, And(
-            from_option(OracleOfSeasonsD0AltEntrance, OracleOfSeasonsD0AltEntrance.option_true),
+            from_option(OracleOfSeasonsRemoveD0AltEntrance, OracleOfSeasonsRemoveD0AltEntrance.option_false),
             oos_can_break_bush(True)
         )],
 
@@ -291,7 +291,7 @@ def make_holodrum_logic(origin_name: str, options: OracleOfSeasonsOptions):
         ["central woods of winter", "d2 stump", True, None],
 
         ["d2 stump", "d2 roof", True, oos_has_bracelet()],
-        ["d2 roof", "d2 alt entrances", True, from_option(OracleOfSeasonsD2AltEntrance, OracleOfSeasonsD2AltEntrance.option_true)],
+        ["d2 roof", "d2 alt entrances", True, from_option(OracleOfSeasonsRemoveD2AltEntrance, OracleOfSeasonsRemoveD2AltEntrance.option_false)],
 
         # EYEGLASS LAKE SECTOR #########################################################################################
 
