@@ -1,3 +1,5 @@
+import logging
+
 from Options import OptionError
 from ..Options import OracleOfSeasonsOldMenShuffle
 from ..Util import get_old_man_values_pool
@@ -86,10 +88,19 @@ def generate_early(world: OracleOfSeasonsWorld) -> None:
 
 
 def pick_essences_in_game(world: OracleOfSeasonsWorld) -> None:
+    # -1 is the named range to set the placed essences equal to the required essences
+    if world.options.placed_essences.value == -1:
+        world.options.placed_essences.value = world.options.placed_essences.value
+
     # If the value for "Placed Essences" is lower than "Required Essences" (which can happen when using random
     # values for both), a new random value is automatically picked in the valid range.
-    if world.options.required_essences > world.options.placed_essences:
-        world.options.placed_essences.value = world.random.randint(world.options.required_essences.value, 8)
+    elif world.options.required_essences > world.options.placed_essences:
+        new_placed_essences = world.random.randint(world.options.required_essences.value, 8)
+        logging.warn(f"Essences placed for {world.player_name} required to be {world.options.placed_essences.value} "
+                     f"but {world.options.required_essences} essences are required to beat the seed.\n"
+                     f"Increased the value to {new_placed_essences}. "
+                     f"You might want to set the range to 'included essences' or use triggers instead.")
+        world.options.placed_essences.value = new_placed_essences
 
     # If some essence pedestal locations were excluded and essences are not shuffled,
     # remove those essences in priority

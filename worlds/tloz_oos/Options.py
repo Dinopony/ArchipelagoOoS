@@ -56,7 +56,7 @@ class OracleOfSeasonsRequiredEssences(Range):
     include_in_slot_data = True
 
 
-class OracleOfSeasonsPlacedEssences(Range):
+class OracleOfSeasonsPlacedEssences(NamedRange):
     """
     The amount of essences that will be placed in the world. Removed essences are replaced by filler items instead, and
     if essences are not shuffled, those filler items will be placed on the pedestal where the essence would have been.
@@ -69,6 +69,9 @@ class OracleOfSeasonsPlacedEssences(Range):
     range_end = 8
 
     default = 8
+    special_range_names = {
+        "included essences": -1
+    }
 
 
 class OracleOfSeasonsDefaultSeasons(Choice):
