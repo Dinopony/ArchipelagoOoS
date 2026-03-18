@@ -152,15 +152,6 @@
   ld (hl),$b0
   ret
 
-# Remove access to first refill room on 4 essences
-25/49d8/: db $80,$80,$80
-25/49df/: db $64
-25/49f6/: db $64
-25/4a02/: db $40
-
-# Remove access to second refill room on 6 essences
-25/560a/: db $63
-
 # Remove 3 essence original item
 11/6373/: db $4c,$02,$38,$10,$ff
 # Add an item inside the hallway (accessible at 3+ essences) that replaces the item removed above

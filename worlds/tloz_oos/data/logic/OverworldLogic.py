@@ -112,7 +112,7 @@ def make_holodrum_logic(origin_name: str, options: OracleOfSeasonsOptions):
 
         ["western coast", "d0 entrance", True, None],
         ["western coast", "d0 rupee chest", False, And(
-            from_option(OracleOfSeasonsD0AltEntrance, OracleOfSeasonsD0AltEntrance.option_true),
+            from_option(OracleOfSeasonsRemoveD0AltEntrance, OracleOfSeasonsRemoveD0AltEntrance.option_false),
             oos_can_break_bush(True)
         )],
 
@@ -243,12 +243,33 @@ def make_holodrum_logic(origin_name: str, options: OracleOfSeasonsOptions):
 
         ["suburbs fairy fountain", "central woods of winter", False, None],
         ["suburbs fairy fountain (winter)", "central woods of winter", False, Or(
-            oos_can_jump_1_wide_pit(True),
+            And(
+                oos_can_jump_1_wide_pit(True),
+                oos_has_bracelet()
+            ),
             And(
                 oos_option_medium_logic(),
-                oos_has_switch_hook()
+                oos_has_switch_hook(),
+                oos_has_bracelet()
             ),
             oos_can_remove_snow(True)
+        )],
+
+        ["central woods of winter", "suburbs fairy fountain", False, oos_is_default_season("EASTERN_SUBURBS", SEASON_WINTER, False)],
+        ["central woods of winter", "suburbs fairy fountain (winter)", False, And(
+            oos_is_default_season("EASTERN_SUBURBS", SEASON_WINTER),
+            Or(
+                And(
+                    oos_can_jump_1_wide_pit(True),
+                    oos_has_bracelet()
+                ),
+                And(
+                    oos_option_medium_logic(),
+                    oos_has_switch_hook(),
+                    oos_has_bracelet()
+                ),
+                oos_can_remove_snow(True)
+            )
         )],
 
         ["central woods of winter", "woods of winter tree", False, oos_can_harvest_tree(True)],
@@ -270,7 +291,7 @@ def make_holodrum_logic(origin_name: str, options: OracleOfSeasonsOptions):
         ["central woods of winter", "d2 stump", True, None],
 
         ["d2 stump", "d2 roof", True, oos_has_bracelet()],
-        ["d2 roof", "d2 alt entrances", True, from_option(OracleOfSeasonsD2AltEntrance, OracleOfSeasonsD2AltEntrance.option_true)],
+        ["d2 roof", "d2 alt entrances", True, from_option(OracleOfSeasonsRemoveD2AltEntrance, OracleOfSeasonsRemoveD2AltEntrance.option_false)],
 
         # EYEGLASS LAKE SECTOR #########################################################################################
 
@@ -508,7 +529,18 @@ def make_holodrum_logic(origin_name: str, options: OracleOfSeasonsOptions):
         )],
 
         # Goron Mountain <-> North Horon <-> D1 island <-> Spool swamp waterway
-        ["spool swamp south", "d1 island", True, oos_can_swim(True)],
+        ["d1 island", "spool swamp south", False, oos_can_swim(True)],
+        ["spool swamp south (spring)", "d1 island", False, Or(
+            oos_can_summon_dimitri(),
+            And(
+                Has("Swimmer's Ring"),
+                oos_can_swim(False),
+                oos_option_medium_logic()
+            )
+        )],
+        ["spool swamp south (summer)", "d1 island", False, oos_can_swim(True)],
+        ["spool swamp south (autumn)", "d1 island", False, oos_can_swim(True)],
+        ["spool swamp south (winter)", "d1 island", False, oos_can_swim(True)],
         ["d1 island", "north horon", True, oos_can_swim(True)],
         ["north horon", "goron mountain entrance", True, oos_can_swim(True)],
         ["goron mountain entrance", "natzu region, across water", True, oos_can_swim(True)],

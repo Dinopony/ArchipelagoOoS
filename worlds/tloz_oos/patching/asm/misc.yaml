@@ -12,37 +12,37 @@
 
 # let link jump down the cliff outside d7, in case of winter sans shovel.
 # also let link jump down the snow cliff added in woods of winter.
-05//cliffLookup: |
-    push af
-    ld a,(wActiveGroup)
-    or a
-    jr nz,@noJumpPopAf
-    ld a,(wActiveRoom)
-    cp $d0
-    jr nz,@notD7Entrance
-    pop af
-    cp $a8
-    jr nz,@noJump
-    ld a,$08
-    scf
-    ret
-    @notD7Entrance:
-    cp $9d
-    jr nz,@noJumpPopAf
-    pop af
-    cp $99
-    jr z,@snowJump
-    cp $9b
-    jr nz,@noJump
-    @snowJump:
-    ld a,$10
-    scf
-    ret
-    @noJumpPopAf:
-    pop af
-    @noJump:
-    jp lookupCollisionTable
-05/5fe8/: call cliffLookup
+# 05//cliffLookup: |
+#     push af
+#     ld a,(wActiveGroup)
+#     or a
+#     jr nz,@noJumpPopAf
+#     ld a,(wActiveRoom)
+#     cp $d0
+#     jr nz,@notD7Entrance
+#     pop af
+#     cp $a8
+#     jr nz,@noJump
+#     ld a,$08
+#     scf
+#     ret
+#     @notD7Entrance:
+#     cp $9d
+#     jr nz,@noJumpPopAf
+#     pop af
+#     cp $99
+#     jr z,@snowJump
+#     cp $9b
+#     jr nz,@noJump
+#     @snowJump:
+#     ld a,$10
+#     scf
+#     ret
+#     @noJumpPopAf:
+#     pop af
+#     @noJump:
+#     jp lookupCollisionTable
+# 05/5fe8/: call cliffLookup
 
 # custom script command to use on d1 entrance screen: disable warp tiles
 # until bit of cfc0 is set. fixes a vanilla bug where dismounting an animal
@@ -80,8 +80,6 @@
 # top-left corner of the screen, where it can't be hit, and replace the lever
 # tile as well. this prevents the bridge from blocking the waterway.
 11/6737/: db $00,$00    # object
-21/6267/: db $04        # ricky tile
-23/5cb7/: db $04        # moosh tile
 
 # move d8 magnet ball one tile to the left, so you don't get stuck if
 # you go up the stairs without magnet glove.

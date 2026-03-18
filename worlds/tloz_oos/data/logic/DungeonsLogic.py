@@ -1190,7 +1190,10 @@ def make_d8_logic():
                 oos_has_cane()
             )
         )],
-        ["d8 spinner", "d8 spinner chest", False, oos_has_magnet_gloves()],
+        ["d8 spinner", "d8 spinner chest", False,
+         oos_has_magnet_gloves()
+         # Jump 2 liquid also, but this is covered earlier
+         ],
         ["d8 spinner", "frypolar entrance", False, Or(
             oos_has_magnet_gloves(),
             And(
@@ -1269,7 +1272,7 @@ def make_d8_logic():
             # In hell, this is the only place where this region is used without HSS, but then, even satchel is enough
             # (In all honesty, hell players are probably doing HSS skip to come here, so the route is not *that* bad)
         )],
-        ["frypolar room", "d8 spinner chest", False, None],
+        ["beat frypolar", "d8 spinner chest", False, None],
         ["beat frypolar", "d8 ice puzzle room", False, And(
             oos_has_hyper_slingshot(),
             oos_can_use_ember_seeds(False),

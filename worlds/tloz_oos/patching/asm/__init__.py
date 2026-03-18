@@ -73,12 +73,6 @@ asm_files = {
     "quick_flute": [
         "asm/conditional/quick_flute.yaml"
     ],
-    "remove_d0_alt_entrance": [
-        "asm/conditional/remove_d0_alt_entrance.yaml"
-    ],
-    "remove_d2_alt_entrance": [
-        "asm/conditional/remove_d2_alt_entrance.yaml"
-    ],
     "secret_locations": [
         "asm/conditional/secret_locations.yaml"
     ],
@@ -93,5 +87,8 @@ asm_files = {
         "asm/cross_items/seed_shooter.yaml",
         "asm/cross_items/switch_hook.yaml",
         "asm/cross_items/uncmp_gfx.yaml"
+    ],
+    "random_puzzles": [
+        "asm/random_puzzles/d7_armos.yaml"
     ]
 }

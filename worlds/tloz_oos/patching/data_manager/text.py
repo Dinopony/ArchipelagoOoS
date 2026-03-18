@@ -223,11 +223,10 @@ def apply_text_edits(texts: dict[str, str]) -> None:
 
     # Maku tree talking texts are too big to be left there (unused)
     texts_to_blank.append("TX_1704")
-    for i in range(0x06, 0x16):
-        texts_to_blank.append(f"TX_17{simple_hex(i)}")
-    texts_to_blank.append("TX_1717")
-    for i in range(0x19, 0x3a):
-        texts_to_blank.append(f"TX_17{simple_hex(i)}")
+    for i in range(0x1706, 0x1716):
+        texts_to_blank.append(f"TX_{simple_hex(i, 4)}")
+    for i in range(0x1719, 0x173a):
+        texts_to_blank.append(f"TX_{simple_hex(i, 4)}")
 
     for text in texts_to_blank:
         texts[text] = ""
