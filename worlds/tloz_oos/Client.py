@@ -78,8 +78,6 @@ class OracleOfSeasonsClient(BizHawkClient):
                     "local": location.get("local"),
                     "flag_byte": location.get("flag_byte"),
                     "bit_mask": location.get("bit_mask", 0x20),
-                    "remote_flag_byte": location.get("remote_flag_byte"),
-                    "remote_bit_mask": location.get("remote_bit_mask"),
                     "gasha_nut_index": location.get("gasha_nut_index"),
                 }
         self.local_scouted_locations = defaultdict(lambda: set())
@@ -300,10 +298,7 @@ class OracleOfSeasonsClient(BizHawkClient):
                         ])
                         return
                     # However, if the player has NOT checked the location, then set the flag for it
-                    writing_flag_byte = loc_data["remote_flag_byte"] or flag_byte
-                    writing_bit_mask = loc_data["remote_bit_mask"] or bit_mask
-                    writing_byte_offset = writing_flag_byte - RAM_ADDRS["location_flags"][0]
-                    writes.append((writing_flag_byte, [flag_bytes[writing_byte_offset] | writing_bit_mask], "System Bus"))
+                    writes.append((flag_byte, [flag_bytes[byte_offset] | bit_mask], "System Bus"))
                 # If we're handling Gasha Nuts locations, we simply skip the delivery if the location has already been harvested.
                 # Updates to the counter are done in process_checked_locations, and setting the planted/harvested flag
                 # is done in game_watcher (with sync_gasha_spot_flags)

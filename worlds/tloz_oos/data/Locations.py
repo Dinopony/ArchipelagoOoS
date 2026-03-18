@@ -1478,8 +1478,8 @@ LOCATIONS_DATA: dict[str, dict[str, Any]] = {
         "collect": COLLECT_TOUCH,
         "map_tile": 0xe8,
         "symbolic_name": "vasuGift",
-        "remote_flag_byte": 0xC6CB, # This is the flag for the "first visit" that we'll set for remote items
-        "remote_bit_mask": 0x01,
+        "flag_byte": 0xC6CB,
+        "bit_mask": 0x01,
     },
     "Goron Mountain: Lonely Goron's Gift": {
         "region_id": "goron's gift",
@@ -1497,7 +1497,7 @@ LOCATIONS_DATA: dict[str, dict[str, Any]] = {
         "collect": COLLECT_TOUCH,
         "map_tile": 0xf9,
         "symbolic_name": "drLeftReward",
-        "remote_bit_mask": 0x40,  # Dr. Left's script uses jumpifroomflagset $40 (not COLLECT_TOUCH's bit 0x20)
+        "bit_mask": 0x40,
     },
     "North Horon: Malon Trade": {
         "region_id": "malon trade",
@@ -1506,7 +1506,7 @@ LOCATIONS_DATA: dict[str, dict[str, Any]] = {
         "collect": COLLECT_TOUCH,
         "map_tile": 0x88,
         "symbolic_name": "malonTrade",
-        "remote_bit_mask": 0x40,
+        "bit_mask": 0x40,
     },
     "Maple Trade": {
         "region_id": "maple trade",
@@ -1523,7 +1523,7 @@ LOCATIONS_DATA: dict[str, dict[str, Any]] = {
         "collect": COLLECT_TOUCH,
         "map_tile": 0xa3,
         "symbolic_name": "mrsRuulTrade",
-        "remote_bit_mask": 0x40,
+        "bit_mask": 0x40,
     },
     "Subrosia: Subrosian Chef Trade": {
         "region_id": "subrosian chef trade",
@@ -1532,7 +1532,7 @@ LOCATIONS_DATA: dict[str, dict[str, Any]] = {
         "collect": COLLECT_TOUCH,
         "map_tile": 0x9a,
         "symbolic_name": "subrosianChefTrade",
-        "remote_bit_mask": 0x40,
+        "bit_mask": 0x40,
     },
     "Goron Mountain: Biggoron Trade": {
         "region_id": "biggoron trade",
@@ -1549,7 +1549,7 @@ LOCATIONS_DATA: dict[str, dict[str, Any]] = {
         "collect": COLLECT_TOUCH,
         "map_tile": 0x4d,
         "symbolic_name": "ingoTrade",
-        "remote_bit_mask": 0x40,
+        "bit_mask": 0x40,
     },
     "North Horon: Yelling Old Man Trade": {
         "region_id": "old man trade",
@@ -1557,7 +1557,7 @@ LOCATIONS_DATA: dict[str, dict[str, Any]] = {
         "room": 0x00b7,
         "collect": COLLECT_TOUCH,
         "symbolic_name": "yellingOldManTrade",
-        "remote_bit_mask": 0x40,
+        "bit_mask": 0x40,
     },
     "Mt. Cucco: Talon Trade": {
         "region_id": "talon trade",
@@ -1574,7 +1574,7 @@ LOCATIONS_DATA: dict[str, dict[str, Any]] = {
         "collect": COLLECT_TOUCH,
         "map_tile": 0x5e,
         "symbolic_name": "syrupTrade",
-        "remote_bit_mask": 0x40,
+        "bit_mask": 0x40,
     },
     "Horon Village: Tick Tock Trade": {
         "region_id": "tick tock trade",
@@ -1583,7 +1583,7 @@ LOCATIONS_DATA: dict[str, dict[str, Any]] = {
         "collect": COLLECT_TOUCH,
         "map_tile": 0xd7,
         "symbolic_name": "tickTockTrade",
-        "remote_bit_mask": 0x40,
+        "bit_mask": 0x40,
     },
     "Eastern Suburbs: Guru-Guru Trade": {
         "region_id": "guru-guru trade",
@@ -1591,7 +1591,7 @@ LOCATIONS_DATA: dict[str, dict[str, Any]] = {
         "room": 0x00da,
         "collect": COLLECT_TOUCH,
         "symbolic_name": "guruguruTrade",
-        "remote_bit_mask": 0x40,
+        "bit_mask": 0x40,
     },
 
     "Subrosia: Buried Bomb Flower": {
