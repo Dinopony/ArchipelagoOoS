@@ -1,11 +1,10 @@
 import random
-from typing import Any
 
-from worlds.tloz_oos.common.patching.RomData import RomData
-from worlds.tloz_oos.common.patching.z80asm.Assembler import GameboyAddress, Z80Assembler
+from ...common.patching.RomData import RomData
+from ...common.patching.z80asm.Assembler import GameboyAddress, Z80Assembler
 
 
-def randomize_armos_puzzle(rom: RomData, assembler: Z80Assembler, room_data: list[bytearray], patch_data: dict[str, Any]):
+def randomize_d7_armos_puzzle(rom: RomData, assembler: Z80Assembler, room_data: list[bytearray]) -> None:
     room = room_data[0x635]
 
     # Empty the room

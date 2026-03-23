@@ -6,7 +6,7 @@ import yaml
 from worlds.Files import APProcedurePatch, APTokenMixin, APPatchExtension
 from .Functions import *
 from .data_manager.text import apply_ages_edits, get_modded_seasons_text_data
-from .puzzle_rando.armos_puzzle import randomize_armos_puzzle
+from .puzzle_rando import randomize_puzzles
 from .room_edits import apply_room_edits
 from ..common.patching.rooms.encoding import write_room_data
 from ..common.patching.text.encoding import write_text_data
@@ -82,7 +82,7 @@ class OoSPatchExtensions(APPatchExtension):
         define_tree_sprites(assembler, patch_data, item_data)
         set_file_select_text(assembler, caller.player_name)
         set_player_start_inventory(assembler, patch_data)
-        randomize_armos_puzzle(rom_data, assembler, room_data, patch_data)
+        randomize_puzzles(rom_data, assembler, room_data, patch_data)
         if not hasattr(get_settings().tloz_oos_options, "beat_tutorial"):
             set_faq_trap(assembler)
 

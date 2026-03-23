@@ -89,6 +89,7 @@ asm_files = {
         "asm/cross_items/uncmp_gfx.yaml"
     ],
     "random_puzzles": [
-        "asm/random_puzzles/d7_armos.yaml"
+        "asm/random_puzzles/d7_armos.yaml",
+        "asm/random_puzzles/hide_and_seek.yaml"
     ]
 }

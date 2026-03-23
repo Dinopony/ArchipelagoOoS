@@ -32,6 +32,7 @@ CAVE_DATA: list[int | list[int | list[int]]] = [
         0x3be9,
     ],
     [  # 0b
+        [0x2717, 0x27a1],  # Rosa hiding
         [0x34ac, 0x34ee],  # Impa intro script
         [0x39b4, 0x39e9],  # Twinrova cutscene 1
         [0x39f5, 0x3a29],  # Twinrova cutscene 2
@@ -45,7 +46,10 @@ CAVE_DATA: list[int | list[int | list[int]]] = [
     0x3eb0,  # 11
     0x3c8f,  # 12
     0x3bd2,  # 13
-    0x2fc9,  # 14 - ton of free space here
+    [
+        [0x0e3f, 0x0f51],  # Rosa hiding
+        0x2fc9,  # 14 - ton of free space here
+    ],
     [  # 15
         [0x1435, 0x1464],  # Trade item (0x41) data
         [0x1e5d, 0x1edd],  # Strange bros stealing feathers, companions in swamp
@@ -363,10 +367,12 @@ DEFINES = {
     "scriptend": "$00",
     "loadscript": "$83",
     "jumptable_memoryaddress": "$87",
+    "setcoords": "$88",
     "setcollisionradii": "$8d",
     "setanimation": "$8f",
     "writememory": "$91",
     "ormemory": "$92",
+    "setangleandanimation": "$96",
     "rungenericnpc": "$97",
     "showtext": "$98",
     "checkabutton": "$9e",
