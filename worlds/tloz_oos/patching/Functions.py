@@ -55,6 +55,8 @@ def get_asm_files(patch_data: dict[str, Any]) -> list[str]:
         files += asm_files["quick_flute"]
     if patch_data["options"]["shuffle_old_men"] == OracleOfSeasonsOldMenShuffle.option_turn_into_locations:
         files += asm_files["old_men_as_locations"]
+    if patch_data["options"]["remove_d2_alt_entrance"]:
+        files += asm_files["remove_d2_alt_entrance"]
     if patch_data["dungeon_entrances"]["d3"] == "d0":
         files += asm_files["prevent_drowning_d0_warp"]
     elif patch_data["dungeon_entrances"]["d3"] == "d2":

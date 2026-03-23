@@ -1,0 +1,8 @@
+# Make inside left stairs point to inside right stairs
+04/7935/: dw $420d
+# Make inside right stairs point to inside left stairs
+04/7939/: dw $420c
+
+# Since both stairs leading outside in vanilla are now connected together,
+# remove D2 alt-entrance introduction textbox.
+15/6a37/: jp interactionDelete
