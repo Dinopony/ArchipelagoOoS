@@ -1,6 +1,6 @@
 import os
 from threading import Event
-from typing import List, ClassVar, Any, Optional, Type, TextIO
+from typing import ClassVar, Any, Optional, Type, TextIO
 
 from BaseClasses import Item, ItemClassification, MultiWorld, CollectionState
 from Options import Option
@@ -73,19 +73,19 @@ class OracleOfSeasonsWorld(World):
     def __init__(self, multiworld: MultiWorld, player: int):
         super().__init__(multiworld, player)
 
-        self.pre_fill_items: List[Item] = []
-        self.default_seasons: Dict[str, str] = DEFAULT_SEASONS.copy()
-        self.dungeon_entrances: Dict[str, str] = DUNGEON_CONNECTIONS.copy()
-        self.portal_connections: Dict[str, str] = PORTAL_CONNECTIONS.copy()
-        self.lost_woods_item_sequence: List[List] = LOST_WOODS_ITEM_SEQUENCE.copy()
-        self.lost_woods_main_sequence: List[List] = LOST_WOODS_MAIN_SEQUENCE.copy()
-        self.old_man_rupee_values: Dict[str, int] = OLD_MAN_RUPEE_VALUES.copy()
-        self.samasa_gate_code: List[int] = SAMASA_GATE_CODE.copy()
-        self.shop_prices: Dict[str, int] = VANILLA_SHOP_PRICES.copy()
-        self.shop_order: List[List[str]] = []
-        self.shop_rupee_requirements: Dict[str, int] = {}
-        self.essences_in_game: List[str] = ITEM_GROUPS["Essences"].copy()
-        self.random_rings_pool: List[str] = []
+        self.pre_fill_items: list[Item] = []
+        self.default_seasons: dict[str, str] = DEFAULT_SEASONS.copy()
+        self.dungeon_entrances: dict[str, str] = DUNGEON_CONNECTIONS.copy()
+        self.portal_connections: dict[str, str] = PORTAL_CONNECTIONS.copy()
+        self.lost_woods_item_sequence: list[list] = LOST_WOODS_ITEM_SEQUENCE.copy()
+        self.lost_woods_main_sequence: list[list] = LOST_WOODS_MAIN_SEQUENCE.copy()
+        self.old_man_rupee_values: dict[str, int] = OLD_MAN_RUPEE_VALUES.copy()
+        self.samasa_gate_code: list[int] = SAMASA_GATE_CODE.copy()
+        self.shop_prices: dict[str, int] = VANILLA_SHOP_PRICES.copy()
+        self.shop_order: list[list[str]] = []
+        self.shop_rupee_requirements: dict[str, int] = {}
+        self.essences_in_game: list[str] = ITEM_GROUPS["Essences"].copy()
+        self.random_rings_pool: list[str] = []
         self.remaining_progressive_gasha_seeds = 0
         self.item_mapping_collect: dict[str, tuple[str, int]] = {}
 
