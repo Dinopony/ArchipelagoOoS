@@ -29,7 +29,7 @@
   inc l
   ld (hl),$03 ; dest transition
   inc l
-  ld (hl),$ff ; dest pos
+  ld (hl),$f7 ; dest pos
   inc l
   ld (hl),$03 ; source transition
   ret
@@ -38,12 +38,24 @@
 08//create_d11_warp: |
   ld a,(wActiveRoom)
   cp $04 ; hero's cave entrance
-  jr z,@end
+  jr nz,@end
   call getFreeInteractionSlot
   jr nz,@end
   ld (hl),$7e ; warp pad
   inc hl
   ld (hl),$03 ; subid 3
+  ld l,$4b ; yh
+  ld (hl),$58
+  ld l,$4d ; xh
+  ld (hl),$78
   @end:
-  ld a,($cd00) ; (wScrollMode)
+  cp $30 ; linked hero's cave entrance
+  jr nz,@normalArg
+  ld a,($d008) ; link's direction
+  or a
+  jr nz,@normalArg
+  ld a,$02 ; Lie to the dungeon init to make sure it stays, as you cannot come from below the room without anyway
+  ret
+  @normalArg:
+  ld a,(wScrollMode)
   ret

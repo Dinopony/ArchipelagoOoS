@@ -1,7 +1,7 @@
 import logging
 
 from Options import OptionError
-from ..Options import OracleOfSeasonsOldMenShuffle
+from ..Options import OracleOfSeasonsOldMenShuffle, OracleOfSeasonsLinkedHerosCave
 from ..Util import get_old_man_values_pool
 from ..World import OracleOfSeasonsWorld
 from ..data import LOCATIONS_DATA, ITEMS_DATA
@@ -55,7 +55,7 @@ def generate_early(world: OracleOfSeasonsWorld) -> None:
 
     create_random_rings_pool(world)
 
-    if world.options.linked_heros_cave.value:
+    if world.options.linked_heros_cave.value & OracleOfSeasonsLinkedHerosCave.samasa:
         world.dungeon_entrances["d11 entrance"] = "enter d11"
 
     world.item_mapping_collect = {

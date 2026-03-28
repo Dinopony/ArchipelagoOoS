@@ -66,15 +66,15 @@ def apply_d2_alt_entrance_edits(room_data: list[bytearray], patch_data: dict[str
 
 
 def apply_samasa_dungeon_edits(room_data: list[bytearray], patch_data: dict[str, Any]) -> None:
-    if not patch_data["options"]["linked_heros_cave"] & OracleOfSeasonsLinkedHerosCave.samasa:
-        return
-    # Add the dungeon entrance
-    room_data[0x1cf] = bytearray(pkgutil.get_data(patching.__name__, "rooms/samasa_dungeon.dat"))
+    if patch_data["options"]["linked_heros_cave"] & OracleOfSeasonsLinkedHerosCave.samasa:
+        # Add the dungeon entrance
+        room_data[0x1cf] = bytearray(pkgutil.get_data(patching.__name__, "rooms/samasa_dungeon.dat"))
+        if patch_data["options"]["linked_heros_cave"] & OracleOfSeasonsLinkedHerosCave.no_alt_entrance:
+            room_data[0x1cf][28] = 0x04  # Remove the grass
+            room_data[0x1cf][48] = 0xaf  # Remove the chimney
 
     if patch_data["options"]["linked_heros_cave"] & OracleOfSeasonsLinkedHerosCave.no_alt_entrance:
-        room_data[0x1cf][28] = 0x04  # Remove the grass
-        room_data[0x1cf][48] = 0xaf  # Remove the chimney
-        room_data[0x62c][0x32] = 0x52  # Add stairs to the alt entrance chest
+        room_data[0x62c][0x42] = 0x52  # Add stairs to the alt entrance chest
 
 
 def apply_anti_softlock_edits(room_data: list[bytearray]) -> None:

@@ -1033,7 +1033,7 @@ def set_dungeon_warps(rom: RomData, patch_data: dict[str, Any], dungeon_entrance
     dungeon_index = int(warp_matchings["d8"][1:])
     rom.write_byte(0xab19, 0x81 | (dungeon_index << 3))
 
-    if patch_data["options"]["linked_heros_cave"]:
+    if patch_data["options"]["linked_heros_cave"] & OracleOfSeasonsLinkedHerosCave.samasa:
         # Change Minimap popups
         entrance_name = "d11"
         dungeon_index = int(warp_matchings[entrance_name][1:])

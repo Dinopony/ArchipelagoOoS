@@ -202,6 +202,7 @@ DEFINES = {
     "wRoomEdgeY": "$cca0",
     "wRoomEdgeX": "$cca1",
     "wDisableWarpTiles": "$ccaa",
+    "wScrollMode": "$cd00",
     "wScreenTransitionDirection": "$cd02",
     "wScreenOffsetY": "$cd08",
 
