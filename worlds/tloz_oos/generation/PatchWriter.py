@@ -67,5 +67,5 @@ def oos_create_ap_procedure_patch(world: OracleOfSeasonsWorld) -> OoSProcedurePa
         start_inventory[item.name] += 1
     patch_data["start_inventory"] = dict(start_inventory)
 
-    patch.write_file("patch.dat", json.dumps(patch_data).encode("utf-8"))
+    patch.write_file("patch.json", json.dumps(patch_data).encode("utf-8"))
     return patch
