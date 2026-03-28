@@ -700,14 +700,17 @@ class OracleOfSeasonsLinkedHerosCave(Choice):
     """
     Sets whether and how the link version of the hero's cave is placed in the world.
     - Samasa: an entrance is placed in the Samasa desert, below the oasis
+    - Hero's cave: a warp is placed at the entrance of d0
     """
     display_name = "Linked Hero's Cave"
-    samasa = 0b01
-    no_alt_entrance = 0b10
+    samasa = 0b001
+    no_alt_entrance = 0b010
+    heros_cave = 0b100
 
-    option_disabled = 0b00
-    option_samasa = 0b01
-    option_samasa_without_alt_entrance = 0b11
+    option_disabled = 0b000
+    option_samasa = 0b001
+    option_samasa_without_alt_entrance = 0b011
+    option_heros_cave = 0b110
 
     include_in_patch = True
     include_in_slot_data = True

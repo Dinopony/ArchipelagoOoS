@@ -49,6 +49,9 @@ asm_files = {
     "d11": [
         "asm/conditional/d11.yaml"
     ],
+    "d11_in_d0": [
+        "asm/conditional/d11_in_d0.yaml"
+    ],
     "d11_in_samasa": [
         "asm/conditional/d11_in_samasa.yaml"
     ],
@@ -72,6 +75,9 @@ asm_files = {
     ],
     "quick_flute": [
         "asm/conditional/quick_flute.yaml"
+    ],
+    "remove_d2_alt_entrance": [
+        "asm/conditional/remove_d2_alt_entrance.yaml"
     ],
     "secret_locations": [
         "asm/conditional/secret_locations.yaml"

@@ -75,6 +75,8 @@ def get_asm_files(patch_data: dict[str, Any]) -> list[str]:
         files += asm_files["d11"]
         if patch_data["options"]["linked_heros_cave"] & OracleOfSeasonsLinkedHerosCave.samasa:
             files += asm_files["d11_in_samasa"]
+        elif patch_data["options"]["linked_heros_cave"] & OracleOfSeasonsLinkedHerosCave.heros_cave:
+            files += asm_files["d11_in_d0"]
     if patch_data["options"]["randomize_puzzles"]:
         files += asm_files["random_puzzles"]
     return files
@@ -323,9 +325,10 @@ def define_option_constants(assembler: Z80Assembler, patch_data: dict[str, Any])
     elif patch_data["dungeon_entrances"]["d3"] == "d11":
         assembler.define_byte("d11Drowning", 0x01)
 
-    if patch_data["options"]["linked_heros_cave"] & OracleOfSeasonsLinkedHerosCave.samasa:
+    if patch_data["options"]["linked_heros_cave"]:
         assembler.define_byte("d11", 0x01)
-        assembler.define_byte("d11InSamasa", 0x01)
+        if patch_data["options"]["linked_heros_cave"] & OracleOfSeasonsLinkedHerosCave.samasa:
+            assembler.define_byte("d11InSamasa", 0x01)
 
         chest_dict = {
             "d0": 0x75,

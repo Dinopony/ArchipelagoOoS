@@ -1432,4 +1432,6 @@ def make_d11_logic(options: OracleOfSeasonsOptions):
         logic.append(["enter d11", "d11 alt entrance", False, None])
     else:
         logic.append(["d11 alt entrance", "enter d11", False, None])
+    if options.linked_heros_cave.value & OracleOfSeasonsLinkedHerosCave.heros_cave:
+        logic.append(["enter d0", "enter d11", False, None])
     return logic
