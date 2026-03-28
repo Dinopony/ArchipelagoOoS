@@ -129,7 +129,6 @@ class OoSProcedurePatch(APProcedurePatch, APTokenMixin):
 
     game = "The Legend of Zelda - Oracle of Seasons"
     procedure = [
-        ("apply_patches", ["patch.dat"]), # Legacy for 19.0.2x-, remove in 2027
         ("apply_patches", ["patch.json"])
     ]
 
