@@ -1040,6 +1040,9 @@ def set_dungeon_warps(rom: RomData, patch_data: dict[str, Any], dungeon_entrance
         map_tile = dungeon_entrances[entrance_name]["map_tile"]
         rom.write_byte(0xaa19 + map_tile, 0x81 | (dungeon_index << 3))
 
+    if patch_data["options"]["linked_heros_cave"] & OracleOfSeasonsLinkedHerosCave.heros_cave:
+        rom.write_word(dungeon_exits["d11"], exit_values[entrance_map["d0"]])
+
 
 def set_portal_warps(rom: RomData, patch_data: dict[str, Any]) -> None:
     warp_matchings = patch_data["subrosia_portals"]

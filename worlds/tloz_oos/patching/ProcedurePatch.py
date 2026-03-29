@@ -63,6 +63,7 @@ class OoSPatchExtensions(APPatchExtension):
                 "group": 0x00,
                 "position": 0x55
             }
+        if patch_data["options"]["linked_heros_cave"]:
             dungeon_exits["d11"] = GameboyAddress(0x04, 0x7b35).address_in_rom()
         room_data = apply_room_edits(rom_data, patch_data)
 
