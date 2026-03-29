@@ -150,7 +150,7 @@ def apply_misc_edits(room_data: list[bytearray]) -> None:
             room_data[0x41c][i + j] = 0x62 + j
 
     # Remove access to second refill room on 6 essences
-    room_data[0x44c][3] = 0x63
+    room_data[0x44b][3] = 0x63
 
     # Reveal hidden subrosia digging spots if required
     if get_settings()["tloz_oos_options"]["reveal_hidden_subrosia_digging_spots"]:
