@@ -1,4 +1,9 @@
-from ...Options import OracleOfSeasonsOptions, OracleOfSeasonsLinkedHerosCave, OracleOfSeasonsIncludeSecretLocations, OraclesOfSeasonsTarmGateRequirement
+from ...Options import (
+    OracleOfSeasonsIncludeSecretLocations,
+    OracleOfSeasonsLinkedHerosCave,
+    OracleOfSeasonsOptions,
+    OraclesOfSeasonsTarmGateRequirement,
+)
 from .LogicPredicates import *
 
 
@@ -932,7 +937,7 @@ def make_holodrum_logic(origin_name: str, options: OracleOfSeasonsOptions):
         ["goron mountain", "chest in goron mountain", False, And(
             oos_can_jump_3_wide_liquid(),
             Or(
-                oos_has_bombs(),
+                oos_has_bombs_for_tiles(),
                 And(  # Bombchu can only destroy the second block, so we need to use cape to jump around the first
                     oos_option_medium_logic(),
                     oos_has_bombchus_for_tiles(),

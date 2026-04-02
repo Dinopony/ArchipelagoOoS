@@ -61,7 +61,7 @@ def make_subrosia_logic():
             oos_option_hell_logic(),
             oos_has_feather(),
             oos_can_use_pegasus_seeds(),
-            oos_has_bombs(),
+            oos_has_bombs_for_bombjump(),
             # Old H&S skip doesn't require bracelet
         )],
         ["subrosia hide and seek sector", "subrosia temple sector", True, oos_can_jump_4_wide_liquid()],
@@ -153,7 +153,7 @@ def make_subrosia_logic():
                 oos_option_hell_logic(),
                 oos_has_feather(),
                 oos_can_use_pegasus_seeds(),
-                oos_has_bombs()
+                oos_has_bombs_for_bombjump()
             )
         )],
 

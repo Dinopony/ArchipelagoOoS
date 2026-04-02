@@ -1,10 +1,19 @@
-from rule_builder.rules import And, Or, CanReachRegion
-from .Rulebuilder import *
-from ..Constants import *
-from ...Options import OracleOfSeasonsLogicDifficulty, OracleOfSeasonsDefaultSeedType, OracleOfSeasonsMasterKeys, OracleOfSeasonsDungeonShuffle, \
-    OracleOfSeasonsRemoveD0AltEntrance, OracleOfSeasonsRemoveD2AltEntrance, OracleOfSeasonsAnimalCompanion, OracleOfSeasonsLostWoodsItemSequence, \
-    OracleOfSeasonsLostWoodsMainSequence, OracleOfSeasonsHoronSeason
+from rule_builder.rules import And, CanReachRegion, Or
 
+from ...Options import (
+    OracleOfSeasonsAnimalCompanion,
+    OracleOfSeasonsDefaultSeedType,
+    OracleOfSeasonsDungeonShuffle,
+    OracleOfSeasonsHoronSeason,
+    OracleOfSeasonsLogicDifficulty,
+    OracleOfSeasonsLostWoodsItemSequence,
+    OracleOfSeasonsLostWoodsMainSequence,
+    OracleOfSeasonsMasterKeys,
+    OracleOfSeasonsRemoveD0AltEntrance,
+    OracleOfSeasonsRemoveD2AltEntrance,
+)
+from ..Constants import *
+from .Rulebuilder import *
 
 # Items predicates ############################################################
 
@@ -345,7 +354,7 @@ def oos_can_date_rosa() -> Rule:
 def oos_can_trigger_far_switch() -> Rule:
     return Or(
         oos_has_boomerang(),
-        oos_has_bombs(),
+        oos_has_bombs_for_tiles(),
         oos_has_seed_thrower(),
         oos_shoot_beams(),
         oos_has_switch_hook()
@@ -463,7 +472,7 @@ def oos_can_jump_2_wide_liquid() -> Rule:
             # Hard logic expects bomb jumps over 2-wide liquids
             oos_option_hard_logic(),
             oos_has_feather(),
-            oos_has_bombs()
+            oos_has_bombs_for_bombjump()
         )
     )
 
@@ -475,7 +484,7 @@ def oos_can_jump_3_wide_liquid() -> Rule:
             oos_option_hard_logic(),
             oos_has_feather(),
             oos_can_use_pegasus_seeds(),
-            oos_has_bombs(),
+            oos_has_bombs_for_bombjump(),
         )
     )
 
@@ -488,7 +497,7 @@ def oos_can_jump_4_wide_liquid() -> Rule:
             And(
                 # Hard logic expects player to be able to cape bomb-jump above 4-wide liquids
                 oos_option_hard_logic(),
-                oos_has_bombs()
+                oos_has_bombs_for_bombjump()
             )
         )
     )
@@ -1070,7 +1079,7 @@ def oos_can_swim(can_summon_companion: bool) -> Rule:
 
 def oos_can_remove_rockslide(can_summon_companion: bool) -> Rule:
     return Or(
-        oos_has_bombs(),
+        oos_has_bombs_for_tiles(),
         And(
             oos_option_medium_logic(),
             oos_has_bombchus_for_tiles()

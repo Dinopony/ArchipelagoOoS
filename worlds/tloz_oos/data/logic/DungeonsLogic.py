@@ -1,5 +1,5 @@
+from ...Options import OracleOfSeasonsLinkedHerosCave, OracleOfSeasonsOptions
 from .LogicPredicates import *
-from ...Options import OracleOfSeasonsOptions, OracleOfSeasonsLinkedHerosCave
 
 
 def make_d0_logic():
@@ -116,7 +116,7 @@ def make_d2_logic():
         ["d2 alt entrances", "d2 spiral chest", False, And(
             oos_can_break_bush(False, True),
             Or(
-                oos_has_bombs(),
+                oos_has_bombs_for_tiles(),
                 And(
                     # It's tight but doable
                     oos_option_medium_logic(),
