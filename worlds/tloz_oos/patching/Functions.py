@@ -2,26 +2,70 @@ import os
 import random
 from collections import defaultdict
 from pathlib import Path
+from typing import Any
 
 import Utils
 from settings import get_settings
-from .Constants import *
-from .Util import *
-from .asm import asm_files
-from ..Options import OracleOfSeasonsOldMenShuffle, OracleOfSeasonsGoal, OracleOfSeasonsAnimalCompanion, \
-    OracleOfSeasonsMasterKeys, OracleOfSeasonsFoolsOre, OracleOfSeasonsShowDungeonsWithEssence, OracleOfSeasonsLinkedHerosCave
-from ..World import OracleOfSeasonsWorld
+
 from ..common.patching.RomData import RomData
-from ..common.patching.Util import get_available_random_colors_from_sprite_name, simple_hex
 from ..common.patching.text import normalize_text
-from ..common.patching.z80asm.Assembler import Z80Assembler
+from ..common.patching.Util import get_available_random_colors_from_sprite_name, simple_hex
+from ..common.patching.z80asm.Assembler import GameboyAddress, Z80Assembler
 from ..common.patching.z80asm.Util import parse_hex_string_to_value
-from ..data.Constants import *
+from ..data import ITEMS_DATA
+from ..data.Constants import (
+    COLLECT_CHEST,
+    COLLECT_DIVE,
+    COLLECT_DROP,
+    COLLECT_TOUCH,
+    ITEM_GROUPS,
+    OLD_MAN_RUPEE_VALUES,
+    PORTAL_CONNECTIONS,
+    SEED_ITEMS,
+    SUBROSIA_HIDDEN_DIGGING_SPOTS_LOCATIONS,
+    TREASURE_GRAB_INSTANT,
+    TREASURE_GRAB_SPIN_SLASH,
+    TREASURE_SET_ITEM_ROOM_FLAG,
+    TREASURE_SPAWN_CHEST,
+    TREASURE_SPAWN_INSTANT,
+    TREASURE_SPAWN_POOF,
+)
 from ..data.Locations import LOCATIONS_DATA
 from ..generation.Hints import make_hint_texts
+from ..Options import (
+    OracleOfSeasonsAnimalCompanion,
+    OracleOfSeasonsFoolsOre,
+    OracleOfSeasonsGoal,
+    OracleOfSeasonsLinkedHerosCave,
+    OracleOfSeasonsMasterKeys,
+    OracleOfSeasonsOldMenShuffle,
+    OracleOfSeasonsShowDungeonsWithEssence,
+)
+from ..World import OracleOfSeasonsWorld
+from .asm import asm_files
+from .Constants import (
+    CALL_SCRIPT,
+    DEFINES,
+    DELAY_6,
+    DIRECTION_STRINGS,
+    ENABLE_ALL_OBJECTS,
+    MOVE_DOWN,
+    MOVE_LEFT,
+    MOVE_RIGHT,
+    MOVE_UP,
+    PALETTE_BYTES,
+    PORTAL_WARPS,
+    RUPEE_VALUES,
+    SEASON_STRINGS,
+    SHOW_TEXT_LOW_INDEX,
+    WRITE_OBJECT_BYTE,
+)
+from .Util import get_item_id_and_subid
 
 
-def define_foreign_item_data(assembler: Z80Assembler, texts: dict[str, str], patch_data: dict[str, Any]) -> dict[str, dict[str, Any]]:
+def define_foreign_item_data(
+    assembler: Z80Assembler, texts: dict[str, str], patch_data: dict[str, Any]
+) -> dict[str, dict[str, Any]]:
     # Register all foreign items and save their text as TX_0cxx, id 0x41, subid xx
     item_data = ITEMS_DATA.copy()
     current_subid = 0
@@ -32,14 +76,18 @@ def define_foreign_item_data(assembler: Z80Assembler, texts: dict[str, str], pat
         location_content = all_locations[location]
         if "player" not in location_content:
             continue
-        texts[f"TX_0c{simple_hex(current_subid)}"] = normalize_text(f"You got a 🟥{location_content["item"]}⬜ for 🟦{location_content["player"]}⬜!")
-        foreign_item_data.extend([
-            0x00, # grab mode, doesn't really matter
-            current_subid, # parameter, not sure it matters
-            current_subid, # text id, will need special handling
-            0x52 if location_content["progression"] else 0x53 # sprite
-        ])
-        item_data[f"{location_content["item"]}|{location_content["player"]}"] = {
+        texts[f"TX_0c{simple_hex(current_subid)}"] = normalize_text(
+            f"You got a 🟥{location_content['item']}⬜ for 🟦{location_content['player']}⬜!"
+        )
+        foreign_item_data.extend(
+            [
+                0x00,  # grab mode, doesn't really matter
+                current_subid,  # parameter, not sure it matters
+                current_subid,  # text id, will need special handling
+                0x52 if location_content["progression"] else 0x53,  # sprite
+            ]
+        )
+        item_data[f"{location_content['item']}|{location_content['player']}"] = {
             "id": 0x41,
             "subid": current_subid,
         }
@@ -89,9 +137,13 @@ def write_chest_contents(rom: RomData, patch_data: dict[str, Any], item_data: di
     """
     locations_data = patch_data["locations"]
     for location_name, location_data in LOCATIONS_DATA.items():
-        if location_data.get("collect", COLLECT_TOUCH) != COLLECT_CHEST and not location_data.get("is_chest", False) or location_name not in locations_data:
+        if (
+            (location_data.get("collect", COLLECT_TOUCH) != COLLECT_CHEST
+            and not location_data.get("is_chest", False))
+            or location_name not in locations_data
+        ):
             continue
-        chest_addr = rom.get_chest_addr(location_data["room"], 0x15, 0x4f6c)
+        chest_addr = rom.get_chest_addr(location_data["room"], 0x15, 0x4F6C)
         item = locations_data[location_name]
         item_id, item_subid = get_item_id_and_subid(item_data, item)
         rom.write_byte(chest_addr, item_id)
@@ -108,7 +160,7 @@ def define_samasa_combination(assembler: Z80Assembler, patch_data: dict[str, Any
     # 2) Build a cutscene for the Piratian to show the new sequence
     cutscene = [MOVE_UP, 0x15]
     # Add a fake last press on button 1 to make the pirate go back to its original position
-    sequence = samasa_combination + [1]
+    sequence = [*samasa_combination, 1]
     current_position = 1
     for i, button_to_press in enumerate(sequence):
         # If current button is at a different position than the current one,
@@ -126,47 +178,58 @@ def define_samasa_combination(assembler: Z80Assembler, patch_data: dict[str, Any
         # the "closeOpenCupboard" subscript. Don't do it if it's the last movement
         # (which was only added to make the pirate go back to its initial position)
         if i < len(sequence) - 1:
-            cutscene.extend([CALL_SCRIPT, 0x59, 0x5e])
+            cutscene.extend([CALL_SCRIPT, 0x59, 0x5E])
 
     # Add some termination to the script
-    cutscene.extend([
-        MOVE_DOWN, 0x15,
-        WRITE_OBJECT_BYTE, 0x7c, 0x00,
-        DELAY_6,
-        SHOW_TEXT_LOW_INDEX, 0x0d,
-        ENABLE_ALL_OBJECTS,
-        0x5e, 0x4b  # jump back to script start
-    ])
+    cutscene.extend(
+        [
+            MOVE_DOWN,
+            0x15,
+            WRITE_OBJECT_BYTE,
+            0x7C,
+            0x00,
+            DELAY_6,
+            SHOW_TEXT_LOW_INDEX,
+            0x0D,
+            ENABLE_ALL_OBJECTS,
+            0x5E,
+            0x4B,  # jump back to script start
+        ]
+    )
 
     if len(cutscene) > 0xFE:
         raise Exception("Samasa gate sequence is too long")
     assembler.add_floating_chunk("showSamasaCutscene", cutscene)
 
 
-def define_compass_rooms_table(assembler: Z80Assembler, patch_data: dict[str, Any], item_data: dict[str, dict[str, Any]]) -> None:
+def define_compass_rooms_table(
+    assembler: Z80Assembler, patch_data: dict[str, Any], item_data: dict[str, dict[str, Any]]
+) -> None:
     table = []
     for location_name, item in patch_data["locations"].items():
         item_id, item_subid = get_item_id_and_subid(item_data, item)
-        dungeon = 0xff
+        dungeon = 0xFF
         if item_id == 0x30:  # Small Key or Master Key
             dungeon = item_subid
         elif item_id == 0x31:  # Boss Key
             dungeon = item_subid + 1
 
-        if dungeon != 0xff:
+        if dungeon != 0xFF:
             location_data = LOCATIONS_DATA[location_name]
             rooms = location_data["room"]
             if not isinstance(rooms, list):
                 rooms = [rooms]
             for room in rooms:
-                room_id = room & 0xff
+                room_id = room & 0xFF
                 group_id = room >> 8
                 table.extend([group_id, room_id, dungeon])
-    table.append(0xff)  # End of table
+    table.append(0xFF)  # End of table
     assembler.add_floating_chunk("compassRoomsTable", table)
 
 
-def define_collect_properties_table(assembler: Z80Assembler, patch_data: dict[str, Any], item_data: dict[str, dict[str, Any]]) -> None:
+def define_collect_properties_table(
+    assembler: Z80Assembler, patch_data: dict[str, Any], item_data: dict[str, dict[str, Any]]
+) -> None:
     """
     Defines a table of (group, room, collect mode) entries for randomized items
     to determine how they spawn, how they are grabbed and whether they set
@@ -182,24 +245,24 @@ def define_collect_properties_table(assembler: Z80Assembler, patch_data: dict[st
         # Use no pickup animation for drop or diving small keys
         item_id, _ = get_item_id_and_subid(item_data, item)
         if item_id == 0x30 and (mode == COLLECT_DROP or mode == COLLECT_DIVE):
-            mode &= 0xf8  # Set grab mode to TREASURE_GRAB_INSTANT
+            mode &= 0xF8  # Set grab mode to TREASURE_GRAB_INSTANT
 
         rooms = location_data["room"]
         if not isinstance(rooms, list):
             rooms = [rooms]
         for room in rooms:
-            room_id = room & 0xff
+            room_id = room & 0xFF
             group_id = room >> 8
             table.extend([group_id, room_id, mode])
 
     # Specific case for D6 fake rupee
-    table.extend([0x04, 0xc5, TREASURE_SPAWN_POOF | TREASURE_GRAB_INSTANT | TREASURE_SET_ITEM_ROOM_FLAG])
+    table.extend([0x04, 0xC5, TREASURE_SPAWN_POOF | TREASURE_GRAB_INSTANT | TREASURE_SET_ITEM_ROOM_FLAG])
     # Maku Tree gate opening cutscene
-    table.extend([0x00, 0xd9, TREASURE_SPAWN_INSTANT | TREASURE_GRAB_SPIN_SLASH])
+    table.extend([0x00, 0xD9, TREASURE_SPAWN_INSTANT | TREASURE_GRAB_SPIN_SLASH])
     # End of d11
     table.extend([0x05, 0x27, TREASURE_SPAWN_CHEST])
 
-    table.append(0xff)
+    table.append(0xFF)
     assembler.add_floating_chunk("collectPropertiesTable", table)
 
 
@@ -232,7 +295,9 @@ def define_additional_tile_replacements(assembler: Z80Assembler, patch_data: dic
     assembler.add_floating_chunk("additionalTileReplacements", table)
 
 
-def define_location_constants(assembler: Z80Assembler, patch_data: dict[str, Any], item_data: dict[str, dict[str, Any]]):
+def define_location_constants(
+    assembler: Z80Assembler, patch_data: dict[str, Any], item_data: dict[str, dict[str, Any]]
+):
     # If "Enforce potion in shop" is enabled, put a Potion in a specific location in Horon Shop that was
     # disabled at generation time to prevent trackers from tracking it
     if patch_data["options"]["enforce_potion_in_shop"]:
@@ -276,18 +341,18 @@ def define_option_constants(assembler: Z80Assembler, patch_data: dict[str, Any])
     options = patch_data["options"]
 
     assembler.define_byte("option.startingGroup", 0x00)
-    assembler.define_byte("option.startingRoom", 0xb6)
+    assembler.define_byte("option.startingRoom", 0xB6)
     assembler.define_byte("option.startingPosY", 0x58)
     assembler.define_byte("option.startingPosX", 0x58)
 
     assembler.define_byte("option.warpingGroup", 0x00)
-    assembler.define_byte("option.warpingRoom", 0xb6)
+    assembler.define_byte("option.warpingRoom", 0xB6)
     assembler.define_byte("option.warpingPosY", 0x58)
     assembler.define_byte("option.warpingPosX", 0x58)
     assembler.define_byte("option.warpingPos", 0x55)
     assembler.define_byte("option.warpingSeason", patch_data["default_seasons"]["EYEGLASS_LAKE"])
 
-    assembler.define_byte("option.animalCompanion", 0x0b + patch_data["options"]["animal_companion"])
+    assembler.define_byte("option.animalCompanion", 0x0B + patch_data["options"]["animal_companion"])
     assembler.define_byte("option.defaultSeedType", 0x20 + patch_data["options"]["default_seed"])
     assembler.define_byte("option.receivedDamageModifier", options["combat_difficulty"])
     assembler.define_byte("option.openAdvanceShop", options["advance_shop"])
@@ -333,20 +398,18 @@ def define_option_constants(assembler: Z80Assembler, patch_data: dict[str, Any])
         chest_dict = {
             "d0": 0x75,
             "d1": 0x66,
-            "d2": 0x5b,
+            "d2": 0x5B,
             "d3": 0x43,
-            "d4": 0x3b,
+            "d4": 0x3B,
             "d5": 0x59,
             "d6": 0x23,
             "d7": 0x73,
             "d8": 0x35,
-            "d11": 0x7b,
+            "d11": 0x7B,
         }
         dungeon_entrances = patch_data["dungeon_entrances"]
         inverted_dungeon_entrances = {dungeon_entrances[key]: key for key in dungeon_entrances}
-        dungeons_in_order_for_d11_puzzle = []
-        for i in range(1, 9):
-            dungeons_in_order_for_d11_puzzle.append(chest_dict[inverted_dungeon_entrances[f"d{i}"]])
+        dungeons_in_order_for_d11_puzzle = [chest_dict[inverted_dungeon_entrances[f"d{i}"]] for i in range(1, 9)]
         assembler.add_floating_chunk("dungeonsInOrderForD11Puzzle", list(dungeons_in_order_for_d11_puzzle))
         dungeons_in_order_for_d11_puzzle.sort()
         assembler.add_floating_chunk("dungeonsForD11Puzzle", dungeons_in_order_for_d11_puzzle)
@@ -396,13 +459,15 @@ def process_lost_woods_sequence(sequence: list[list[int]]) -> tuple[list[int], s
     return sequence_bytes, text
 
 
-def define_tree_sprites(assembler: Z80Assembler, patch_data: dict[str, Any], item_data: dict[str, dict[str, Any]]) -> None:
+def define_tree_sprites(
+    assembler: Z80Assembler, patch_data: dict[str, Any], item_data: dict[str, dict[str, Any]]
+) -> None:
     tree_data = {  # Name: (map, position)
-        "Horon Village: Seed Tree": (0xf8, 0x48),
-        "Woods of Winter: Seed Tree": (0x9e, 0x88),
+        "Horon Village: Seed Tree": (0xF8, 0x48),
+        "Woods of Winter: Seed Tree": (0x9E, 0x88),
         "Holodrum Plain: Seed Tree": (0x67, 0x88),
         "Spool Swamp: Seed Tree": (0x72, 0x88),
-        "Sunken City: Seed Tree": (0x5f, 0x86),
+        "Sunken City: Seed Tree": (0x5F, 0x86),
         "Tarm Ruins: Seed Tree": (0x10, 0x48),
     }
     i = 1
@@ -418,13 +483,13 @@ def define_tree_sprites(assembler: Z80Assembler, patch_data: dict[str, Any], ite
         i += 1
     if i == 5:
         # Duplicate ember, we have to blank some data
-        assembler.define_byte("seedTree5.enabled", 0x0e)
-        assembler.define_byte("seedTree5.map", 0xff)
+        assembler.define_byte("seedTree5.enabled", 0x0E)
+        assembler.define_byte("seedTree5.map", 0xFF)
         assembler.define_byte("seedTree5.position", 0)
         assembler.define_byte("seedTree5.gfx", 0)
         assembler.define_word("seedTree5.rectangle", 0)
     else:
-        assembler.define_byte("seedTree5.enabled", 0x0d)
+        assembler.define_byte("seedTree5.enabled", 0x0D)
 
 
 def get_treasure_addr(rom: RomData, item_name: str, item_data: dict[str, dict[str, Any]]) -> int:
@@ -435,10 +500,14 @@ def get_treasure_addr(rom: RomData, item_name: str, item_data: dict[str, dict[st
     return addr + (item_subid * 4)
 
 
-def set_treasure_data(rom: RomData, item_data: dict[str, dict[str, Any]],
-                      item_name: str, text_id: int | None,
-                      sprite_id: int | None = None,
-                      param_value: int | None = None) -> None:
+def set_treasure_data(
+    rom: RomData,
+    item_data: dict[str, dict[str, Any]],
+    item_name: str,
+    text_id: int | None,
+    sprite_id: int | None = None,
+    param_value: int | None = None,
+) -> None:
     addr = get_treasure_addr(rom, item_name, item_data)
     if text_id is not None:
         rom.write_byte(addr + 0x02, text_id)
@@ -454,67 +523,70 @@ def set_player_start_inventory(assembler: Z80Assembler, patch_data: dict[str, An
 
     # ###### Base changes ##############################################
     start_inventory_changes[parse_hex_string_to_value(DEFINES["wIsLinkedGame"])] = 0x00  # No linked gaming
-    start_inventory_changes[parse_hex_string_to_value(DEFINES["wAnimalTutorialFlags"])] = 0xff  # Animal vars
+    start_inventory_changes[parse_hex_string_to_value(DEFINES["wAnimalTutorialFlags"])] = 0xFF  # Animal vars
     # Remove the requirement to go in the screen under Sunken City tree to make Dimitri bullies appear
     start_inventory_changes[parse_hex_string_to_value(DEFINES["wDimitriState"])] = 0x20
     # Give L-3 ring box
-    start_inventory_changes[0xc697] = 0x10
+    start_inventory_changes[0xC697] = 0x10
     start_inventory_changes[parse_hex_string_to_value(DEFINES["wRingBoxLevel"])] = 0x03
 
     # Starting map/compass
     if patch_data["options"]["starting_maps_compasses"]:
         dungeon_compass = parse_hex_string_to_value(DEFINES["wDungeonCompasses"])
         for i in range(dungeon_compass, dungeon_compass + 4):
-            start_inventory_changes[i] = 0xff
+            start_inventory_changes[i] = 0xFF
 
     start_inventory_data: dict[str, int] = patch_data["start_inventory"]
     # Handle leveled items
     if "Progressive Shield" in start_inventory_data:
-        start_inventory_changes[parse_hex_string_to_value(DEFINES["wShieldLevel"])] \
-            = start_inventory_data["Progressive Shield"]
+        start_inventory_changes[parse_hex_string_to_value(DEFINES["wShieldLevel"])] = start_inventory_data[
+            "Progressive Shield"
+        ]
     bombs = 0
     if "Bombs (10)" in start_inventory_data:
         bombs += start_inventory_data["Bombs (10)"] * 0x10
     if "Bombs (20)" in start_inventory_data:
         bombs += start_inventory_data["Bombs (20)"] * 0x20
     if bombs > 0:
-        start_inventory_changes[parse_hex_string_to_value(DEFINES["wCurrentBombs"])] \
-            = start_inventory_changes[parse_hex_string_to_value(DEFINES["wMaxBombs"])] \
-            = min(bombs, 0x99)
+        start_inventory_changes[parse_hex_string_to_value(DEFINES["wCurrentBombs"])] = start_inventory_changes[
+            parse_hex_string_to_value(DEFINES["wMaxBombs"])
+        ] = min(bombs, 0x99)
         # The bomb amounts are stored in decimal
     if "Progressive Sword" in start_inventory_data:
-        start_inventory_changes[0xc6ac] = start_inventory_data["Progressive Sword"]
+        start_inventory_changes[0xC6AC] = start_inventory_data["Progressive Sword"]
     if "Progressive Boomerang" in start_inventory_data:
-        start_inventory_changes[0xc6b1] = start_inventory_data["Progressive Boomerang"]  # Boomerang level
+        start_inventory_changes[0xC6B1] = start_inventory_data["Progressive Boomerang"]  # Boomerang level
     if "Ricky's Flute" in start_inventory_data:
         start_inventory_changes[parse_hex_string_to_value(DEFINES["wFluteIcon"])] = 0x01  # Flute icon
-        start_inventory_changes[0xc643] |= 0x80  # Ricky State
+        start_inventory_changes[0xC643] |= 0x80  # Ricky State
     if "Dimitri's Flute" in start_inventory_data:
         start_inventory_changes[parse_hex_string_to_value(DEFINES["wFluteIcon"])] = 0x02  # Flute icon
-        start_inventory_changes[0xc644] |= 0x80  # Dimitri State
+        start_inventory_changes[0xC644] |= 0x80  # Dimitri State
     if "Moosh's Flute" in start_inventory_data:
         start_inventory_changes[parse_hex_string_to_value(DEFINES["wFluteIcon"])] = 0x03  # Flute icon
-        start_inventory_changes[0xc645] |= 0x20  # Moosh State
+        start_inventory_changes[0xC645] |= 0x20  # Moosh State
     if "Progressive Feather" in start_inventory_data:
-        start_inventory_changes[parse_hex_string_to_value(DEFINES["wFeatherLevel"])] \
-            = start_inventory_data["Progressive Feather"]
+        start_inventory_changes[parse_hex_string_to_value(DEFINES["wFeatherLevel"])] = start_inventory_data[
+            "Progressive Feather"
+        ]
     if "Switch Hook" in start_inventory_data:
-        start_inventory_changes[parse_hex_string_to_value(DEFINES["wSwitchHookLevel"])] \
-            = start_inventory_data["Switch Hook"]
+        start_inventory_changes[parse_hex_string_to_value(DEFINES["wSwitchHookLevel"])] = start_inventory_data[
+            "Switch Hook"
+        ]
     bombchus = 0
     if "Bombchus (10)" in start_inventory_data:
         bombchus += start_inventory_data["Bombchus (10)"] * 0x10
     if "Bombchus (20)" in start_inventory_data:
         bombchus += start_inventory_data["Bombchus (20)"] * 0x20
     if bombchus > 0:
-        start_inventory_changes[parse_hex_string_to_value(DEFINES["wNumBombchus"])] \
-            = start_inventory_changes[parse_hex_string_to_value(DEFINES["wMaxBombchus"])] \
-            = min(bombchus, 0x99)
+        start_inventory_changes[parse_hex_string_to_value(DEFINES["wNumBombchus"])] = start_inventory_changes[
+            parse_hex_string_to_value(DEFINES["wMaxBombchus"])
+        ] = min(bombchus, 0x99)
         # The bombchus amounts are stored in decimal
 
     seed_amount = 0
     if "Progressive Slingshot" in start_inventory_data:
-        start_inventory_changes[0xc6b3] = start_inventory_data["Progressive Slingshot"]  # Slingshot level
+        start_inventory_changes[0xC6B3] = start_inventory_data["Progressive Slingshot"]  # Slingshot level
         seed_amount = 0x20
     if "Seed Shooter" in start_inventory_data:
         seed_amount = 0x20
@@ -532,7 +604,7 @@ def set_player_start_inventory(assembler: Z80Assembler, patch_data: dict[str, An
 
     # Inventory obtained flags
     current_inventory_index = parse_hex_string_to_value(DEFINES["wInventoryB"])
-    for item in start_inventory_data:
+    for item, item_amount in start_inventory_data.items():
         item_id = ITEMS_DATA[item]["id"]
         item_address = obtained_treasures_address + item_id // 8
         item_mask = 0x01 << (item_id % 8)
@@ -542,9 +614,9 @@ def set_player_start_inventory(assembler: Z80Assembler, patch_data: dict[str, An
             if item == "Biggoron's Sword":
                 # Biggoron needs special care since it occupies both hands
                 if current_inventory_index == parse_hex_string_to_value(DEFINES["wInventoryB"]):
-                    start_inventory_changes[current_inventory_index] \
-                        = start_inventory_changes[current_inventory_index + 1] \
-                        = item_id
+                    start_inventory_changes[current_inventory_index] = start_inventory_changes[
+                        current_inventory_index + 1
+                    ] = item_id
                     current_inventory_index += 2
                 elif current_inventory_index == parse_hex_string_to_value(DEFINES["wInventoryB"]) + 1:
                     current_inventory_index += 1
@@ -556,28 +628,30 @@ def set_player_start_inventory(assembler: Z80Assembler, patch_data: dict[str, An
 
         if item_id == 0x07:  # Rod of Seasons
             season = ITEMS_DATA[item]["subid"] - 2
-            start_inventory_changes[0xc6b0] |= 0x01 << season
+            start_inventory_changes[0xC6B0] |= 0x01 << season
         elif item_id == 0x28:  # Rupees
             amount = int(item.split("(")[1][:-1])  # Find the value in the item name
-            start_inventory_changes[0xc6a5] += amount * start_inventory_data[item]
+            start_inventory_changes[0xC6A5] += amount * item_amount
         elif item_id == 0x37:  # Ore Chunks
             amount = int(item.split("(")[1][:-1])  # Find the value in the item name
-            start_inventory_changes[0xc6a7] += amount * start_inventory_data[item]
+            start_inventory_changes[0xC6A7] += amount * item_amount
         elif item_id == 0x30:  # Small keys
             subid = ITEMS_DATA[item]["subid"] % 0x80
-            start_inventory_changes[0xc66e + subid] += start_inventory_data[item]
+            start_inventory_changes[0xC66E + subid] += item_amount
         elif item_id == 0x31:  # Boss keys
             subid = ITEMS_DATA[item]["subid"]
-            start_inventory_changes[0xc67a + subid // 8] |= 0x01 << subid % 8
+            start_inventory_changes[0xC67A + subid // 8] |= 0x01 << subid % 8
         elif item_id == 0x32:  # Compasses
             subid = ITEMS_DATA[item]["subid"]
-            start_inventory_changes[0xc67c + subid // 8] |= 0x01 << subid % 8
+            start_inventory_changes[0xC67C + subid // 8] |= 0x01 << subid % 8
         elif item_id == 0x33:  # Maps
             subid = ITEMS_DATA[item]["subid"]
-            start_inventory_changes[0xc67e + subid // 8] |= 0x01 << subid % 8
-        elif item_id == 0x2d:  # Rings
+            start_inventory_changes[0xC67E + subid // 8] |= 0x01 << subid % 8
+        elif item_id == 0x2D:  # Rings
             subid = ITEMS_DATA[item]["subid"] - 4
-            start_inventory_changes[parse_hex_string_to_value(DEFINES["wRingsObtained"]) + subid // 8] |= 0x01 << subid % 8
+            start_inventory_changes[parse_hex_string_to_value(DEFINES["wRingsObtained"]) + subid // 8] |= (
+                0x01 << subid % 8
+            )
         elif item_id == 0x40:  # Essences
             subid = ITEMS_DATA[item]["subid"]
             start_inventory_changes[parse_hex_string_to_value(DEFINES["wEssencesObtained"])] |= 0x01 << subid % 8
@@ -585,25 +659,25 @@ def set_player_start_inventory(assembler: Z80Assembler, patch_data: dict[str, An
             seed_address = parse_hex_string_to_value(DEFINES["wNumEmberSeeds"]) + item_id - 0x20
             start_inventory_changes[seed_address] = seed_amount
 
-    if 0xc6a5 in start_inventory_changes:
-        hex_rupee_count = parse_hex_string_to_value(f"${start_inventory_changes[0xc6a5]}")
-        start_inventory_changes[0xc6a5] = hex_rupee_count % 0x100
-        start_inventory_changes[0xc6a6] = hex_rupee_count // 0x100
-    if 0xc6a7 in start_inventory_changes:
-        hex_ore_count = parse_hex_string_to_value(f"${start_inventory_changes[0xc6a7]}")
-        start_inventory_changes[0xc6a7] = hex_ore_count % 0x100
-        start_inventory_changes[0xc6a8] = hex_ore_count // 0x100
+    if 0xC6A5 in start_inventory_changes:
+        hex_rupee_count = parse_hex_string_to_value(f"${start_inventory_changes[0xC6A5]}")
+        start_inventory_changes[0xC6A5] = hex_rupee_count % 0x100
+        start_inventory_changes[0xC6A6] = hex_rupee_count // 0x100
+    if 0xC6A7 in start_inventory_changes:
+        hex_ore_count = parse_hex_string_to_value(f"${start_inventory_changes[0xC6A7]}")
+        start_inventory_changes[0xC6A7] = hex_ore_count % 0x100
+        start_inventory_changes[0xC6A8] = hex_ore_count // 0x100
     if obtained_treasures_address in start_inventory_changes:
         start_inventory_changes[obtained_treasures_address] |= 1 << 2  # Add treasure punch flag
 
-    heart_pieces = (start_inventory_data.get("Piece of Heart", 0) + start_inventory_data.get("Rare Peach Stone", 0))
-    additional_hearts = (start_inventory_data.get("Heart Container", 0) + heart_pieces // 4)
+    heart_pieces = start_inventory_data.get("Piece of Heart", 0) + start_inventory_data.get("Rare Peach Stone", 0)
+    additional_hearts = start_inventory_data.get("Heart Container", 0) + heart_pieces // 4
     if additional_hearts:
-        start_inventory_changes[0xc6a2] = start_inventory_changes[0xc6a3] = 12 + additional_hearts * 4
+        start_inventory_changes[0xC6A2] = start_inventory_changes[0xC6A3] = 12 + additional_hearts * 4
     if heart_pieces % 4:
-        start_inventory_changes[0xc6a4] = heart_pieces % 4
+        start_inventory_changes[0xC6A4] = heart_pieces % 4
     if "Gasha Seed" in start_inventory_data:
-        start_inventory_changes[0xc6ba] = start_inventory_data["Gasha Seed"]
+        start_inventory_changes[0xC6BA] = start_inventory_data["Gasha Seed"]
 
     # Make the list used in asm
     start_inventory = []
@@ -619,22 +693,22 @@ def set_player_start_inventory(assembler: Z80Assembler, patch_data: dict[str, An
 def alter_treasure_types(rom: RomData, item_data: dict[str, dict[str, Any]]) -> None:
     # Some treasures don't exist as interactions in base game, we need to add
     # text & sprite references for them to work properly in a randomized context
-    set_treasure_data(rom, item_data, "Fool's Ore", 0x36, 0x4a)
-    set_treasure_data(rom, item_data, "Rare Peach Stone", None, 0x3f)
-    set_treasure_data(rom, item_data, "Ribbon", 0x41, 0x4c)
-    set_treasure_data(rom, item_data, "Treasure Map", 0x6c, 0x49)
+    set_treasure_data(rom, item_data, "Fool's Ore", 0x36, 0x4A)
+    set_treasure_data(rom, item_data, "Rare Peach Stone", None, 0x3F)
+    set_treasure_data(rom, item_data, "Ribbon", 0x41, 0x4C)
+    set_treasure_data(rom, item_data, "Treasure Map", 0x6C, 0x49)
     set_treasure_data(rom, item_data, "Member's Card", 0x45, 0x48)
-    set_treasure_data(rom, item_data, "Potion", 0x6d, 0x4b)
+    set_treasure_data(rom, item_data, "Potion", 0x6D, 0x4B)
 
     # Make bombs increase max carriable quantity when obtained from treasures,
     # not drops (see asm/seasons/bomb_bag_behavior)
     set_treasure_data(rom, item_data, "Bombs (10)", None, None, 0x90)
-    set_treasure_data(rom, item_data, "Bombs (20)", 0x94, None, 0xa0)
+    set_treasure_data(rom, item_data, "Bombs (20)", 0x94, None, 0xA0)
     set_treasure_data(rom, item_data, "Bombchus (10)", None, None, 0x90)
-    set_treasure_data(rom, item_data, "Bombchus (20)", None, None, 0xa0)
+    set_treasure_data(rom, item_data, "Bombchus (20)", None, None, 0xA0)
 
     # Colored Rod of Seasons to make them recognizable
-    set_treasure_data(rom, item_data, "Rod of Seasons (Spring)", None, 0x4f)
+    set_treasure_data(rom, item_data, "Rod of Seasons (Spring)", None, 0x4F)
     set_treasure_data(rom, item_data, "Rod of Seasons (Autumn)", None, 0x50)
     set_treasure_data(rom, item_data, "Rod of Seasons (Winter)", None, 0x51)
 
@@ -649,32 +723,32 @@ def set_old_men_rupee_values(rom: RomData, patch_data: dict[str, Any]) -> None:
             rom.write_byte(0x56233 + i, value_byte)
 
             if abs(value) == value:
-                rom.write_word(0x2987b + (i * 2), 0x7472)  # Give rupees
+                rom.write_word(0x2987B + (i * 2), 0x7472)  # Give rupees
             else:
-                rom.write_word(0x2987b + (i * 2), 0x7488)  # Take rupees
+                rom.write_word(0x2987B + (i * 2), 0x7488)  # Take rupees
 
 
 def apply_miscellaneous_options(rom: RomData, patch_data: dict[str, Any]) -> None:
     # If companion is Dimitri, allow calling him using the Flute inside Sunken City
     if patch_data["options"]["animal_companion"] == OracleOfSeasonsAnimalCompanion.option_dimitri:
-        rom.write_byte(GameboyAddress(0x09, 0x4f39).address_in_rom(), 0xa7)
-        rom.write_byte(GameboyAddress(0x09, 0x4f3b).address_in_rom(), 0xe7)
+        rom.write_byte(GameboyAddress(0x09, 0x4F39).address_in_rom(), 0xA7)
+        rom.write_byte(GameboyAddress(0x09, 0x4F3B).address_in_rom(), 0xE7)
 
     # If horon shop 3 is set to be a renewable Potion, manually edit the shop flag for
     # that slot to zero to make it stay after buying
     if patch_data["options"]["enforce_potion_in_shop"]:
-        rom.write_byte(GameboyAddress(0x08, 0x4cfb).address_in_rom(), 0x00)
+        rom.write_byte(GameboyAddress(0x08, 0x4CFB).address_in_rom(), 0x00)
 
     if patch_data["options"]["master_keys"] != OracleOfSeasonsMasterKeys.option_disabled:
         # Remove small key consumption on keydoor opened
         rom.write_byte(GameboyAddress(0x06, 0x4357).address_in_rom(), 0x00)
     if patch_data["options"]["master_keys"] == OracleOfSeasonsMasterKeys.option_all_dungeon_keys:
         # Remove boss key consumption on boss keydoor opened
-        rom.write_word(GameboyAddress(0x06, 0x434f).address_in_rom(), 0x0000)
-    rom.write_byte(GameboyAddress(0x0a, 0x46ed).address_in_rom(),
-                   patch_data["options"]["gasha_nut_kill_requirement"])
-    rom.write_byte(GameboyAddress(0x04, 0x6a31).address_in_rom(),
-                   patch_data["options"]["gasha_nut_kill_requirement"] // 2)
+        rom.write_word(GameboyAddress(0x06, 0x434F).address_in_rom(), 0x0000)
+    rom.write_byte(GameboyAddress(0x0A, 0x46ED).address_in_rom(), patch_data["options"]["gasha_nut_kill_requirement"])
+    rom.write_byte(
+        GameboyAddress(0x04, 0x6A31).address_in_rom(), patch_data["options"]["gasha_nut_kill_requirement"] // 2
+    )
 
 
 def set_fixed_subrosia_seaside_location(rom: RomData, patch_data: dict[str, Any]) -> None:
@@ -693,19 +767,17 @@ def set_file_select_text(assembler: Z80Assembler, slot_name: str) -> None:
         if "0" <= c <= "9":
             return ord(c) - 0x20
         if "A" <= c <= "Z":
-            return ord(c) + 0xa1
+            return ord(c) + 0xA1
         if c == "+":
-            return 0xfd
+            return 0xFD
         if c == "-":
-            return 0xfe
+            return 0xFE
         if c == ".":
-            return 0xff
+            return 0xFF
         else:
-            return 0xfc  # All other chars are blank spaces
+            return 0xFC  # All other chars are blank spaces
 
-    row_1 = [char_to_tile(c) for c in
-             f"AP {OracleOfSeasonsWorld.version()}"
-             .center(16, " ")]
+    row_1 = [char_to_tile(c) for c in f"AP {OracleOfSeasonsWorld.version()}".center(16, " ")]
     row_2 = [char_to_tile(c) for c in slot_name.replace("-", " ").upper().center(16, " ")]
 
     text_tiles = [0x74, 0x31]
@@ -741,7 +813,7 @@ def make_text_data(assembler: Z80Assembler, text: dict[str, str], patch_data: di
         "Horon Village: Shop",
         "Horon Village: Member's Shop",
         "Sunken City: Syrup Shop",
-        "Horon Village: Advance Shop"
+        "Horon Village: Advance Shop",
     ]
     tx_indices = {
         "horonShop1": "TX_0e04",
@@ -774,8 +846,7 @@ def make_text_data(assembler: Z80Assembler, text: dict[str, str], patch_data: di
             if location_name not in patch_data["locations"]:
                 continue
             item_text = process_item_name_for_shop_text(patch_data["locations"][location_name])
-            item_text += (" \\num1 Rupees\n"
-                          "  \\optOK \\optNo thanks\\cmd(0f)")
+            item_text += " \\num1 Rupees\n  \\optOK \\optNo thanks\\cmd(0f)"
             text[tx_indices[symbolic_name]] = item_text
 
     for market_slot in range(1, 6):
@@ -785,42 +856,40 @@ def make_text_data(assembler: Z80Assembler, text: dict[str, str], patch_data: di
             continue
         item_text = process_item_name_for_shop_text(patch_data["locations"][location_name])
         if market_slot == 1:
-            item_text += ("I'll trade for\n"
-                          "🟥Star-Shaped Ore⬜.\n"
-                          "\\jump(0b)")
+            item_text += "I'll trade for\n🟥Star-Shaped Ore⬜.\n\\jump(0b)"
         else:
-            item_text += ("I'll trade for\n"
-                          "🟥\\num1 Ore Chunks⬜.\n"
-                          "\\jump(0b)")
+            item_text += "I'll trade for\n🟥\\num1 Ore Chunks⬜.\n\\jump(0b)"
         text[tx_indices[symbolic_name]] = item_text
 
     BUSINESS_SCRUBS = [
         "Spool Swamp: Business Scrub",
         "Samasa Desert: Business Scrub",
         "Snake's Remains: Business Scrub",
-        "Dancing Dragon Dungeon (1F): Business Scrub"
+        "Dancing Dragon Dungeon (1F): Business Scrub",
     ]
     for location_name in BUSINESS_SCRUBS:
         symbolic_name = LOCATIONS_DATA[location_name]["symbolic_name"]
         if location_name not in patch_data["locations"]:
             continue
         # Scrub string asking the player if they want to buy the item
-        item_text = ("\\sfx(c6)Greetings!\n"
-                     + process_item_name_for_shop_text(patch_data["locations"][location_name])
-                     + f"for 🟩{patch_data['shop_prices'][symbolic_name]} Rupees⬜\n"
-                       "  \\optOK \\optNo thanks")
+        item_text = (
+            "\\sfx(c6)Greetings!\n"
+            + process_item_name_for_shop_text(patch_data["locations"][location_name])
+            + f"for 🟩{patch_data['shop_prices'][symbolic_name]} Rupees⬜\n"
+            "  \\optOK \\optNo thanks"
+        )
         text[tx_indices[symbolic_name]] = item_text
 
     # Cross items
-    assembler.define_byte("text.hook1.treasure", 0x3b)
+    assembler.define_byte("text.hook1.treasure", 0x3B)
     assembler.define_byte("text.hook2.treasure", 0x51)
     assembler.define_byte("text.cane.treasure", 0x53)
     assembler.define_byte("text.shooter.treasure", 0x54)
 
-    assembler.define_byte("text.hook1.inventory", 0x1e)
+    assembler.define_byte("text.hook1.inventory", 0x1E)
     assembler.define_byte("text.hook2.inventory", 0x17)
-    assembler.define_byte("text.cane.inventory", 0x1d)
-    assembler.define_byte("text.shooter.inventory", 0x2e)
+    assembler.define_byte("text.cane.inventory", 0x1D)
+    assembler.define_byte("text.shooter.inventory", 0x2E)
 
     # Default satchel seed
     seed_name = SEED_ITEMS[patch_data["options"]["default_seed"]].replace(" ", "\n")
@@ -828,37 +897,26 @@ def make_text_data(assembler: Z80Assembler, text: dict[str, str], patch_data: di
 
     # Misc
     if patch_data["options"]["rosa_quick_unlock"]:
-        text["TX_2904"] = ("Since you're so\n"
-                           "nice, I unlocked\n"
-                           "all the doors\n"
-                           "here for you.")
+        text["TX_2904"] = "Since you're so\nnice, I unlocked\nall the doors\nhere for you."
 
-    text["TX_3e1b"] = ("You've broken\n🟩\\num1 signs⬜!\n"
-                       "You'd better not\n"
-                       "break more than\n"
-                       f"🟩{patch_data['options']['sign_guy_requirement']}⬜"
-                       ", or else...")
+    text["TX_3e1b"] = (
+        "You've broken\n🟩\\num1 signs⬜!\n"
+        "You'd better not\n"
+        "break more than\n"
+        f"🟩{patch_data['options']['sign_guy_requirement']}⬜"
+        ", or else..."
+    )
 
     # Inform the player of how many gashas are good
     wife_text_index = text["TX_3101"].index("The place")
     num_seeds = patch_data["options"]["deterministic_gasha_locations"]
     if num_seeds == 0:
-        seed_text = ("nuts will not\n"
-                     "contain anything\n"
-                     "useful.")
+        seed_text = "nuts will not\ncontain anything\nuseful."
     elif num_seeds == 16:
-        seed_text = ("every nut can\n"
-                     "hold something\n"
-                     "useful.")
+        seed_text = "every nut can\nhold something\nuseful."
     else:
-        seed_text = ("only your first\n"
-                     f"🟩{num_seeds}⬜ nuts can\n"
-                     "contain anything\n"
-                     "useful.")
-    text["TX_3101"] = (text["TX_3101"][:wife_text_index]
-                       + "\\stop\n"
-                         "You should know\n"
-                       + seed_text)
+        seed_text = f"only your first\n🟩{num_seeds}⬜ nuts can\ncontain anything\nuseful."
+    text["TX_3101"] = text["TX_3101"][:wife_text_index] + "\\stop\nYou should know\n" + seed_text
 
     # Golden beasts
     golden_beasts_requirement = patch_data["options"]["golden_beasts_requirement"]
@@ -867,8 +925,7 @@ def make_text_data(assembler: Z80Assembler, text: dict[str, str], patch_data: di
         golden_beast_reward_text = text["TX_1f05"]
         post_congratulation_index = golden_beast_reward_text.index("Sir")
         text["TX_1f04"] = ""
-        text["TX_1f05"] = ("You did nothing!\n"
-                           "Truly, " + golden_beast_reward_text[post_congratulation_index:])
+        text["TX_1f05"] = "You did nothing!\nTruly, " + golden_beast_reward_text[post_congratulation_index:]
     elif golden_beasts_requirement < 4:
         number = ["one", "two", "three"][golden_beasts_requirement - 1]
         text["TX_1f04"] = text["TX_1f04"].replace("the four", number)
@@ -879,18 +936,17 @@ def make_text_data(assembler: Z80Assembler, text: dict[str, str], patch_data: di
 
     # Maku tree sign
     essence_count = patch_data["options"]["required_essences"]
-    text["TX_2e00"] = (f"Find 🟥{essence_count} essence{'s' if essence_count != 1 else ''}⬜\n"
-                       "to get the seed!")
+    text["TX_2e00"] = f"Find 🟥{essence_count} essence{'s' if essence_count != 1 else ''}⬜\nto get the seed!"
 
     # Tarm ruins sign
     jewel_count = patch_data["options"]["tarm_gate_required_jewels"]
-    text["TX_2e12"] = (f"Bring 🟩{jewel_count}⬜ jewel{'s' if jewel_count != 1 else ''}\n"
-                       "for the door\n"
-                       "to open.")
+    text["TX_2e12"] = f"Bring 🟩{jewel_count}⬜ jewel{'s' if jewel_count != 1 else ''}\nfor the door\nto open."
 
     # Tree house old man
     essence_count = patch_data["options"]["treehouse_old_man_requirement"]
-    text["TX_3601"] = text["TX_3601"].replace("knows many\n🟥essences⬜...", f"has 🟥{essence_count} essence{'s' if essence_count != 1 else ''}⬜!")
+    text["TX_3601"] = text["TX_3601"].replace(
+        "knows many\n🟥essences⬜...", f"has 🟥{essence_count} essence{'s' if essence_count != 1 else ''}⬜!"
+    )
 
     # With quick rosa, the escort code is disabled
     if patch_data["options"]["rosa_quick_unlock"]:
@@ -902,18 +958,20 @@ def make_text_data(assembler: Z80Assembler, text: dict[str, str], patch_data: di
 def set_heart_beep_interval_from_settings(rom: RomData) -> None:
     heart_beep_interval = get_settings()["tloz_oos_options"]["heart_beep_interval"]
     if heart_beep_interval == "half":
-        rom.write_byte(0x9116, 0x3f * 2)
+        rom.write_byte(0x9116, 0x3F * 2)
     elif heart_beep_interval == "quarter":
-        rom.write_byte(0x9116, 0x3f * 4)
+        rom.write_byte(0x9116, 0x3F * 4)
     elif heart_beep_interval == "disabled":
-        rom.write_bytes(0x9116, [0x00, 0xc9])  # Put a return to avoid beeping entirely
+        rom.write_bytes(0x9116, [0x00, 0xC9])  # Put a return to avoid beeping entirely
 
 
 def set_character_sprite_from_settings(rom: RomData) -> None:
     sprite = get_settings()["tloz_oos_options"]["character_sprite"]
     sprite_dir = Path(Utils.local_path(os.path.join("data", "sprites", "oos_ooa")))
     if sprite == "random":
-        sprite_weights = {f: 1 for f in os.listdir(sprite_dir) if sprite_dir.joinpath(f).is_file() and f.endswith(".bin")}
+        sprite_weights = {
+            f: 1 for f in os.listdir(sprite_dir) if sprite_dir.joinpath(f).is_file() and f.endswith(".bin")
+        }
     elif isinstance(sprite, str):
         sprite_weights = {sprite: 1}
     else:
@@ -927,7 +985,7 @@ def set_character_sprite_from_settings(rom: RomData) -> None:
 
     palette_option = get_settings()["tloz_oos_options"]["character_palette"]
     if palette_option == "random":
-        palette_weights = {palette: 1 for palette in get_available_random_colors_from_sprite_name(sprite)}
+        palette_weights = dict.fromkeys(get_available_random_colors_from_sprite_name(sprite), 1)
     elif isinstance(palette_option, str):
         palette_weights = {palette_option: 1}
     else:
@@ -970,27 +1028,29 @@ def set_character_sprite_from_settings(rom: RomData) -> None:
     palette_byte = PALETTE_BYTES[palette]
 
     # Link in-game
-    for addr in range(0x141cc, 0x141df, 2):
+    for addr in range(0x141CC, 0x141DF, 2):
         rom.write_byte(addr, 0x08 | palette_byte)
     # Link palette restored after Medusa Head / Ganon stun attacks
-    rom.write_byte(0x1516d, 0x08 | palette_byte)
+    rom.write_byte(0x1516D, 0x08 | palette_byte)
     # Link standing still in file select (fileSelectDrawLink:@sprites0)
-    rom.write_byte(0x8d46, palette_byte)
-    rom.write_byte(0x8d4a, palette_byte)
+    rom.write_byte(0x8D46, palette_byte)
+    rom.write_byte(0x8D4A, palette_byte)
     # Link animated in file select (@sprites1 & @sprites2)
-    rom.write_byte(0x8d4f, palette_byte)
-    rom.write_byte(0x8d53, palette_byte)
-    rom.write_byte(0x8d58, 0x20 | palette_byte)
-    rom.write_byte(0x8d5c, 0x20 | palette_byte)
+    rom.write_byte(0x8D4F, palette_byte)
+    rom.write_byte(0x8D53, palette_byte)
+    rom.write_byte(0x8D58, 0x20 | palette_byte)
+    rom.write_byte(0x8D5C, 0x20 | palette_byte)
 
 
 def inject_slot_name(rom: RomData, slot_name: str) -> None:
     slot_name_as_bytes = list(str.encode(slot_name))
     slot_name_as_bytes += [0x00] * (0x40 - len(slot_name_as_bytes))
-    rom.write_bytes(0xfffc0, slot_name_as_bytes)
+    rom.write_bytes(0xFFFC0, slot_name_as_bytes)
 
 
-def set_dungeon_warps(rom: RomData, patch_data: dict[str, Any], dungeon_entrances: dict[str, Any], dungeon_exits: dict[str, Any]) -> None:
+def set_dungeon_warps(
+    rom: RomData, patch_data: dict[str, Any], dungeon_entrances: dict[str, Any], dungeon_exits: dict[str, Any]
+) -> None:
     warp_matchings = patch_data["dungeon_entrances"]
     enter_values = {name: rom.read_word(dungeon["addr"]) for name, dungeon in dungeon_entrances.items()}
     exit_values = {name: rom.read_word(addr) for name, addr in dungeon_exits.items()}
@@ -1003,42 +1063,35 @@ def set_dungeon_warps(rom: RomData, patch_data: dict[str, Any], dungeon_entrance
         rom.write_word(exit_addr, exit_values[from_name])
 
     # Build a map dungeon => entrance (useful for essence warps)
-    entrance_map = dict((v, k) for k, v in warp_matchings.items())
+    entrance_map = {v: k for k, v in warp_matchings.items()}
 
     # D0 Chest Warp (hardcoded warp using a specific format)
     d0_new_entrance = dungeon_entrances[entrance_map["d0"]]
-    rom.write_bytes(0x2bbe4, [
-        d0_new_entrance["group"] | 0x80,
-        d0_new_entrance["room"],
-        0x00,
-        d0_new_entrance["position"]
-    ])
+    rom.write_bytes(
+        0x2BBE4, [d0_new_entrance["group"] | 0x80, d0_new_entrance["room"], 0x00, d0_new_entrance["position"]]
+    )
 
     # D1-D8 Essence Warps (hardcoded in one array using a unified format)
     for i in range(8):
         entrance = dungeon_entrances[entrance_map[f"d{i + 1}"]]
-        rom.write_bytes(0x24b59 + (i * 4), [
-            entrance["group"] | 0x80,
-            entrance["room"],
-            entrance["position"]
-        ])
+        rom.write_bytes(0x24B59 + (i * 4), [entrance["group"] | 0x80, entrance["room"], entrance["position"]])
 
     # Change Minimap popups to indicate the randomized dungeon's name
     for i in range(8):
         entrance_name = f"d{i}"
         dungeon_index = int(warp_matchings[entrance_name][1:])
         map_tile = dungeon_entrances[entrance_name]["map_tile"]
-        rom.write_byte(0xaa19 + map_tile, 0x81 | (dungeon_index << 3))
+        rom.write_byte(0xAA19 + map_tile, 0x81 | (dungeon_index << 3))
     # Dungeon 8 specific case (since it's in Subrosia)
     dungeon_index = int(warp_matchings["d8"][1:])
-    rom.write_byte(0xab19, 0x81 | (dungeon_index << 3))
+    rom.write_byte(0xAB19, 0x81 | (dungeon_index << 3))
 
     if patch_data["options"]["linked_heros_cave"] & OracleOfSeasonsLinkedHerosCave.samasa:
         # Change Minimap popups
         entrance_name = "d11"
         dungeon_index = int(warp_matchings[entrance_name][1:])
         map_tile = dungeon_entrances[entrance_name]["map_tile"]
-        rom.write_byte(0xaa19 + map_tile, 0x81 | (dungeon_index << 3))
+        rom.write_byte(0xAA19 + map_tile, 0x81 | (dungeon_index << 3))
 
     if patch_data["options"]["linked_heros_cave"] & OracleOfSeasonsLinkedHerosCave.heros_cave:
         rom.write_word(dungeon_exits["d11"], exit_values[entrance_map["d0"]])
@@ -1062,11 +1115,11 @@ def set_portal_warps(rom: RomData, patch_data: dict[str, Any]) -> None:
         rom.write_word(portal_2["addr"], values[name_1])
 
         # Set portal text in map menu for both portals
-        portal_text_addr = 0xab19 if portal_1["in_subrosia"] else 0xaa19
+        portal_text_addr = 0xAB19 if portal_1["in_subrosia"] else 0xAA19
         portal_text_addr += portal_1["map_tile"]
         rom.write_byte(portal_text_addr, 0x80 | (portal_2["text_index"] << 3))
 
-        portal_text_addr = 0xab19 if portal_2["in_subrosia"] else 0xaa19
+        portal_text_addr = 0xAB19 if portal_2["in_subrosia"] else 0xAA19
         portal_text_addr += portal_2["map_tile"]
         rom.write_byte(portal_text_addr, 0x80 | (portal_1["text_index"] << 3))
 
@@ -1124,7 +1177,9 @@ def define_dungeon_items_text_constants(texts: dict[str, str], patch_data: dict[
         texts["TX_001a"] = texts["TX_001a"].replace("Small", "Master")
 
 
-def define_essence_sparkle_constants(assembler: Z80Assembler, patch_data: dict[str, Any], dungeon_entrances: dict[str, Any]) -> None:
+def define_essence_sparkle_constants(
+    assembler: Z80Assembler, patch_data: dict[str, Any], dungeon_entrances: dict[str, Any]
+) -> None:
     byte_array = []
     show_dungeons_with_essence = patch_data["options"]["show_dungeons_with_essence"]
 
@@ -1137,7 +1192,7 @@ def define_essence_sparkle_constants(assembler: Z80Assembler, patch_data: dict[s
 
             # Find where dungeon entrance is located, and place the sparkle hint there
             dungeon = f"d{i + 1}"
-            dungeon_entrance = [k for k, v in patch_data["dungeon_entrances"].items() if v == dungeon][0]
+            dungeon_entrance = next(k for k, v in patch_data["dungeon_entrances"].items() if v == dungeon)
             entrance_data = dungeon_entrances[dungeon_entrance]
             byte_array.extend([entrance_data["group"], entrance_data["room"]])
     assembler.add_floating_chunk("essenceLocationsTable", byte_array)
@@ -1148,13 +1203,13 @@ def define_essence_sparkle_constants(assembler: Z80Assembler, patch_data: dict[s
 
 def set_faq_trap(assembler: Z80Assembler) -> None:
     assembler.define_byte("option.startingGroup", 0x04, True)
-    assembler.define_byte("option.startingRoom", 0xec, True)
+    assembler.define_byte("option.startingRoom", 0xEC, True)
     assembler.define_byte("option.startingPosY", 0x50, True)
     assembler.define_byte("option.startingPosX", 0x78, True)
 
 
 def randomize_ai_for_april_fools(rom: RomData, seed: int):
-    code_table = 0x2f16
+    code_table = 0x2F16
     # TODO : properly implement that ?
     enemy_table = [
         # enemy id in (08, 2f), specially for the blade traps since they can't take the beamos AI, or they'd block d6
@@ -1162,9 +1217,9 @@ def randomize_ai_for_april_fools(rom: RomData, seed: int):
             0: [
                 0x08,  # river zora
                 0x09,  # octorok
-                0x0c,  # arrow moblin
-                0x0d,  # lynel
-                0x0f,
+                0x0C,  # arrow moblin
+                0x0D,  # lynel
+                0x0F,
                 0x11,  # Pokey is too unreliable and laggy
                 0x12,  # gibdo
                 0x13,  # spark
@@ -1172,39 +1227,39 @@ def randomize_ai_for_april_fools(rom: RomData, seed: int):
                 0x15,  # bubble
                 0x18,  # buzzblob
                 0x19,  # whisp
-                0x1a,  # crab
+                0x1A,  # crab
                 0x20,  # masked moblin
                 0x22,
                 0x23,  # pol's voice
                 0x25,  # goponga flower
                 0x29,
-                0x2d,
-                0x2e,
-                0x2f
+                0x2D,
+                0x2E,
+                0x2F,
             ],
             1: [
-                0x0a,  # boomerang moblin
-                0x1c,  # iron mask
-                0x1e,  # piranha
+                0x0A,  # boomerang moblin
+                0x1C,  # iron mask
+                0x1E,  # piranha
                 0x25,
-                0x2c,  # cheep cheep, will probably break
+                0x2C,  # cheep cheep, will probably break
             ],
             2: [
-                0x0b,  # leever
+                0x0B,  # leever
                 0x17,  # ghini
                 0x21,  # arrow darknut
             ],
             3: [
-                0x1b,  # spiny beetle
+                0x1B,  # spiny beetle
                 0x24,  # like like, flagged as unkillable as the spawner, and is logically not required
-                0x2a,
+                0x2A,
             ],
             4: [
                 0x10,  # rope
             ],
             5: [
-                0x0e,  # blade trap
-                0x2b,
+                0x0E,  # blade trap
+                0x2B,
             ],
         },
         # enemy id in (08, 2f)
@@ -1212,9 +1267,9 @@ def randomize_ai_for_april_fools(rom: RomData, seed: int):
             0: [
                 0x08,  # river zora
                 0x09,  # octorok
-                0x0c,  # arrow moblin
-                0x0d,  # lynel
-                0x0f,
+                0x0C,  # arrow moblin
+                0x0D,  # lynel
+                0x0F,
                 0x11,  # Pokey is too unreliable and laggy
                 0x12,  # gibdo
                 0x13,  # spark
@@ -1223,38 +1278,38 @@ def randomize_ai_for_april_fools(rom: RomData, seed: int):
                 0x16,  # beamos
                 0x18,  # buzzblob
                 0x19,  # whisp
-                0x1a,  # crab
+                0x1A,  # crab
                 0x20,  # masked moblin
                 0x22,
                 0x23,  # pol's voice
                 0x25,  # goponga flower
                 0x29,
-                0x2d,
-                0x2e,
-                0x2f
+                0x2D,
+                0x2E,
+                0x2F,
             ],
             1: [
-                0x0a,  # boomerang moblin
-                0x1c,  # iron mask
-                0x1e,  # piranha
+                0x0A,  # boomerang moblin
+                0x1C,  # iron mask
+                0x1E,  # piranha
                 0x25,
-                0x2c,  # cheep cheep, will probably break
+                0x2C,  # cheep cheep, will probably break
             ],
             2: [
-                0x0b,  # leever
+                0x0B,  # leever
                 0x17,  # ghini
                 0x21,  # arrow darknut
             ],
             3: [
-                0x1b,  # spiny beetle
+                0x1B,  # spiny beetle
                 0x24,  # like like, flagged as unkillable as the spawner, and is logically not required
-                0x2a,
+                0x2A,
             ],
             4: [
                 0x10,  # rope
             ],
             5: [
-                0x2b,
+                0x2B,
             ],
         },
         # enemy id in (08, 2f), killable
@@ -1264,21 +1319,21 @@ def randomize_ai_for_april_fools(rom: RomData, seed: int):
                 0x12,  # gibdo
                 0x14,  # spiked beetle
                 0x18,  # buzzblob
-                0x1a,  # crab
+                0x1A,  # crab
                 0x22,
                 0x23,  # pol's voice
-                0x0d,  # lynel
-                0x0c,  # arrow moblin
+                0x0D,  # lynel
+                0x0C,  # arrow moblin
                 0x20,  # masked moblin
             ],
             1: [
-                0x0a,  # boomerang moblin
-                0x1c,  # iron mask
-                0x1e,  # piranha
+                0x0A,  # boomerang moblin
+                0x1C,  # iron mask
+                0x1E,  # piranha
                 0x25,
             ],
             2: [
-                0x0b,  # leever
+                0x0B,  # leever
                 0x17,  # ghini
                 0x21,  # arrow darknut
             ],
@@ -1286,7 +1341,6 @@ def randomize_ai_for_april_fools(rom: RomData, seed: int):
                 0x10,  # rope
             ],
         },
-
         # enemy id in (30, 60)
         {
             0: [
@@ -1296,27 +1350,27 @@ def randomize_ai_for_april_fools(rom: RomData, seed: int):
                 0x36,
                 0x37,
                 0x38,
-                0x3b,
-                0x3c,
-                0x3d,
-                0x3e,
+                0x3B,
+                0x3C,
+                0x3D,
+                0x3E,
                 0x43,
                 0x46,
                 0x48,
                 0x49,
-                0x4a,
-                0x4b,
-                0x4d,
-                0x4e,
-                0x5e,
+                0x4A,
+                0x4B,
+                0x4D,
+                0x4E,
+                0x5E,
             ],
             1: [
                 0x32,
                 0x34,
                 0x39,
                 0x41,
-                0x4c,
-                0x4f,
+                0x4C,
+                0x4F,
             ],
             2: [
                 # 0x40,
@@ -1328,36 +1382,35 @@ def randomize_ai_for_april_fools(rom: RomData, seed: int):
             ],
             4: [
                 0x45,  # pincer
-            ]
+            ],
         },
-
         # enemy id in (30, 60), killable
         {
             0: [
                 0x30,
                 0x31,
-                0x3c,
-                0x3d,
-                0x3e,
+                0x3C,
+                0x3D,
+                0x3E,
                 0x43,
                 0x48,
                 0x49,
-                0x4a,
-                0x4b,
-                0x4d,
-                0x4e,
+                0x4A,
+                0x4B,
+                0x4D,
+                0x4E,
             ],
             1: [
                 0x32,
                 0x34,
                 0x39,
-                0x4c,
-                0x4f,
+                0x4C,
+                0x4F,
             ],
             2: [
                 # 0x40
             ],
-        }
+        },
     ]
     r = random.Random(seed)
     ai_table = {}
@@ -1382,25 +1435,16 @@ def randomize_ai_for_april_fools(rom: RomData, seed: int):
                 ai = ais.pop()
                 ai_table[enemy] = ai
 
-    ai_table[0x2f] = 0x2f  # Thwomps have to stay vanilla for platforming
-    for enemy in ai_table:
-        ai = ai_table[enemy]
+    ai_table[0x2F] = 0x2F  # Thwomps have to stay vanilla for platforming
+    for enemy, ai in ai_table.items():
         rom.write_word(code_table + enemy * 2, rom.read_word(code_table + ai * 2))
 
-    blinkers = {
-        0x08,
-        0x0b,
-        0x10,
-        0x24,
-        0x34,
-        0x40,
-        0x41
-    }
+    blinkers = {0x08, 0x0B, 0x10, 0x24, 0x34, 0x40, 0x41}
 
     # Make some enemies hittable without having access to their AI
     if ai_table[0x08] not in blinkers:
         rom.write_byte(0xFDD92, 0x8F)  # river zora
-    if ai_table[0x0b] not in blinkers:
+    if ai_table[0x0B] not in blinkers:
         rom.write_byte(0xFDD9E, 0x90)  # leever
     if ai_table[0x10] not in blinkers:
         rom.write_byte(0xFDDB2, 0x90)  # rope
@@ -1417,7 +1461,7 @@ def randomize_ai_for_april_fools(rom: RomData, seed: int):
         rom.write_byte(0xFDDC2, 0xCE)  # Make spiked beetles have the flipped collisions
     if ai_table[0x1C] != 0x1C:
         rom.write_byte(0xFDDE2, 0xD0)  # Make iron mask have the unmasked collisions
-    if ai_table[0x3e] != 0x3e:
+    if ai_table[0x3E] != 0x3E:
         rom.write_byte(0xFDE6A, 0xAE)  # Make peahats have vulnerable collisions
 
     if ai_table[0x24] != 0x24:
