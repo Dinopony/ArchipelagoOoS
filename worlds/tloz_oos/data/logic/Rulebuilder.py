@@ -137,7 +137,7 @@ class HasRupeesForShop(Rule[OracleOfSeasonsWorld], game=OracleOfSeasonsWorld.gam
         if amount == 0:
             return True_().resolve(world)
         from .LogicPredicates import oos_can_farm_rupees
-        return (oos_can_farm_rupees() & Has("Rupees", amount / 2)).resolve(world)
+        return (oos_can_farm_rupees() & Has("Rupees", amount // 2)).resolve(world)
 
 
 class HasOresForShop(Rule[OracleOfSeasonsWorld], game=OracleOfSeasonsWorld.game):
