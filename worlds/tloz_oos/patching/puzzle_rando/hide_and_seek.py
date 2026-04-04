@@ -1,6 +1,6 @@
 import random
 
-from ...common.patching.Util import simple_hex, script_delay
+from ...common.patching.Util import script_delay, simple_hex
 from ...common.patching.z80asm.Assembler import Z80Assembler, Z80Block
 from ..puzzle_rando.hide_and_seek_data import hide_and_seek_data
 
@@ -18,8 +18,8 @@ def randomize_hns_pattern(assembler: Z80Assembler, screen: int):
                           f"dw {header_name}_pattern2\n")
         for pattern in range(1, 3):
             current_pattern = screen_data.pop()
-            pattern_code = (f"db setcoords,${current_pattern["start"] // 0x10}8,${current_pattern["start"] % 0x10}8\n"
-                            f"db setangleandanimation,${simple_hex(current_pattern["start_angle"])}\n")
+            pattern_code = (f"db setcoords,${current_pattern['start'] // 0x10}8,${current_pattern['start'] % 0x10}8\n"
+                            f"db setangleandanimation,${simple_hex(current_pattern['start_angle'])}\n")
             pattern_name = f"{header_name}_pattern{pattern}"
             if brother == 1:
                 if screen == 1:

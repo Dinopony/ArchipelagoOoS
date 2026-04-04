@@ -445,9 +445,9 @@ hide_and_seek_data = [
                 (MoveDirection.Up, 0x20),
                 Direction.Right,
                 (MoveDirection.Wait, 30),
-                (MoveDirection.Left, 30),
-                (MoveDirection.Down, 20),
-                (MoveDirection.Up, 50)
+                (MoveDirection.Left, 0x30),
+                (MoveDirection.Down, 0x20),
+                (MoveDirection.Up, 0x50)
             ]
         }
     ]
