@@ -1,16 +1,54 @@
 import json
+import logging
 import pkgutil
+import random
 
 import yaml
 
-from worlds.Files import APProcedurePatch, APTokenMixin, APPatchExtension
-from .Functions import *
-from .data_manager.text import apply_ages_edits, get_modded_seasons_text_data
-from .puzzle_rando import randomize_puzzles
-from .room_edits import apply_room_edits
+import Utils
+from settings import get_settings
+from worlds.Files import APPatchExtension, APProcedurePatch, APTokenMixin
+
+from ..common.patching.RomData import RomData
 from ..common.patching.rooms.encoding import write_room_data
 from ..common.patching.text.encoding import write_text_data
-from ..common.patching.z80asm.Assembler import Z80Assembler, Z80Block, GameboyAddress
+from ..common.patching.z80asm.Assembler import GameboyAddress, Z80Assembler, Z80Block
+from ..data.Constants import ROM_HASH
+from ..Options import OracleOfSeasonsLinkedHerosCave
+from .Constants import CAVE_DATA, DEFINES, DUNGEON_ENTRANCES, DUNGEON_EXITS
+from .data_manager.text import apply_ages_edits, get_modded_seasons_text_data
+from .Functions import (
+    alter_treasure_types,
+    apply_miscellaneous_options,
+    define_additional_tile_replacements,
+    define_collect_properties_table,
+    define_compass_rooms_table,
+    define_dungeon_items_text_constants,
+    define_essence_sparkle_constants,
+    define_foreign_item_data,
+    define_location_constants,
+    define_lost_woods_sequences,
+    define_option_constants,
+    define_samasa_combination,
+    define_season_constants,
+    define_tree_sprites,
+    get_asm_files,
+    inject_slot_name,
+    make_text_data,
+    randomize_ai_for_april_fools,
+    set_character_sprite_from_settings,
+    set_dungeon_warps,
+    set_faq_trap,
+    set_file_select_text,
+    set_fixed_subrosia_seaside_location,
+    set_heart_beep_interval_from_settings,
+    set_old_men_rupee_values,
+    set_player_start_inventory,
+    set_portal_warps,
+    write_chest_contents,
+)
+from .puzzle_rando import randomize_puzzles
+from .room_edits import apply_room_edits
 
 
 class OoSPatchExtensions(APPatchExtension):
@@ -36,15 +74,15 @@ class OoSPatchExtensions(APPatchExtension):
             rom_file.close()
 
             for bank in range(0x40, 0x80):
-                bank = 0xdd  # TODO: this is an invalid instruction that hangs the game, it's easier to debug but looks worse, remove/comment out once stable
                 rom_data.add_bank(bank)
             rom_data.update_rom_size()
         else:
-            ages_rom = bytes()
+            ages_rom = b""
 
         # Initialize random seed with the one used for generation + the player ID, so that cosmetic stuff set
         # to "random" always generate the same for successive patchings for a given slot
-        random.seed(patch_data["seed"] + caller.player)
+        seed: int = patch_data["seed"]
+        random.seed(seed + caller.player)
 
         assembler = Z80Assembler(CAVE_DATA, DEFINES, rom, ages_rom)
         dictionary, texts = get_modded_seasons_text_data(rom_data)
@@ -88,11 +126,14 @@ class OoSPatchExtensions(APPatchExtension):
             set_faq_trap(assembler)
 
         # Parse assembler files, compile them and write the result in the ROM
-        print("Compiling ASM files...")
+        logging.info("Compiling ASM files...")
         write_text_data(rom_data, dictionary, texts, True)
         write_room_data(rom_data, room_data, True)
         for file_path in get_asm_files(patch_data):
-            data_loaded = yaml.safe_load(pkgutil.get_data(__name__, file_path))
+            yaml_data = pkgutil.get_data(__name__, file_path)
+            if yaml_data is None:
+                raise OSError(f"Could not load asm file: {file_path}")
+            data_loaded = yaml.safe_load(yaml_data)
             for metalabel, contents in data_loaded.items():
                 assembler.add_block(Z80Block(metalabel, contents))
         assembler.compile_all()
@@ -111,7 +152,7 @@ class OoSPatchExtensions(APPatchExtension):
         apply_miscellaneous_options(rom_data, patch_data)
         set_fixed_subrosia_seaside_location(rom_data, patch_data)
         if patch_data["options"]["randomize_ai"]:
-            randomize_ai_for_april_fools(rom_data, patch_data["seed"] + caller.player)
+            randomize_ai_for_april_fools(rom_data)
 
         # Apply cosmetic settings
         set_heart_beep_interval_from_settings(rom_data)
@@ -124,14 +165,14 @@ class OoSPatchExtensions(APPatchExtension):
 
 
 class OoSProcedurePatch(APProcedurePatch, APTokenMixin):
-    hash = [ROM_HASH]
+    hash = (ROM_HASH,)
     patch_file_ending: str = ".apoos"
     result_file_ending: str = ".gbc"
 
     game = "The Legend of Zelda - Oracle of Seasons"
-    procedure = [
-        ("apply_patches", ["patch.json"])
-    ]
+    procedure = (
+        ("apply_patches", ["patch.json"]),
+    )
 
     @classmethod
     def get_source_data(cls) -> bytes:
@@ -144,5 +185,5 @@ class OoSProcedurePatch(APProcedurePatch, APTokenMixin):
             base_rom_bytes = bytes(rom_file.read())
             rom_file.close()
 
-            setattr(cls, "base_rom_bytes", base_rom_bytes)
+            cls.base_rom_bytes = base_rom_bytes
         return base_rom_bytes

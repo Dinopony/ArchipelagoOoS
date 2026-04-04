@@ -1208,7 +1208,7 @@ def set_faq_trap(assembler: Z80Assembler) -> None:
     assembler.define_byte("option.startingPosX", 0x78, True)
 
 
-def randomize_ai_for_april_fools(rom: RomData, seed: int):
+def randomize_ai_for_april_fools(rom: RomData):
     code_table = 0x2F16
     # TODO : properly implement that ?
     enemy_table = [
@@ -1412,7 +1412,6 @@ def randomize_ai_for_april_fools(rom: RomData, seed: int):
             ],
         },
     ]
-    r = random.Random(seed)
     ai_table = {}
 
     for bank in enemy_table:
@@ -1429,7 +1428,7 @@ def randomize_ai_for_april_fools(rom: RomData, seed: int):
                             ais.extend(bank[cat2])
             else:
                 ais = list(bank[cat])
-            r.shuffle(ais)
+            random.shuffle(ais)
             for i in range(len(enemies)):
                 enemy = enemies[i]
                 ai = ais.pop()
