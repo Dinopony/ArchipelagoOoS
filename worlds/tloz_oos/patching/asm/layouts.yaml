@@ -107,3 +107,5 @@
 # remove some snow outside d7 for the same reason - but off the right ledge,
 # not in front of the stairs.
 # 24/7910/: db $2b,$a0,$b9,$2b
+
+04/6607/: ret ; Remove the switch+bridge in Natzu

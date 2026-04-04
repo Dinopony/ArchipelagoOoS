@@ -12,6 +12,7 @@ CAVE_DATA: list[int | list[int | list[int]]] = [
     ],
     0x3dd7,  # 03
     [  # 04
+        [0x2668, 0x262a],  # Natzu bridge replacement
         [0x2776, 0x280f],  # roomTileChangesAfterLoad for trees, which are reimplemented
         0x3e12  # End of bank
     ],
