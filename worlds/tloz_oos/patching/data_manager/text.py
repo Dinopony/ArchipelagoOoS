@@ -207,19 +207,37 @@ def apply_text_edits(texts: dict[str, str]) -> None:
                         "can do it\n"
                         "everywhere")
 
+    # Temple of seasons cutscene
+    texts_to_blank.append("TX_0800")
+    texts_to_blank.append("TX_0801")
+    texts_to_blank.append("TX_0802")
+    texts_to_blank.append("TX_0803")
+
+    # Onox intro monologue
+    texts_to_blank.append("TX_1e06")
+    # Impa monologue
+    texts_to_blank.append("TX_2500")
     # Remove ring fortune
-    texts["TX_301f"] = normalize_text("Ring fortunes are disabled in randomizer.")
     texts_to_blank.append("TX_3024")
     texts_to_blank.append("TX_302e")
+    texts_to_blank.append("TX_300a")
+    texts_to_blank.append("TX_300b")
+    texts_to_blank.append("TX_300c")
     texts_to_blank.append("TX_300f")
-    texts_to_blank.append("TX_3031")
-    texts_to_blank.append("TX_302a")
+    texts_to_blank.append("TX_3018")
+    texts_to_blank.append("TX_3019")
+    texts_to_blank.append("TX_301a")
+    texts["TX_301f"] = normalize_text("Ring fortunes are disabled in randomizer.")
     texts_to_blank.append("TX_3020")
-    texts_to_blank.append("TX_3025")
-    texts_to_blank.append("TX_303d")
-    texts_to_blank.append("TX_3026")
     texts_to_blank.append("TX_3023")
-    # There is probably more, and the red snake could also be attacked
+    texts_to_blank.append("TX_3024")
+    texts_to_blank.append("TX_3026")
+    texts_to_blank.append("TX_302a")
+    texts_to_blank.append("TX_302e")
+    texts_to_blank.append("TX_3025")
+    texts_to_blank.append("TX_3031")
+    texts_to_blank.append("TX_303d")
+    # There is probably more
 
     # Maku tree talking texts are too big to be left there (unused)
     texts_to_blank.append("TX_1704")

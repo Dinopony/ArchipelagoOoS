@@ -167,3 +167,13 @@
   db $1f ; reuse the text from the blue snake
   dwbe $4b44
 # 0b:4b4d to 0b:4b68 is free
+
+# Disable the red snake
+0b/4aa0/: |
+  db showtextlowindex,$1f
+  db scriptend
+
+
+0b/4b3a/: |
+  db showtextlowindex,$1f
+  db scriptend
