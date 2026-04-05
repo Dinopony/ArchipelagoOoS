@@ -2,8 +2,8 @@ import json
 from collections import defaultdict
 
 from ..Options import OracleOfSeasonsOptions
+from ..patching.procedure_patch import OoSProcedurePatch
 from ..World import OracleOfSeasonsWorld
-from ..patching.ProcedurePatch import OoSProcedurePatch
 
 
 def oos_create_ap_procedure_patch(world: OracleOfSeasonsWorld) -> OoSProcedurePatch:
