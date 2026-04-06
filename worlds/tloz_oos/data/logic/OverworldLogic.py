@@ -161,7 +161,7 @@ def make_holodrum_logic(origin_name: str, options: OracleOfSeasonsOptions):
         )],
         ["d7 entrance", "graveyard secret", False, oos_has_shovel()],
         ["d7 entrance", "western coast after ship", False, Or(
-            oos_is_default_season("WESTERN_COAST", SEASON_AUTUMN, False),
+            oos_is_default_season("WESTERN_COAST", SEASON_WINTER, False),
             oos_has_shovel(),
         )],
 
