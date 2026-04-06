@@ -60,7 +60,7 @@ from .Constants import (
     SHOW_TEXT_LOW_INDEX,
     WRITE_OBJECT_BYTE,
 )
-from .Util import get_item_id_and_subid
+from .util import get_item_id_and_subid
 
 
 def define_foreign_item_data(
@@ -76,9 +76,17 @@ def define_foreign_item_data(
         location_content = all_locations[location]
         if "player" not in location_content:
             continue
+        unique_item_name = (f"{location_content['item']}|{location_content['player']}|"
+                            f"{'P' if location_content['progression'] else 'N'}")
+        if unique_item_name in item_data:
+            continue
         texts[f"TX_0c{simple_hex(current_subid)}"] = normalize_text(
             f"You got a 🟥{location_content['item']}⬜ for 🟦{location_content['player']}⬜!"
         )
+        item_data[unique_item_name] = {
+            "id": 0x41,
+            "subid": current_subid,
+        }
         foreign_item_data.extend(
             [
                 0x00,  # grab mode, doesn't really matter
@@ -87,10 +95,6 @@ def define_foreign_item_data(
                 0x52 if location_content["progression"] else 0x53,  # sprite
             ]
         )
-        item_data[f"{location_content['item']}|{location_content['player']}"] = {
-            "id": 0x41,
-            "subid": current_subid,
-        }
         current_subid += 1
 
     assembler.add_floating_chunk("archipelago_items", foreign_item_data)

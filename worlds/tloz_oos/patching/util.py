@@ -1,12 +1,10 @@
 from typing import Any
 
-from ..data import ITEMS_DATA
-
 
 def get_item_id_and_subid(item_data: dict[str, dict[str, Any]], item: dict[str, str | bool]) -> tuple[int, int]:
     item_name = item["item"]
     if "player" in item:
-        item_name += f"|{item["player"]}"
+        item_name += f"|{item['player']}|{'P' if item['progression'] else 'N'}"
     item_data = item_data[item_name]
     item_id = item_data["id"]
     item_subid = item_data["subid"] if "subid" in item_data else 0x00
