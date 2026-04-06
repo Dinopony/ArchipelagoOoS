@@ -149,7 +149,7 @@ class HasOresForShop(Rule[OracleOfSeasonsWorld], game=OracleOfSeasonsWorld.game)
         from .LogicPredicates import oos_can_farm_ore_chunks
         if world.options.shuffle_golden_ore_spots == OracleOfSeasonsGoldenOreSpotsShuffle.option_false:
             return oos_can_farm_ore_chunks().resolve(world)
-        return (oos_can_farm_ore_chunks() & Has("Ore Chunks", amount / 2)).resolve(world)
+        return (oos_can_farm_ore_chunks() & Has("Ore Chunks", amount // 2)).resolve(world)
 
 
 @dataclasses.dataclass
