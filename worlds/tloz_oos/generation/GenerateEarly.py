@@ -74,11 +74,11 @@ def generate_early(world: OracleOfSeasonsWorld) -> None:
         "Ore Chunks (25)": ("Ore Chunks", 25),
         "Ore Chunks (50)": ("Ore Chunks", 50),
 
-        "Bombs (10)": ("Bombs", 10),
-        "Bombs (20)": ("Bombs", 20),
+        "Bombs (10)": ("Bombs", 1),
+        "Bombs (20)": ("Bombs", 2),
 
-        "Bombchus (10)": ("Bombchus", 10),
-        "Bombchus (20)": ("Bombchus", 20),
+        "Bombchus (10)": ("Bombchus", 1),
+        "Bombchus (20)": ("Bombchus", 2),
     }
     for old_man in world.old_man_rupee_values:
         rupees = world.old_man_rupee_values[old_man]
