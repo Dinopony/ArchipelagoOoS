@@ -46,7 +46,7 @@ from .functions import (
     write_chest_contents,
 )
 from .functions.room_edits import apply_room_edits
-from .functions.text_edits import make_text_data, define_dungeon_items_text_constants
+from .functions.text_edits import define_dungeon_items_text_constants, make_text_data
 from .puzzle_rando import randomize_puzzles
 
 
@@ -126,8 +126,6 @@ class OoSPatchExtensions(APPatchExtension):
 
         # Parse assembler files, compile them and write the result in the ROM
         logging.info("Compiling ASM files...")
-        with open("texts.json", "w", encoding="utf-8") as f:
-            json.dump(texts, f, indent=4)
         write_text_data(rom_data, dictionary, texts, True)
         write_room_data(rom_data, room_data, True)
         for file_path in get_asm_files(patch_data):
