@@ -156,10 +156,6 @@ def apply_text_edits(texts: dict[str, str]) -> None:
                         "🟩30 Rupees⬜ only.\n"
                         "  \\optOK \\optNo thanks")
 
-    # Impa refills
-    texts["TX_2503"] = ("Come see me if\n"
-                        "you need a\n"
-                        "refill!")
     # Change D8 introduction text to “Sword & Shield Dungeon” from “Sword & Shield Maze”,
     # since every other mention of it was using “Dungeon” naming
     texts["TX_0208"] = texts["TX_0208"].replace("Maze", "Dungeon")
@@ -216,10 +212,14 @@ def apply_text_edits(texts: dict[str, str]) -> None:
     # Onox intro monologue
     texts_to_blank.append("TX_1e06")
     # Impa monologue
-    texts_to_blank.append("TX_2500")
+    texts["TX_2500"] = ("Come see me if\n"
+                        "you need a\n"
+                        "refill!")
+    for i in range(0x2501, 0x2512):
+        del texts[f"TX_{simple_hex(i, 4)}"]
+    # Vasu appraising
+    texts_to_blank.append("TX_3013")
     # Remove ring fortune
-    texts_to_blank.append("TX_3024")
-    texts_to_blank.append("TX_302e")
     texts_to_blank.append("TX_300a")
     texts_to_blank.append("TX_300b")
     texts_to_blank.append("TX_300c")
@@ -238,6 +238,7 @@ def apply_text_edits(texts: dict[str, str]) -> None:
     texts_to_blank.append("TX_3031")
     texts_to_blank.append("TX_303d")
     # There is probably more
+    texts_to_blank.append("TX_5200") # Prophet interupting when going first to suburb
 
     # Maku tree talking texts are too big to be left there (unused)
     texts_to_blank.append("TX_1704")

@@ -104,7 +104,7 @@
 0b/74ef/: |
     db checkabutton
     db disableinput
-    db showtext,$25,$03
+    db showtext,$25,$00
     
     db asm15
     dw impaRefill

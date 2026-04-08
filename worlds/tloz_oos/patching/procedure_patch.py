@@ -17,13 +17,12 @@ from ..data.Constants import ROM_HASH
 from ..Options import OracleOfSeasonsLinkedHerosCave
 from .Constants import CAVE_DATA, DEFINES, DUNGEON_ENTRANCES, DUNGEON_EXITS
 from .data_manager.text import apply_ages_edits, get_modded_seasons_text_data
-from .Functions import (
+from .functions import (
     alter_treasure_types,
     apply_miscellaneous_options,
     define_additional_tile_replacements,
     define_collect_properties_table,
     define_compass_rooms_table,
-    define_dungeon_items_text_constants,
     define_essence_sparkle_constants,
     define_foreign_item_data,
     define_location_constants,
@@ -34,7 +33,6 @@ from .Functions import (
     define_tree_sprites,
     get_asm_files,
     inject_slot_name,
-    make_text_data,
     randomize_ai_for_april_fools,
     set_character_sprite_from_settings,
     set_dungeon_warps,
@@ -47,8 +45,9 @@ from .Functions import (
     set_portal_warps,
     write_chest_contents,
 )
+from .functions.room_edits import apply_room_edits
+from .functions.text_edits import make_text_data, define_dungeon_items_text_constants
 from .puzzle_rando import randomize_puzzles
-from .room_edits import apply_room_edits
 
 
 class OoSPatchExtensions(APPatchExtension):
@@ -127,6 +126,8 @@ class OoSPatchExtensions(APPatchExtension):
 
         # Parse assembler files, compile them and write the result in the ROM
         logging.info("Compiling ASM files...")
+        with open("texts.json", "w", encoding="utf-8") as f:
+            json.dump(texts, f, indent=4)
         write_text_data(rom_data, dictionary, texts, True)
         write_room_data(rom_data, room_data, True)
         for file_path in get_asm_files(patch_data):
