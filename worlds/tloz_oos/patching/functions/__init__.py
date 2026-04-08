@@ -349,11 +349,11 @@ def define_option_constants(assembler: Z80Assembler, patch_data: dict[str, Any])
     assembler.define_byte("option.startingPosX", 0x58)
 
     assembler.define_byte("option.warpingGroup", 0x00)
-    assembler.define_byte("option.warpingRoom", 0x56)
+    assembler.define_byte("option.warpingRoom", 0xB6)
     assembler.define_byte("option.warpingPosY", 0x58)
     assembler.define_byte("option.warpingPosX", 0x58)
     assembler.define_byte("option.warpingPos", 0x55)
-    assembler.define_byte("option.warpingSeason", 1)
+    assembler.define_byte("option.warpingSeason", patch_data["default_seasons"]["EYEGLASS_LAKE"])
 
     assembler.define_byte("option.animalCompanion", 0x0B + patch_data["options"]["animal_companion"])
     assembler.define_byte("option.defaultSeedType", 0x20 + patch_data["options"]["default_seed"])
