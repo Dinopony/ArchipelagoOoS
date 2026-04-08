@@ -15,7 +15,7 @@
 1. Download the **Oracle of Seasons .apworld file** and double-click it to install it the "custom_worlds/" subdirectory of your Archipelago install directory
 2. Generate a seed using your .yaml settings file (see below if you don't know how to get the template)
 3. Download the .apoos patch file that was built by the server while generating, this will be used to generate your modified ROM
-4. Open this patch file using the Archipelago Launcher
+4. Run "Open Patch" in the Archipelago Launcher and select the apoos patch you downloaded
 5. If everything went fine, the patched ROM was built in the same directory as the .apoos file, and both Bizhawk and the client launched
 6. Connect the Client to the AP Server of your choice, and you can start playing!
 
