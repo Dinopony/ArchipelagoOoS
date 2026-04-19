@@ -1,9 +1,9 @@
 import os
 
 from settings import get_settings
-from worlds.tloz_oos.patching.RomData import RomData
+from worlds.tloz_oos.common.patching.RomData import RomData
 from worlds.tloz_oos.common.spriter.microbmp import MicroBMP
-from worlds.tloz_oos.common.spriter.sprite import bw_palette, link_palette
+from worlds.tloz_oos.common.spriter.sprite import bw_palette, green_palette
 from worlds.tloz_oos.common.spriter.sprite.decoding import load_link_data, load_link_sprite
 from worlds.tloz_oos.common.spriter.sprite.encoding import encode_sprite, remap_sprite
 
@@ -16,7 +16,7 @@ if __name__ == "__main__":
     image = load_link_sprite(sprite_data, True)
     image.palette = bw_palette
     image.save("output/link_bw.bmp")
-    image.palette = link_palette
+    image.palette = green_palette
     image.save("output/link_g.bmp")
 
     # Test encoder
