@@ -2,9 +2,9 @@ import json
 import os
 
 from settings import get_settings
-from ..common.patching.RomData import RomData
-from ..common.patching.text.decoding import parse_all_texts, decode_text, parse_text_dict
-from ..common.patching.text.encoding import encode_dict, write_text_data
+from worlds.tloz_oos.common.patching.RomData import RomData
+from worlds.tloz_oos.common.patching.text.decoding import decode_text, parse_all_texts, parse_text_dict
+from worlds.tloz_oos.common.patching.text.encoding import encode_text_data, write_text_data
 
 if __name__ == "__main__":
     if not os.path.isdir("output"):
@@ -20,12 +20,12 @@ if __name__ == "__main__":
     with open("output/seasons_text.json", "w+", encoding="utf-8") as f:
         json.dump(text, f, ensure_ascii=False, indent=4)
 
-    encoded_dict1 = encode_dict(dict_seasons)
+    encoded_dict1 = encode_text_data(dict_seasons)
     for key in dict_seasons:
         fake_rom = RomData(encoded_dict1[key])
         assert decode_text(fake_rom, 0) == dict_seasons[key], (decode_text(fake_rom, 0), dict_seasons[0])
 
-    encoded_dict2 = encode_dict(text, dict_seasons)
+    encoded_dict2 = encode_text_data(text, dict_seasons)
     for key in text:
         fake_rom = RomData(encoded_dict2[key])
         assert decode_text(fake_rom, 0, dict_seasons) == text[key], (decode_text(fake_rom, 0, dict_seasons), text[key])
