@@ -4,6 +4,7 @@ from typing import ClassVar, Any, Optional, Type, TextIO
 
 from BaseClasses import Item, ItemClassification, MultiWorld, CollectionState
 from Options import Option
+from rule_builder.rules import Has
 from worlds.AutoWorld import World
 from .Options import *
 from .Settings import OracleOfSeasonsSettings
@@ -104,16 +105,10 @@ class OracleOfSeasonsWorld(World):
         create_regions(self)
 
     def set_rules(self) -> None:
-        from .generation.Logic import create_connections, apply_self_locking_rules
+        from .generation.Logic import apply_self_locking_rules, create_connections
         create_connections(self, self.origin_region_name, self.options)
         apply_self_locking_rules(self.multiworld, self.player)
-        self.multiworld.completion_condition[self.player] = lambda state: state.has("_beaten_game", self.player)
-
-        self.multiworld.register_indirect_condition(self.get_region("lost woods top statue"), self.get_entrance("lost woods -> lost woods deku"))
-        self.multiworld.register_indirect_condition(self.get_region("lost woods phonograph"), self.get_entrance("lost woods stump -> lost woods"))
-        self.multiworld.register_indirect_condition(self.get_region("lost woods phonograph"), self.get_entrance("d6 sector -> lost woods"))
-        self.multiworld.register_indirect_condition(self.get_region("lost woods deku"), self.get_entrance("lost woods -> d6 sector"))
-        self.multiworld.register_indirect_condition(self.get_region("lost woods deku"), self.get_entrance("lost woods stump -> d6 sector"))
+        self.set_completion_rule(Has("_beaten_game"))
 
         if self.options.linked_heros_cave:
             for i in range(1, 9):
