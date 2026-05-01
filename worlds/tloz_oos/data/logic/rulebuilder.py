@@ -1,13 +1,16 @@
 import dataclasses
-from typing import Any, override
+from typing import Any
+
+from typing_extensions import override
 
 from BaseClasses import CollectionState
-from Options import Option, Accessibility
-from rule_builder.options import OptionFilter, Operator
-from rule_builder.rules import Rule, HasFromList, HasGroup, HasAll, False_, True_, Has
-from ..Constants import SEASON_CHAOTIC, SEASON_ITEMS, MARKET_LOCATIONS
-from ...World import OracleOfSeasonsWorld
+from Options import Accessibility, Option
+from rule_builder.options import Operator, OptionFilter
+from rule_builder.rules import False_, Has, HasAll, HasFromList, HasGroup, Rule, True_
+
 from ...Options import OracleOfSeasonsGoldenOreSpotsShuffle
+from ...World import OracleOfSeasonsWorld
+from ..Constants import MARKET_LOCATIONS, SEASON_CHAOTIC, SEASON_ITEMS
 
 
 @dataclasses.dataclass
@@ -20,11 +23,10 @@ class Season(Rule[OracleOfSeasonsWorld], game=OracleOfSeasonsWorld.game):
     def _instantiate(self, world: OracleOfSeasonsWorld) -> Rule.Resolved:
         if (world.default_seasons[self.area_name] == self.season) == self.excluded:
             return True_().resolve(world)
-        else:
-            return False_().resolve(world)
+        return False_().resolve(world)
 
 
-class HasGroupOption(HasGroup, game=OracleOfSeasonsWorld.game):
+class HasGroupOption(HasGroup[OracleOfSeasonsWorld], game=OracleOfSeasonsWorld.game):
     option_name: str
 
     def __init__(self, item_name: str, option_name: str):
@@ -36,7 +38,7 @@ class HasGroupOption(HasGroup, game=OracleOfSeasonsWorld.game):
         return super()._instantiate(world)
 
 
-class HasFromListOption(HasFromList, game=OracleOfSeasonsWorld.game):
+class HasFromListOption(HasFromList[OracleOfSeasonsWorld], game=OracleOfSeasonsWorld.game):
     option_name: str
 
     def __init__(self, *item_names: str, option_name: str):
@@ -49,7 +51,7 @@ class HasFromListOption(HasFromList, game=OracleOfSeasonsWorld.game):
 
 
 @dataclasses.dataclass
-class LostWoods(HasAll, game=OracleOfSeasonsWorld.game):
+class LostWoods(HasAll[OracleOfSeasonsWorld], game=OracleOfSeasonsWorld.game):
     is_main_sequence: bool
     allow_default: bool
 
@@ -102,7 +104,7 @@ class CanReachNumRegions(Rule[OracleOfSeasonsWorld], game=OracleOfSeasonsWorld.g
         return f"{self.__class__.__name__}({self.region_names}{options})"
 
     class Resolved(Rule.Resolved):
-        region_names: tuple[str]
+        region_names: tuple[str, ...]
         region_need: int
 
         @override

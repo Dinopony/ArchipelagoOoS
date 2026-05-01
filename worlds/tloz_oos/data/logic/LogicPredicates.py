@@ -15,7 +15,7 @@ from ...Options import (
     OracleOfSeasonsRemoveD2AltEntrance,
 )
 from ..Constants import *
-from .Rulebuilder import *
+from .rulebuilder import *
 
 # Items predicates ############################################################
 
