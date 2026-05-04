@@ -18,6 +18,8 @@ When collecting it, the game will inform you that you just sent an item to anoth
 **How can I warp to start?**
 
 > You can warp to start by pressing A+B while the screen is fading to white into any menu (e.g. after pressing START or SELECT)
+> 
+> (If warping does not work, make sure the controls are correctly mapped)
 
 **I lost my shield, where do I get it back?**
 
