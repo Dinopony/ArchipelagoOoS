@@ -1,6 +1,17 @@
 {
   "game": "The Legend of Zelda - Oracle of Seasons",
-  "authors": ["Dinopony", "Ishigh"],
+  "authors": [
+    "Dinopony",
+    "Ishigh"
+  ],
   "minimum_ap_version": "0.6.7",
-  "world_version": "20.1.13"
+  "world_version": "20.1.13",
+
+  "tracker": "https://github.com/OmegaZeron/Oracle-of-Seasons-AP-Poptracker-Pack/releases/latest",
+  "igdb_id": 1032,
+  "license": "MIT",
+  "repo_url": "https://github.com/Dinopony/ArchipelagoOoS",
+  "flags": [
+    "supports_deathlink"
+  ]
 }
