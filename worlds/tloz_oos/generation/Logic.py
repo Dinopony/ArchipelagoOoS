@@ -1,7 +1,9 @@
-from BaseClasses import MultiWorld, Item, EntranceType
+from BaseClasses import EntranceType, Item, MultiWorld
+
 from ..data.logic.DungeonsLogic import *
 from ..data.logic.OverworldLogic import *
 from ..data.logic.SubrosiaLogic import *
+from ..world import OracleOfSeasonsWorld
 
 
 def create_randomizable_connections(world: OracleOfSeasonsWorld, prefix: str,

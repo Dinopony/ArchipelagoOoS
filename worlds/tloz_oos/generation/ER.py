@@ -1,9 +1,10 @@
 import itertools
 
 from entrance_rando import randomize_entrances
+
+from ..data.Constants import PORTAL_CONNECTIONS, OracleOfSeasonsConnectionType
 from ..Options import OracleOfSeasonsPortalShuffle
-from ..World import OracleOfSeasonsWorld
-from ..data.Constants import DUNGEON_CONNECTIONS, PORTAL_CONNECTIONS, OracleOfSeasonsConnectionType
+from ..world import OracleOfSeasonsWorld
 
 
 def list_entrances_for_patch(world: OracleOfSeasonsWorld, prefix: str, vanilla_entrances: dict[str, str]):

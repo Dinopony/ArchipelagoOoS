@@ -1,7 +1,7 @@
 from typing_extensions import Any
 
 from BaseClasses import Item, ItemClassification, Location, Region, LocationProgressType
-from ..World import OracleOfSeasonsWorld
+from ..world import OracleOfSeasonsWorld
 from ..Options import OracleOfSeasonsGoal, OracleOfSeasonsOldMenShuffle, OracleOfSeasonsLogicDifficulty
 from ..data import LOCATIONS_DATA
 from ..data.Constants import GASHA_SPOT_REGIONS, ITEM_GROUPS, SCRUB_LOCATIONS, SUBROSIA_HIDDEN_DIGGING_SPOTS_LOCATIONS, RUPEE_OLD_MAN_LOCATIONS, \

@@ -1,13 +1,11 @@
 import random
-
-from typing_extensions import TYPE_CHECKING
+from typing import cast
 
 from BaseClasses import Item
-from ..common.patching.Util import simple_hex
-from ..common.patching.text import normalize_text
 
-if TYPE_CHECKING:
-    from . import OracleOfSeasonsWorld
+from ..common.patching.text import normalize_text
+from ..common.patching.Util import simple_hex
+from ..world import OracleOfSeasonsWorld
 
 know_it_all_birds = [
     "TX_3200",  # "Know-It-All Bird #1",
@@ -212,7 +210,7 @@ location_by_region = {
 
 def get_region_hint_text(region_name: str, region_category: str) -> str:
     region_name = f"🟦{region_name}⬜"
-    hint_text = f"Did you know? "
+    hint_text = "Did you know? "
     if region_category == "Foolish":
         hint_text += f"It is foolish to search {region_name}."
     elif region_category == "Golden":
@@ -284,7 +282,7 @@ def make_hint_texts(texts: dict[str, str], patch_data) -> None:
             i += 1
 
 
-def create_region_hints(world: "OracleOfSeasonsWorld") -> list[tuple[str, str | int]]:
+def create_region_hints(world: OracleOfSeasonsWorld) -> list[tuple[str, str | int]]:
     hinted_regions: list[str] = world.random.sample([*location_by_region], k=len(know_it_all_birds))
     hint_data: list[tuple[str, str | int]] = []
     for region in hinted_regions:
@@ -305,24 +303,17 @@ def create_region_hints(world: "OracleOfSeasonsWorld") -> list[tuple[str, str | 
             region_type = "Golden"
         else:
             region_type = num_progression
-        hint_data.append([region, region_type])
+        hint_data.append((region, region_type))
     return hint_data
 
 
-def create_item_hints(world: "OracleOfSeasonsWorld") -> list[Item | None]:
-    hint_data: list[tuple[str, str, int | None]] = []
+def create_item_hints(world: OracleOfSeasonsWorld) -> list[Item | None]:
     hintable_items: list[Item | None] = [location.item for location in world.multiworld.get_filled_locations()
-                                         if location.item.player == world.player
-                                         and location.item.advancement
-                                         and not location.item.deprioritized
+                                         if cast(Item, location.item).player == world.player
+                                         and cast(Item, location.item).advancement
+                                         and not cast(Item, location.item).deprioritized
                                          and not location.is_event
                                          and not location.locked]
     hintable_items.append(None)
-
     hinted_items: list[Item | None] = world.random.choices(hintable_items, k=len(owl_statues))
-    for hinted_item in hinted_items:
-        if hinted_item is None:
-            hint_data.append(None)
-            continue
-        hint_data.append(hinted_item)
-    return hint_data
+    return hinted_items

@@ -40,7 +40,7 @@ from ...Options import (
     OracleOfSeasonsOldMenShuffle,
     OracleOfSeasonsShowDungeonsWithEssence,
 )
-from ...World import OracleOfSeasonsWorld
+from ...world import OracleOfSeasonsWorld
 from ..asm import asm_files
 from ..Constants import (
     CALL_SCRIPT,

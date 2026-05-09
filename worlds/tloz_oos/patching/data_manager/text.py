@@ -11,9 +11,9 @@ from ...common.patching.text import normalize_text
 
 
 def load_modded_seasons_text_data() -> None | tuple[dict[str, str], dict[str, str]]:
-    from ...World import OracleOfSeasonsWorld
+    from ...world import OracleOfSeasonsWorld
     text_dir = Path(Utils.cache_path("oos_ooa/text"))
-    dict_file = text_dir.joinpath(f"seasons_dict.json")
+    dict_file = text_dir.joinpath("seasons_dict.json")
     if not dict_file.is_file():
         return None
 
@@ -34,7 +34,7 @@ def load_modded_seasons_text_data() -> None | tuple[dict[str, str], dict[str, st
 
 
 def save_seasons_edited_text_data(texts: dict[str, str]) -> None:
-    from ...World import OracleOfSeasonsWorld
+    from ...world import OracleOfSeasonsWorld
     texts["version"] = OracleOfSeasonsWorld.version()
 
     text_dir = Path(Utils.cache_path("oos_ooa/text"))

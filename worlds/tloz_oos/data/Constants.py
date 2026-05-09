@@ -211,7 +211,7 @@ VANILLA_SHOP_PRICES = {
 }
 
 ITEM_GROUPS = {
-    "Small Keys": [
+    "Small Keys": {
         "Small Key (Hero's Cave)",
         "Small Key (Gnarled Root Dungeon)",
         "Small Key (Snake's Remains)",
@@ -222,8 +222,8 @@ ITEM_GROUPS = {
         "Small Key (Explorer's Crypt)",
         "Small Key (Sword & Shield Dungeon)",
         "Small Key (Linked Hero's Cave)",
-    ],
-    "Boss Keys": [
+    },
+    "Boss Keys": {
         "Boss Key (Gnarled Root Dungeon)",
         "Boss Key (Snake's Remains)",
         "Boss Key (Poison Moth's Lair)",
@@ -232,8 +232,8 @@ ITEM_GROUPS = {
         "Boss Key (Ancient Ruins)",
         "Boss Key (Explorer's Crypt)",
         "Boss Key (Sword & Shield Dungeon)",
-    ],
-    "Compasses": [
+    },
+    "Compasses": {
         "Compass (Gnarled Root Dungeon)",
         "Compass (Snake's Remains)",
         "Compass (Poison Moth's Lair)",
@@ -242,8 +242,8 @@ ITEM_GROUPS = {
         "Compass (Ancient Ruins)",
         "Compass (Explorer's Crypt)",
         "Compass (Sword & Shield Dungeon)",
-    ],
-    "Dungeon Maps": [
+    },
+    "Dungeon Maps": {
         "Dungeon Map (Gnarled Root Dungeon)",
         "Dungeon Map (Snake's Remains)",
         "Dungeon Map (Poison Moth's Lair)",
@@ -252,8 +252,8 @@ ITEM_GROUPS = {
         "Dungeon Map (Ancient Ruins)",
         "Dungeon Map (Explorer's Crypt)",
         "Dungeon Map (Sword & Shield Dungeon)",
-    ],
-    "Master Keys": [
+    },
+    "Master Keys": {
         "Master Key (Hero's Cave)",
         "Master Key (Gnarled Root Dungeon)",
         "Master Key (Snake's Remains)",
@@ -264,8 +264,8 @@ ITEM_GROUPS = {
         "Master Key (Explorer's Crypt)",
         "Master Key (Sword & Shield Dungeon)",
         "Master Key (Linked Hero's Cave)",
-    ],
-    "Essences": [
+    },
+    "Essences": {
         "Fertile Soil",
         "Gift of Time",
         "Bright Sun",
@@ -274,23 +274,23 @@ ITEM_GROUPS = {
         "Blowing Wind",
         "Seed of Life",
         "Changing Seasons",
-    ],
-    "Jewels": [
+    },
+    "Jewels": {
         "Square Jewel",
         "Pyramid Jewel",
         "Round Jewel",
         "X-Shaped Jewel"
-    ]
+    }
 }
 
 LOCATION_GROUPS = {
-    "D0": [
+    "D0": {
         "Hero's Cave: Topmost Chest",
         "Hero's Cave: Final Chest",
         "Hero's Cave: Item in Basement Under Keese Room",
         "Hero's Cave: Alternative Entrance Chest",
-    ],
-    "D1": [
+    },
+    "D1": {
         "Gnarled Root Dungeon: Drop in Right Stalfos Room",
         "Gnarled Root Dungeon: Item in Basement",
         "Gnarled Root Dungeon: Chest in Block-pushing Room",
@@ -302,8 +302,8 @@ LOCATION_GROUPS = {
         "Gnarled Root Dungeon: Chest in Goriya Room",
         "Gnarled Root Dungeon: Boss Reward",
         "Gnarled Root Dungeon: Essence",
-    ],
-    "D2": [
+    },
+    "D2": {
         "Snake's Remains: Drop in Left Rope Room",
         "Snake's Remains: Chest in Distant Moblins Room",
         "Snake's Remains: Chest in Rollers Section",
@@ -316,8 +316,8 @@ LOCATION_GROUPS = {
         "Snake's Remains: Business Scrub",
         "Snake's Remains: Boss Reward",
         "Snake's Remains: Essence",
-    ],
-    "D3": [
+    },
+    "D3": {
         "Poison Moth's Lair (B1F): Chest in Roller Room",
         "Poison Moth's Lair (1F): Chest in Mimics Room",
         "Poison Moth's Lair (1F): Chest Above East Trampoline",
@@ -329,8 +329,8 @@ LOCATION_GROUPS = {
         "Poison Moth's Lair (B1F): Chest in Moving Blade Room",
         "Poison Moth's Lair (1F): Boss Reward",
         "Poison Moth's Lair: Essence",
-    ],
-    "D4": [
+    },
+    "D4": {
         "Dancing Dragon Dungeon (2F): Pots on Buttons Puzzle Drop",
         "Dancing Dragon Dungeon (2F): Chest North of Entrance",
         "Dancing Dragon Dungeon (1F): Chest in Southwest Quadrant of Beamos Room",
@@ -344,8 +344,8 @@ LOCATION_GROUPS = {
         "Dancing Dragon Dungeon (B1F): Boss Reward",
         "Dancing Dragon Dungeon (1F): Business Scrub",
         "Dancing Dragon Dungeon: Essence",
-    ],
-    "D5": [
+    },
+    "D5": {
         "Unicorn's Cave: Right Cart Chest",
         "Unicorn's Cave: Chest Left from Entrance",
         "Unicorn's Cave: Magnet Gloves Chest",
@@ -358,8 +358,8 @@ LOCATION_GROUPS = {
         "Unicorn's Cave: Treadmills Basement Item",
         "Unicorn's Cave: Boss Reward",
         "Unicorn's Cave: Essence",
-    ],
-    "D6": [
+    },
+    "D6": {
         "Ancient Ruins (1F): Magnet Ball Puzzle Drop",
         "Ancient Ruins (2F): Chest North of Main Spinner",
         "Ancient Ruins (3F): Armos Hall Chest",
@@ -373,8 +373,8 @@ LOCATION_GROUPS = {
         "Ancient Ruins (2F): Chest on Red Terrace Before Vire",
         "Ancient Ruins (5F): Boss Reward",
         "Ancient Ruins: Essence",
-    ],
-    "D7": [
+    },
+    "D7": {
         "Explorer's Crypt (1F): Chest in Wizzrobe Room",
         "Explorer's Crypt (B1F): Chest in Fast Moving Platform Room",
         "Explorer's Crypt (B2F): Stair Maze Chest",
@@ -388,8 +388,8 @@ LOCATION_GROUPS = {
         "Explorer's Crypt (B1F): Chest in Jumping Stalfos Room",
         "Explorer's Crypt (B1F): Boss Reward",
         "Explorer's Crypt: Essence",
-    ],
-    "D8": [
+    },
+    "D8": {
         "Sword & Shield Dungeon (1F): Eye Drop Near Entrance",
         "Sword & Shield Dungeon (1F): Three Eyes Chest",
         "Sword & Shield Dungeon (1F): Drop in Hardhat & Magnet Ball Room",
@@ -405,8 +405,8 @@ LOCATION_GROUPS = {
         "Sword & Shield Dungeon (1F): Chest in Sparks & Pots Room",
         "Sword & Shield Dungeon (B1F): Boss Reward",
         "Sword & Shield Dungeon: Essence",
-    ],
-    "D11": [
+    },
+    "D11": {
         "Linked Hero's Cave: Alternate Entrance Chest",
         "Linked Hero's Cave: First Reward",
         "Linked Hero's Cave: Checkerboard Drop",
@@ -418,8 +418,8 @@ LOCATION_GROUPS = {
         "Linked Hero's Cave: Gauntlet",
         "Linked Hero's Cave: Boomerang Maze",
         "Linked Hero's Cave: Final Reward"
-    ],
-    "Trade Sequence": [
+    },
+    "Trade Sequence": {
         "Horon Village: Dr. Left Reward",
         "North Horon: Malon Trade",
         "Maple Trade",
@@ -436,7 +436,7 @@ LOCATION_GROUPS = {
         "Sunken City: Syrup Shop #1",
         "Sunken City: Syrup Shop #2",
         "Sunken City: Syrup Shop #3",
-    ]
+    }
 }
 
 GASHA_SPOT_REGIONS = [

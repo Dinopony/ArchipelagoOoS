@@ -9,7 +9,7 @@ from rule_builder.options import Operator, OptionFilter
 from rule_builder.rules import False_, Has, HasAll, HasFromList, HasGroup, Rule, True_
 
 from ...Options import OracleOfSeasonsGoldenOreSpotsShuffle
-from ...World import OracleOfSeasonsWorld
+from ...world import OracleOfSeasonsWorld
 from ..Constants import MARKET_LOCATIONS, SEASON_CHAOTIC, SEASON_ITEMS
 
 

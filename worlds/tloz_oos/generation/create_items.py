@@ -1,12 +1,25 @@
 import logging
 
 from BaseClasses import Item, ItemClassification
-from ..World import OracleOfSeasonsWorld
-from ..Options import OracleOfSeasonsShopPrices, OracleOfSeasonsMasterKeys, OracleOfSeasonsFoolsOre, OracleOfSeasonsDuplicateSeedTree, \
-    OracleOfSeasonsLogicDifficulty
-from ..data import LOCATIONS_DATA, ITEMS_DATA
-from ..data.Constants import ITEM_GROUPS, DUNGEON_NAMES, MARKET_LOCATIONS, VALID_RUPEE_ITEM_VALUES, VALID_ORE_ITEM_VALUES, SEED_ITEMS
+
+from ..data import ITEMS_DATA, LOCATIONS_DATA
+from ..data.Constants import (
+    DUNGEON_NAMES,
+    ITEM_GROUPS,
+    MARKET_LOCATIONS,
+    SEED_ITEMS,
+    VALID_ORE_ITEM_VALUES,
+    VALID_RUPEE_ITEM_VALUES,
+)
 from ..generation.CreateRegions import location_is_active
+from ..Options import (
+    OracleOfSeasonsDuplicateSeedTree,
+    OracleOfSeasonsFoolsOre,
+    OracleOfSeasonsLogicDifficulty,
+    OracleOfSeasonsMasterKeys,
+    OracleOfSeasonsShopPrices,
+)
+from ..world import OracleOfSeasonsWorld
 
 
 def create_item(world: OracleOfSeasonsWorld, name: str) -> Item:
@@ -30,8 +43,17 @@ def create_item(world: OracleOfSeasonsWorld, name: str) -> Item:
     ap_code = world.item_name_to_id[name]
 
     # A few items become progression only in hard logic
-    progression_items_in_medium_logic = ["Expert's Ring", "Fist Ring", "Swimmer's Ring", "Energy Ring", "Heart Ring L-2"]
-    if world.options.logic_difficulty >= OracleOfSeasonsLogicDifficulty.option_medium and name in progression_items_in_medium_logic:
+    progression_items_in_medium_logic = [
+        "Expert's Ring",
+        "Fist Ring",
+        "Swimmer's Ring",
+        "Energy Ring",
+        "Heart Ring L-2",
+    ]
+    if (
+        world.options.logic_difficulty >= OracleOfSeasonsLogicDifficulty.option_medium
+        and name in progression_items_in_medium_logic
+    ):
         classification = ItemClassification.progression
     if world.options.logic_difficulty >= OracleOfSeasonsLogicDifficulty.option_hard and name == "Heart Ring L-1":
         classification = ItemClassification.progression
@@ -41,7 +63,11 @@ def create_item(world: OracleOfSeasonsWorld, name: str) -> Item:
         classification = ItemClassification.progression_deprioritized
 
     # Players in Medium+ are expected to know the default paths through Lost Woods, Phonograph becomes filler
-    if world.options.logic_difficulty >= OracleOfSeasonsLogicDifficulty.option_medium and not world.options.randomize_lost_woods_item_sequence and name == "Phonograph":
+    if (
+        world.options.logic_difficulty >= OracleOfSeasonsLogicDifficulty.option_medium
+        and not world.options.randomize_lost_woods_item_sequence
+        and name == "Phonograph"
+    ):
         classification = ItemClassification.filler
 
     # UT doesn't let us know if the item is progression or not, so it is always progression
@@ -53,10 +79,7 @@ def create_item(world: OracleOfSeasonsWorld, name: str) -> Item:
 
 def create_items(world: OracleOfSeasonsWorld) -> None:
     item_pool_dict = build_item_pool_dict(world)
-    items = []
-    for item_name, quantity in item_pool_dict.items():
-        for _ in range(quantity):
-            items.append(create_item(world, item_name))
+    items = [create_item(world, item_name) for item_name, quantity in item_pool_dict.items() for _ in range(quantity)]
     filter_confined_dungeon_items_from_pool(world, items)
     world.multiworld.itempool.extend(items)
     pre_fill_seeds(world)
@@ -93,7 +116,10 @@ def build_item_pool_dict(world: OracleOfSeasonsWorld) -> dict[str, int]:
                 rupee_item_count += 1
             continue
         if item_name.startswith("Ore Chunks ("):
-            if world.options.shop_prices == OracleOfSeasonsShopPrices.option_free or not world.options.shuffle_golden_ore_spots:
+            if (
+                world.options.shop_prices == OracleOfSeasonsShopPrices.option_free
+                or not world.options.shuffle_golden_ore_spots
+            ):
                 filler_item_count += 1
             else:
                 ore_item_count += 1
@@ -124,7 +150,8 @@ def build_item_pool_dict(world: OracleOfSeasonsWorld) -> dict[str, int]:
                 continue
 
         if item_name == "Gasha Seed":
-            # Remove all gasha seeds from the pool to read as many as needed a later while limiting their impact on the item pool
+            # Remove all gasha seeds from the pool to read as many as needed a later
+            # while limiting their impact on the item pool
             filler_item_count += 1
             continue
 
@@ -187,8 +214,9 @@ def build_item_pool_dict(world: OracleOfSeasonsWorld) -> dict[str, int]:
             current_amount = 0
         new_amount = current_amount - removed_amount
         if new_amount < 0:
-            logging.warning(f"Not enough {item} to satisfy {world.player_name}'s remove_items_from_pool: "
-                            f"{-new_amount} missing")
+            logging.warning(
+                f"Not enough {item} to satisfy {world.player_name}'s remove_items_from_pool: {-new_amount} missing"
+            )
             new_amount = 0
         item_pool_dict[item] = new_amount
         filler_item_count += current_amount - new_amount
@@ -224,36 +252,49 @@ def build_item_pool_dict(world: OracleOfSeasonsWorld) -> dict[str, int]:
     return item_pool_dict
 
 
-def build_rupee_item_dict(world: OracleOfSeasonsWorld, rupee_item_count: int, filler_item_count: int) -> tuple[dict[str, int], int]:
+def build_rupee_item_dict(
+    world: OracleOfSeasonsWorld, rupee_item_count: int, filler_item_count: int
+) -> tuple[dict[str, int], int]:
     sorted_shop_values = sorted(world.shop_rupee_requirements.values())
     total_cost = sorted_shop_values[-1]
 
-    # Count the old man's contribution, it's especially important as it may be negative
-    # (We ignore dungeons here because we don't want to worry about whether they'll be available)
-    # TODO : With GER that note will be obsolete
-    environment_rupee = 0
+    # Count the negative old men's rupees, but not the positives of the rupee rooms, since they might be unreachable
     for name in world.old_man_rupee_values:
-        environment_rupee += world.old_man_rupee_values[name]
+        if world.old_man_rupee_values[name] < 0:
+            total_cost -= world.old_man_rupee_values[name]
 
-    target = total_cost / 2 - environment_rupee
-    total_cost = max(total_cost - environment_rupee, sorted_shop_values[-3])  # Ensure it doesn't drop too low due to the old men
-    return build_currency_item_dict(world, rupee_item_count, filler_item_count, target, total_cost, "Rupees", VALID_RUPEE_ITEM_VALUES)
+    target = total_cost // 2
+
+    return build_currency_item_dict(
+        world, rupee_item_count, filler_item_count, target, total_cost, "Rupees", VALID_RUPEE_ITEM_VALUES
+    )
 
 
-def build_ore_item_dict(world: OracleOfSeasonsWorld, ore_item_count: int, filler_item_count: int) -> tuple[dict[str, int], int]:
+def build_ore_item_dict(
+    world: OracleOfSeasonsWorld, ore_item_count: int, filler_item_count: int
+) -> tuple[dict[str, int], int]:
     total_cost = sum([world.shop_prices[loc] for loc in MARKET_LOCATIONS])
-    target = total_cost / 2
+    target = total_cost // 2
 
-    return build_currency_item_dict(world, ore_item_count, filler_item_count, target, total_cost, "Ore Chunks", VALID_ORE_ITEM_VALUES)
+    return build_currency_item_dict(
+        world, ore_item_count, filler_item_count, target, total_cost, "Ore Chunks", VALID_ORE_ITEM_VALUES
+    )
 
 
-def build_currency_item_dict(world: OracleOfSeasonsWorld, currency_item_count: int, filler_item_count: int, initial_target: int,
-                             total_cost: int, currency_name: str, valid_currency_item_values: list[int]) -> tuple[dict[str, int], int]:
+def build_currency_item_dict(
+    world: OracleOfSeasonsWorld,
+    currency_item_count: int,
+    filler_item_count: int,
+    initial_target: int,
+    total_cost: int,
+    currency_name: str,
+    valid_currency_item_values: list[int],
+) -> tuple[dict[str, int], int]:
     average_value = total_cost / currency_item_count
     deviation = average_value / 2.5
     currency_item_dict = {}
     target = initial_target
-    for i in range(0, currency_item_count):
+    for _ in range(0, currency_item_count):
         value = world.random.gauss(average_value, deviation)
         value = min(valid_currency_item_values, key=lambda x: abs(x - value))
         if value > average_value / 3:
@@ -266,8 +307,15 @@ def build_currency_item_dict(world: OracleOfSeasonsWorld, currency_item_count: i
         currency_item_dict[item_name] = currency_item_dict.get(item_name, 0) + 1
     # If the target is positive, it means there aren't enough rupees, so we'll steal a filler from the pool and reroll
     if target > 0:
-        return build_currency_item_dict(world, currency_item_count + 1, filler_item_count - 1, initial_target,
-                                        total_cost, currency_name, valid_currency_item_values)
+        return build_currency_item_dict(
+            world,
+            currency_item_count + 1,
+            filler_item_count - 1,
+            initial_target,
+            total_cost,
+            currency_name,
+            valid_currency_item_values,
+        )
     return currency_item_dict, filler_item_count
 
 
@@ -288,7 +336,9 @@ def filter_confined_dungeon_items_from_pool(world: OracleOfSeasonsWorld, items: 
         confined_dungeon_items.extend([item for item in items if item.name.startswith(small_keys_name)])
     else:
         for i in excluded_dungeons:
-            confined_dungeon_items.extend([item for item in items if item.name == f"{small_keys_name} ({DUNGEON_NAMES[i]})"])
+            confined_dungeon_items.extend(
+                [item for item in items if item.name == f"{small_keys_name} ({DUNGEON_NAMES[i]})"]
+            )
 
     # Put Boss Keys unless keysanity is enabled for those
     if not world.options.keysanity_boss_keys:
@@ -299,8 +349,9 @@ def filter_confined_dungeon_items_from_pool(world: OracleOfSeasonsWorld, items: 
 
     # Put Maps & Compasses unless keysanity is enabled for those
     if not world.options.keysanity_maps_compasses:
-        confined_dungeon_items.extend([item for item in items if item.name.startswith("Dungeon Map")
-                                       or item.name.startswith("Compass")])
+        confined_dungeon_items.extend(
+            [item for item in items if item.name.startswith("Dungeon Map") or item.name.startswith("Compass")]
+        )
 
     for item in confined_dungeon_items:
         items.remove(item)
@@ -318,7 +369,7 @@ def pre_fill_seeds(world: OracleOfSeasonsWorld) -> None:
     #   - if Horon is NOT the duplicate tree, we need to remove Horon's seed from the pool of 5 seeds to scatter
     #     and put a random seed inside the duplicate tree. Then, we place the 4 remaining seeds on the 4 remaining
     #     trees
-    TREES_TABLE = {
+    trees_table = {
         OracleOfSeasonsDuplicateSeedTree.option_horon_village: "Horon Village: Seed Tree",
         OracleOfSeasonsDuplicateSeedTree.option_woods_of_winter: "Woods of Winter: Seed Tree",
         OracleOfSeasonsDuplicateSeedTree.option_north_horon: "Holodrum Plain: Seed Tree",
@@ -326,7 +377,7 @@ def pre_fill_seeds(world: OracleOfSeasonsWorld) -> None:
         OracleOfSeasonsDuplicateSeedTree.option_sunken_city: "Sunken City: Seed Tree",
         OracleOfSeasonsDuplicateSeedTree.option_tarm_ruins: "Tarm Ruins: Seed Tree",
     }
-    duplicate_tree_name = TREES_TABLE[world.options.duplicate_seed_tree.value]
+    duplicate_tree_name = trees_table[world.options.duplicate_seed_tree.value]
 
     def place_seed(seed_name: str, location_name: str):
         seed_item = create_item(world, seed_name)
@@ -335,7 +386,7 @@ def pre_fill_seeds(world: OracleOfSeasonsWorld) -> None:
     seeds_to_place = list(SEED_ITEMS)
 
     manually_placed_trees = ["Horon Village: Seed Tree", duplicate_tree_name]
-    trees_to_process = [name for name in TREES_TABLE.values() if name not in manually_placed_trees]
+    trees_to_process = [name for name in trees_table.values() if name not in manually_placed_trees]
 
     # Place default seed type in Horon Village tree
     place_seed(SEED_ITEMS[world.options.default_seed.value], "Horon Village: Seed Tree")

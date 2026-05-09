@@ -55,7 +55,7 @@ class OoSPatchExtensions(APPatchExtension):
 
     @staticmethod
     def apply_patches(caller: APProcedurePatch, rom: bytes, patch_file: str) -> bytes:
-        from .. import OracleOfSeasonsWorld
+        from ..world import OracleOfSeasonsWorld
         rom_data = RomData(rom)
         patch_data = json.loads(caller.get_file(patch_file).decode("utf-8"))
 
