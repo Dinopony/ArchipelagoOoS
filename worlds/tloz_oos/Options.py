@@ -1,8 +1,21 @@
 from dataclasses import dataclass
 from datetime import datetime
 
-from Options import Choice, DeathLink, DefaultOnToggle, PerGameCommonOptions, Range, Toggle, StartInventoryPool, \
-    ItemDict, ItemsAccessibility, ItemSet, Visibility, OptionGroup, NamedRange
+from Options import (
+    Choice,
+    DeathLink,
+    DefaultOnToggle,
+    PerGameCommonOptions,
+    Range,
+    Toggle,
+    StartInventoryPool,
+    ItemDict,
+    ItemsAccessibility,
+    ItemSet,
+    Visibility,
+    OptionGroup,
+    NamedRange,
+)
 from .data.Items import ITEMS_DATA
 
 
@@ -12,6 +25,7 @@ class OracleOfSeasonsGoal(Choice):
     - Beat Onox: beat the usual final boss (same as vanilla)
     - Beat Ganon: teleport to the Room of Rites after beating Onox, then beat Ganon (same as linked game)
     """
+
     display_name = "Goal"
 
     option_beat_onox = 0
@@ -30,6 +44,7 @@ class OracleOfSeasonsLogicDifficulty(Choice):
     - Hard: expects you to know difficult tricks such as bomb jumps
     - Hell: expects you to use tricks and glitches that span over more than a few inputs
     """
+
     display_name = "Logic Difficulty"
 
     option_casual = 0
@@ -46,6 +61,7 @@ class OracleOfSeasonsRequiredEssences(Range):
     The amount of essences that need to be obtained in order to get the Maku Seed from the Maku Tree and be able
     to fight Onox in his castle
     """
+
     display_name = "Required Essences"
 
     range_start = 0
@@ -63,15 +79,14 @@ class OracleOfSeasonsPlacedEssences(NamedRange):
     If the value for "Placed Essences" is lower than "Required Essences" (which can happen when using random values
     for both), a new random value is automatically picked in the valid range.
     """
+
     display_name = "Placed Essences"
 
     range_start = 0
     range_end = 8
 
     default = 8
-    special_range_names = {
-        "included essences": -1
-    }
+    special_range_names = {"included essences": -1}
 
 
 class OracleOfSeasonsDefaultSeasons(Choice):
@@ -83,6 +98,7 @@ class OracleOfSeasonsDefaultSeasons(Choice):
     - Random Singularity: a single season is randomly picked and put as default season in every region in the game
     - Specific Singularity: the given season is put as default season in every region in the game
     """
+
     display_name = "Default Seasons"
 
     option_vanilla = 0
@@ -106,6 +122,7 @@ class OracleOfSeasonsHoronSeason(DefaultOnToggle):
     This means it will have a default season picked at generation time that follows the global behavior defined
     in the "Default Seasons" option.
     """
+
     display_name = "Normalize Horon Village Season"
 
 
@@ -116,6 +133,7 @@ class OracleOfSeasonsAnimalCompanion(Choice):
     - Dimitri: the swimming dinosaur who can eat anything
     - Moosh: the flying blue bear with a passion for Spring Bananas
     """
+
     display_name = "Animal Companion"
 
     option_ricky = 0
@@ -134,6 +152,7 @@ class OracleOfSeasonsDefaultSeedType(Choice):
     - when obtaining Slingshot
     - by Horon Seed Tree
     """
+
     display_name = "Default Seed Type"
 
     option_ember = 0
@@ -155,6 +174,7 @@ class OracleOfSeasonsDuplicateSeedTree(Choice):
     It is strongly advised to set this to "Tarm Ruins Tree" since it's by far the hardest tree to reach
     (and being locked out of a useful seed type can lead to very frustrating situations).
     """
+
     display_name = "Duplicate Seed Tree"
 
     option_horon_village = 0
@@ -172,6 +192,7 @@ class OracleOfSeasonsDungeonShuffle(Toggle):
     If enabled, each dungeon entrance will lead to a random dungeon picked at generation time.
     Otherwise, all dungeon entrances lead to their dungeon as intended.
     """
+
     display_name = "Shuffle Dungeons"
 
     include_in_slot_data = True
@@ -184,6 +205,7 @@ class OracleOfSeasonsPortalShuffle(Choice):
     - Shuffle: each portal is connected to a random portal, which might be in the same dimension (with the guarantee of
       having at least one portal going across dimensions)
     """
+
     display_name = "Shuffle Subrosia Portals"
 
     option_vanilla = 0
@@ -225,6 +247,7 @@ class OracleOfSeasonsBusinessScrubsShuffle(Toggle):
     which can only be purchased once.
     Please note that scrubs inside dungeons can hold dungeon items, such as keys.
     """
+
     display_name = "Shuffle Business Scrubs"
 
     include_in_patch = True
@@ -236,6 +259,7 @@ class OracleOfSeasonsGoldenOreSpotsShuffle(Toggle):
     This option adds the 7 hidden digging spots in Subrosia (containing 50 Ore Chunks each) to the pool
     of randomized locations.
     """
+
     display_name = "Shuffle Golden Ore Spots"
 
     include_in_patch = True
@@ -247,6 +271,7 @@ class OracleOfSeasonsEssenceSanity(Toggle):
     If enabled, essences will be shuffled anywhere in the multiworld instead of being guaranteed to be found
     at the end their respective dungeons.
     """
+
     display_name = "Shuffle Essences"
 
     include_in_patch = True
@@ -260,6 +285,7 @@ class OracleOfSeasonsExcludeDungeonsWithoutEssence(DefaultOnToggle):
     If "Shuffle Essences" is enabled, this option has no effect.
     Hero's Cave is not considered to be a dungeon for this option, and therefore is never excluded.
     """
+
     display_name = "Exclude Dungeons Without Essence"
 
 
@@ -267,6 +293,7 @@ class OracleOfSeasonsShowDungeonsWithMap(DefaultOnToggle):
     """
     If enabled, dungeons will indicate where they are once their corresponding map is obtained
     """
+
     display_name = "Show Dungeons With Map"
 
     include_in_patch = True
@@ -283,6 +310,7 @@ class OracleOfSeasonsShowDungeonsWithEssence(Choice):
     - With Compass: Dungeons with an essence can only be highlighted after obtaining their Compass
     - Always: Dungeons with an essence are always shown on the map
     """
+
     # TODO: - With Treasure Map: Dungeons with an essence all become highlighted when you obtain the unique Treasure Map item
     display_name = "Show Dungeons With Essence"
 
@@ -304,6 +332,7 @@ class OracleOfSeasonsMasterKeys(Choice):
       removing Boss Keys from the item pool
     Master Keys placement is determined following the "Keysanity (Small Keys)" option.
     """
+
     display_name = "Master Keys"
 
     option_disabled = 0
@@ -319,6 +348,7 @@ class OracleOfSeasonsSmallKeyShuffle(Toggle):
     """
     If enabled, dungeon Small Keys can be found anywhere instead of being confined in their dungeon of origin.
     """
+
     display_name = "Keysanity (Small Keys)"
 
     include_in_patch = True
@@ -329,6 +359,7 @@ class OracleOfSeasonsBossKeyShuffle(Toggle):
     """
     If enabled, dungeon Boss Keys can be found anywhere instead of being confined in their dungeon of origin.
     """
+
     display_name = "Keysanity (Boss Keys)"
 
     include_in_patch = True
@@ -339,6 +370,7 @@ class OracleOfSeasonsMapCompassShuffle(Toggle):
     """
     If enabled, Dungeon Maps and Compasses can be found anywhere instead of being confined in their dungeon of origin.
     """
+
     display_name = "Maps & Compasses Outside Dungeon"
 
     include_in_patch = True
@@ -351,6 +383,7 @@ class OracleOfSeasonsRemoveD0AltEntrance(Toggle):
     This is especially useful when shuffling dungeons, since only main dungeon entrances are shuffled.
     If this option is not set in such a case, you could potentially have two distant entrances leading to the same dungeon.
     """
+
     display_name = "Remove Hero's Cave Alt. Entrance"
 
     include_in_patch = True
@@ -363,16 +396,18 @@ class OracleOfSeasonsRemoveD2AltEntrance(Toggle):
     This is especially useful when shuffling dungeons, since only main dungeon entrances are shuffled.
     If this option is not set in such a case, you could potentially have two distant entrances leading to the same dungeon.
     """
+
     display_name = "Remove D2 Alt. Entrance"
 
     include_in_patch = True
     include_in_slot_data = True
 
 
-class OraclesOfSeasonsTreehouseOldManRequirement(Range):
+class OracleOfSeasonsTreehouseOldManRequirement(Range):
     """
     The amount of essences that you need to bring to the treehouse old man for him to give his item.
     """
+
     display_name = "Treehouse Old Man Requirement"
 
     range_start = 0
@@ -383,10 +418,11 @@ class OraclesOfSeasonsTreehouseOldManRequirement(Range):
     include_in_slot_data = True
 
 
-class OraclesOfSeasonsTarmGateRequirement(Range):
+class OracleOfSeasonsTarmGateRequirement(Range):
     """
     The number of jewels that you need to bring to Tarm Ruins gate to be able to open it.
     """
+
     display_name = "Tarm Ruins Gate Required Jewels"
 
     range_start = 0
@@ -397,12 +433,13 @@ class OraclesOfSeasonsTarmGateRequirement(Range):
     include_in_slot_data = True
 
 
-class OraclesOfSeasonsGoldenBeastsRequirement(Range):
+class OracleOfSeasonsGoldenBeastsRequirement(Range):
     """
     The amount of golden beasts that need to be beaten for the golden old man to give his item.
     Golden beasts are 4 unique enemies that appear at specific spots on specific seasons, and beating all four of them
     requires all seasons and having access to most of the overworld.
     """
+
     display_name = "Golden Beasts Requirement"
 
     range_start = 0
@@ -419,15 +456,14 @@ class OracleOfSeasonsSignGuyRequirement(NamedRange):
     This option lets you configure how many signs are required to obtain that item, since breaking 100 signs is not
     everyone's cup of tea.
     """
+
     display_name = "Sign Guy Requirement"
 
     range_start = 0
     range_end = 250
 
     default = 10
-    special_range_names = {
-        "vanilla": 100
-    }
+    special_range_names = {"vanilla": 100}
     include_in_patch = True
 
 
@@ -436,26 +472,27 @@ class OracleOfSeasonsGashaNutKillRequirement(NamedRange):
     This option lets you configure how many kills are required to make a gasha tree grow.
     Using a gasha ring halves this number.
     """
+
     display_name = "Gasha Nut Requirement"
 
     range_start = 0
     range_end = 250
 
     default = 20
-    special_range_names = {
-        "vanilla": 40
-    }
+    special_range_names = {"vanilla": 40}
     include_in_patch = True
+
 
 class OracleOfSeasonsRandomizePuzzles(Toggle):
     """
     If enabled, randomize some puzzles and mini-games.
     Puzzles relying on owls will not have their logic affected, and puzzles will not require additional items.
     """
+
     display_name = "Randomize Puzzles"
 
     include_in_patch = True
-    default = 1 if (datetime.now().month == 4) else 0 # Default on during april
+    default = 1 if (datetime.now().month == 4) else 0  # Default on during april
 
 
 class OracleOfSeasonsLostWoodsItemSequence(DefaultOnToggle):
@@ -465,6 +502,7 @@ class OracleOfSeasonsLostWoodsItemSequence(DefaultOnToggle):
     To know the randomized combination, you will need to bring the Phonograph to the Deku Scrub near the stump, just
     like in the vanilla game.
     """
+
     display_name = "Randomize Lost Woods Item Sequence"
 
     include_in_slot_data = True
@@ -477,6 +515,7 @@ class OracleOfSeasonsLostWoodsMainSequence(Toggle):
     To know the randomized combination, you will need to stun the Deku Scrub near the jewel gate using a shield, just
     like in the vanilla game.
     """
+
     display_name = "Randomize Lost Woods Main Sequence"
 
     include_in_slot_data = True
@@ -487,6 +526,7 @@ class OracleOfSeasonsSamasaGateCode(Toggle):
     This option defines if the secret combination which opens the gate to Samasa Desert should be randomized.
     You can then configure the length of the sequence with the next option.
     """
+
     display_name = "Randomize Samasa Desert Gate Code"
 
 
@@ -495,6 +535,7 @@ class OracleOfSeasonsSamasaGateCodeLength(Range):
     The length of the randomized combination for Samasa Desert gate.
     This option has no effect if "Randomize Samasa Desert Gate Code" is disabled.
     """
+
     display_name = "Samasa Desert Gate Code Length"
 
     range_start = 1
@@ -511,6 +552,7 @@ class OracleOfSeasonsGashaLocations(Range):
     The value of this option is the number of items that can be obtained that way, the maximum value expecting you
     to plant a tree on each one of the 16 Gasha spots in the game.
     """
+
     display_name = "Deterministic Gasha Locations"
 
     range_start = 0
@@ -527,6 +569,7 @@ class OracleOfSeasonsRequiredRings(ItemSet):
     Adding too many rings to this list can cause generation failures.
     List of ring names can be found here: https://zeldawiki.wiki/wiki/Magic_Ring
     """
+
     display_name = "Required Rings"
     valid_keys = {name for name, idata in ITEMS_DATA.items() if "ring" in idata}
 
@@ -536,6 +579,7 @@ class OracleOfSeasonsExcludedRings(ItemSet):
     Forces a specified set of rings to not appear in the seed.
     List of ring names can be found here: https://zeldawiki.wiki/wiki/Magic_Ring
     """
+
     display_name = "Excluded Rings"
     default = {name for name, idata in ITEMS_DATA.items() if "ring" in idata and idata["ring"] == "useless"}
     valid_keys = {name for name, idata in ITEMS_DATA.items() if "ring" in idata}
@@ -551,6 +595,7 @@ class OracleOfSeasonsShopPrices(Choice):
     - Expensive: shop prices are randomized with an average cost of 200 Rupees
     - Outrageous: shop prices are randomized with an average cost of 350 Rupees
     """
+
     display_name = "Shop Prices"
 
     option_vanilla = 0
@@ -570,6 +615,7 @@ class OracleOfSeasonsAdvanceShop(Toggle):
     If enabled, this option makes this shop always open, adding 3 shop locations to the game (and some rupees to the
     item pool to compensate for the extra purchases that might be required)
     """
+
     display_name = "Open Advance Shop"
 
     include_in_patch = True
@@ -585,6 +631,7 @@ class OracleOfSeasonsFoolsOre(Choice):
     - Balanced: Fool's Ore appears in the item pool but its stats are lowered to become comparable to an L-2 sword
     - Excluded: Fool's Ore doesn't appear in the item pool at all. Problem solved!
     """
+
     display_name = "Fool's Ore"
 
     option_vanilla = 0
@@ -599,6 +646,7 @@ class OracleOfSeasonsEnforcePotionInShop(Toggle):
     """
     When enabled, you are guaranteed to have a renewable Potion for 300 rupees inside Horon shop
     """
+
     display_name = "Enforce Potion in Shop"
 
     include_in_patch = True
@@ -610,6 +658,7 @@ class OracleOfSeasonsCombatDifficulty(Choice):
     Modifies the damage taken during combat to make this aspect of the game easier or harder depending on the
     type of experience you want to have
     """
+
     display_name = "Combat Difficulty"
 
     option_peaceful = 4
@@ -626,6 +675,7 @@ class OracleOfSeasonsQuickFlute(DefaultOnToggle):
     """
     When enabled, playing the flute will immobilize you during a very small amount of time compared to vanilla game.
     """
+
     display_name = "Quick Flute"
 
     include_in_patch = True
@@ -635,6 +685,7 @@ class OracleOfSeasonsRosaQuickUnlock(Toggle):
     """
     When enabled, Rosa will instantly unlock all subrosia locks when given the Ribbon
     """
+
     display_name = "Rosa Quick Unlock"
 
     include_in_patch = True
@@ -645,6 +696,7 @@ class OracleOfSeasonsStartingMapsCompasses(Toggle):
     When enabled, you will start the game with maps and compasses for every dungeon in the game.
     This makes navigation easier and removes those items for the pool, which are replaced with random filler items.
     """
+
     display_name = "Start with Dungeon Maps & Compasses"
 
     include_in_patch = True
@@ -661,6 +713,7 @@ class OracleOfSeasonsRandomizeAi(Toggle):
     ⚠ Required golden beasts is 0 because you are not guaranteed to get an enemy
     with a golden beast AI that would be counted for the old man
     """
+
     display_name = "Randomize AI"
 
     include_in_patch = True
@@ -673,6 +726,7 @@ class OracleOfSeasonsRemoveItemsFromPool(ItemDict):
     This option has significant chances to break generation if used carelessly, so test your preset several times
     before using it on long generations. Use at your own risk!
     """
+
     display_name = "Remove Items from Pool"
     verify_item_name = False
 
@@ -682,6 +736,7 @@ class OracleOfSeasonsIncludeCrossItems(Toggle):
     When enabled, adds the Cane of Somaria, the Switch Hook and the Seed Shooter to the item pool
     ⚠ Requires the Oracles of Ages US ROM on patch, you won't be able to play without
     """
+
     display_name = "Cross Items"
     include_in_patch = True
 
@@ -690,6 +745,7 @@ class OracleOfSeasonsIncludeSecretLocations(Toggle):
     """
     When enabled, add the linked game secrets to the list of locations
     """
+
     display_name = "Secret Locations"
 
     include_in_patch = True
@@ -702,6 +758,7 @@ class OracleOfSeasonsLinkedHerosCave(Choice):
     - Samasa: an entrance is placed in the Samasa desert, below the oasis
     - Hero's cave: a warp is placed at the entrance of d0
     """
+
     display_name = "Linked Hero's Cave"
     samasa = 0b001
     no_alt_entrance = 0b010
@@ -715,11 +772,32 @@ class OracleOfSeasonsLinkedHerosCave(Choice):
     include_in_patch = True
     include_in_slot_data = True
 
+    @property
+    def is_enabled(self) -> bool:
+        return bool(self.value)
+
+    @property
+    def is_samasa(self) -> bool:
+        return self.is_enabled and bool(self.value & OracleOfSeasonsLinkedHerosCave.samasa)
+
+    @property
+    def is_heros_cave(self) -> bool:
+        return self.is_enabled and bool(self.value & OracleOfSeasonsLinkedHerosCave.heros_cave)
+
+    @property
+    def is_alt_entrance(self) -> bool:
+        return self.is_enabled and not bool(self.value & OracleOfSeasonsLinkedHerosCave.no_alt_entrance)
+
+    @property
+    def is_no_alt_entrance(self) -> bool:
+        return self.is_enabled and bool(self.value & OracleOfSeasonsLinkedHerosCave.no_alt_entrance)
+
 
 class OracleOfSeasonsDeathLink(DeathLink):
     """
     When you die, everyone who enabled death link dies. Of course, the reverse is true too.
     """
+
     include_in_slot_data = True  # This is for the bizhawk client
 
 
@@ -730,6 +808,7 @@ class OracleOfSeasonsMoveLink(Toggle):
 
     ⚠ This option may easily cause softlocks and may cause some issues. Some graphical oddities are also to be expected.
     """
+
     display_name = "Randomize AI"
     visibility = Visibility.all if (datetime.now().month == 4) else Visibility.none  # Only visible in april
 
@@ -742,6 +821,7 @@ class OracleOfSeasonsBirdHint(Choice):
     Know-it-all: Enable region hints from the birds in the house next to the advance shop
     Owl: Enable owls to give hints about items from your world
     """
+
     display_name = "Bird Hint"
 
     option_disabled = 0b00
@@ -803,9 +883,9 @@ class OracleOfSeasonsOptions(PerGameCommonOptions):
     starting_maps_compasses: OracleOfSeasonsStartingMapsCompasses
 
     # Numeric requirements for some checks / access to regions
-    treehouse_old_man_requirement: OraclesOfSeasonsTreehouseOldManRequirement
-    tarm_gate_required_jewels: OraclesOfSeasonsTarmGateRequirement
-    golden_beasts_requirement: OraclesOfSeasonsGoldenBeastsRequirement
+    treehouse_old_man_requirement: OracleOfSeasonsTreehouseOldManRequirement
+    tarm_gate_required_jewels: OracleOfSeasonsTarmGateRequirement
+    golden_beasts_requirement: OracleOfSeasonsGoldenBeastsRequirement
     sign_guy_requirement: OracleOfSeasonsSignGuyRequirement
     gasha_nut_kill_requirement: OracleOfSeasonsGashaNutKillRequirement
 
@@ -837,80 +917,113 @@ class OracleOfSeasonsOptions(PerGameCommonOptions):
 
 
 oos_option_groups = [
-    OptionGroup("General", [
-        ItemsAccessibility,
-        OracleOfSeasonsGoal,
-        OracleOfSeasonsLogicDifficulty,
-        OracleOfSeasonsDeathLink,
-    ]),
-    OptionGroup("Items", [
-        OracleOfSeasonsIncludeCrossItems,
-    ]),
-    OptionGroup("Optional Locations", [
-        OracleOfSeasonsAdvanceShop,
-        OracleOfSeasonsOldMenShuffle,
-        OracleOfSeasonsBusinessScrubsShuffle,
-        OracleOfSeasonsGoldenOreSpotsShuffle,
-        OracleOfSeasonsGashaLocations,
-        OracleOfSeasonsIncludeSecretLocations,
-        OracleOfSeasonsLinkedHerosCave
-    ]),
-    OptionGroup("Essences", [
-        OracleOfSeasonsRequiredEssences,
-        OracleOfSeasonsEssenceSanity,
-        OracleOfSeasonsPlacedEssences,
-        OracleOfSeasonsExcludeDungeonsWithoutEssence,
-        OracleOfSeasonsShowDungeonsWithMap,
-        OracleOfSeasonsShowDungeonsWithEssence,
-    ]),
-    OptionGroup("Seasons", [
-        OracleOfSeasonsDefaultSeasons,
-        OracleOfSeasonsHoronSeason,
-    ]),
-    OptionGroup("Overworld Layout Options", [
-        OracleOfSeasonsAnimalCompanion,
-        OracleOfSeasonsPortalShuffle,
-        OracleOfSeasonsDungeonShuffle,
-        OracleOfSeasonsRemoveD0AltEntrance,
-        OracleOfSeasonsRemoveD2AltEntrance,
-        OracleOfSeasonsDefaultSeedType,
-        OracleOfSeasonsDuplicateSeedTree,
-    ]),
-    OptionGroup("Dungeon Items", [
-        OracleOfSeasonsMasterKeys,
-        OracleOfSeasonsSmallKeyShuffle,
-        OracleOfSeasonsBossKeyShuffle,
-        OracleOfSeasonsMapCompassShuffle,
-        OracleOfSeasonsStartingMapsCompasses
-    ]),
-    OptionGroup("Numeric Requirements", [
-        OraclesOfSeasonsTreehouseOldManRequirement,
-        OraclesOfSeasonsTarmGateRequirement,
-        OraclesOfSeasonsGoldenBeastsRequirement,
-        OracleOfSeasonsSignGuyRequirement,
-        OracleOfSeasonsGashaNutKillRequirement,
-    ]),
-    OptionGroup("Randomizable Sequences", [
-        OracleOfSeasonsRandomizePuzzles,
-        OracleOfSeasonsLostWoodsItemSequence,
-        OracleOfSeasonsLostWoodsMainSequence,
-        OracleOfSeasonsSamasaGateCode,
-        OracleOfSeasonsSamasaGateCodeLength,
-    ]),
-    OptionGroup("QOL", [
-        OracleOfSeasonsQuickFlute,
-        OracleOfSeasonsRosaQuickUnlock,
-    ]),
-    OptionGroup("Others", [
-        OracleOfSeasonsShopPrices,
-        OracleOfSeasonsEnforcePotionInShop,
-        OracleOfSeasonsRequiredRings,
-        OracleOfSeasonsExcludedRings,
-        OracleOfSeasonsFoolsOre,
-        OracleOfSeasonsCombatDifficulty,
-        OracleOfSeasonsBirdHint,
-        OracleOfSeasonsRandomizeAi,
-        OracleOfSeasonsMoveLink,
-        OracleOfSeasonsRemoveItemsFromPool
-    ]),
+    OptionGroup(
+        "General",
+        [
+            ItemsAccessibility,
+            OracleOfSeasonsGoal,
+            OracleOfSeasonsLogicDifficulty,
+            OracleOfSeasonsDeathLink,
+        ],
+    ),
+    OptionGroup(
+        "Items",
+        [
+            OracleOfSeasonsIncludeCrossItems,
+        ],
+    ),
+    OptionGroup(
+        "Optional Locations",
+        [
+            OracleOfSeasonsAdvanceShop,
+            OracleOfSeasonsOldMenShuffle,
+            OracleOfSeasonsBusinessScrubsShuffle,
+            OracleOfSeasonsGoldenOreSpotsShuffle,
+            OracleOfSeasonsGashaLocations,
+            OracleOfSeasonsIncludeSecretLocations,
+            OracleOfSeasonsLinkedHerosCave,
+        ],
+    ),
+    OptionGroup(
+        "Essences",
+        [
+            OracleOfSeasonsRequiredEssences,
+            OracleOfSeasonsEssenceSanity,
+            OracleOfSeasonsPlacedEssences,
+            OracleOfSeasonsExcludeDungeonsWithoutEssence,
+            OracleOfSeasonsShowDungeonsWithMap,
+            OracleOfSeasonsShowDungeonsWithEssence,
+        ],
+    ),
+    OptionGroup(
+        "Seasons",
+        [
+            OracleOfSeasonsDefaultSeasons,
+            OracleOfSeasonsHoronSeason,
+        ],
+    ),
+    OptionGroup(
+        "Overworld Layout Options",
+        [
+            OracleOfSeasonsAnimalCompanion,
+            OracleOfSeasonsPortalShuffle,
+            OracleOfSeasonsDungeonShuffle,
+            OracleOfSeasonsRemoveD0AltEntrance,
+            OracleOfSeasonsRemoveD2AltEntrance,
+            OracleOfSeasonsDefaultSeedType,
+            OracleOfSeasonsDuplicateSeedTree,
+        ],
+    ),
+    OptionGroup(
+        "Dungeon Items",
+        [
+            OracleOfSeasonsMasterKeys,
+            OracleOfSeasonsSmallKeyShuffle,
+            OracleOfSeasonsBossKeyShuffle,
+            OracleOfSeasonsMapCompassShuffle,
+            OracleOfSeasonsStartingMapsCompasses,
+        ],
+    ),
+    OptionGroup(
+        "Numeric Requirements",
+        [
+            OracleOfSeasonsTreehouseOldManRequirement,
+            OracleOfSeasonsTarmGateRequirement,
+            OracleOfSeasonsGoldenBeastsRequirement,
+            OracleOfSeasonsSignGuyRequirement,
+            OracleOfSeasonsGashaNutKillRequirement,
+        ],
+    ),
+    OptionGroup(
+        "Randomizable Sequences",
+        [
+            OracleOfSeasonsRandomizePuzzles,
+            OracleOfSeasonsLostWoodsItemSequence,
+            OracleOfSeasonsLostWoodsMainSequence,
+            OracleOfSeasonsSamasaGateCode,
+            OracleOfSeasonsSamasaGateCodeLength,
+        ],
+    ),
+    OptionGroup(
+        "QOL",
+        [
+            OracleOfSeasonsQuickFlute,
+            OracleOfSeasonsRosaQuickUnlock,
+        ],
+    ),
+    OptionGroup(
+        "Others",
+        [
+            OracleOfSeasonsShopPrices,
+            OracleOfSeasonsEnforcePotionInShop,
+            OracleOfSeasonsRequiredRings,
+            OracleOfSeasonsExcludedRings,
+            OracleOfSeasonsFoolsOre,
+            OracleOfSeasonsCombatDifficulty,
+            OracleOfSeasonsBirdHint,
+            OracleOfSeasonsRandomizeAi,
+            OracleOfSeasonsMoveLink,
+            OracleOfSeasonsRemoveItemsFromPool,
+        ],
+    ),
 ]

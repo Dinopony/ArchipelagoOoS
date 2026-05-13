@@ -258,15 +258,8 @@ def build_rupee_item_dict(
     sorted_shop_values = sorted(world.shop_rupee_requirements.values())
     total_cost = sorted_shop_values[-1]
 
-    # Count the negative old men's rupees, but not the positives of the rupee rooms, since they might be unreachable
-    for name in world.old_man_rupee_values:
-        if world.old_man_rupee_values[name] < 0:
-            total_cost -= world.old_man_rupee_values[name]
-
-    target = total_cost // 2
-
     return build_currency_item_dict(
-        world, rupee_item_count, filler_item_count, target, total_cost, "Rupees", VALID_RUPEE_ITEM_VALUES
+        world, rupee_item_count, filler_item_count, total_cost, "Rupees", VALID_RUPEE_ITEM_VALUES
     )
 
 
@@ -274,10 +267,9 @@ def build_ore_item_dict(
     world: OracleOfSeasonsWorld, ore_item_count: int, filler_item_count: int
 ) -> tuple[dict[str, int], int]:
     total_cost = sum([world.shop_prices[loc] for loc in MARKET_LOCATIONS])
-    target = total_cost // 2
 
     return build_currency_item_dict(
-        world, ore_item_count, filler_item_count, target, total_cost, "Ore Chunks", VALID_ORE_ITEM_VALUES
+        world, ore_item_count, filler_item_count, total_cost, "Ore Chunks", VALID_ORE_ITEM_VALUES
     )
 
 
@@ -285,7 +277,6 @@ def build_currency_item_dict(
     world: OracleOfSeasonsWorld,
     currency_item_count: int,
     filler_item_count: int,
-    initial_target: int,
     total_cost: int,
     currency_name: str,
     valid_currency_item_values: list[int],
@@ -293,7 +284,7 @@ def build_currency_item_dict(
     average_value = total_cost / currency_item_count
     deviation = average_value / 2.5
     currency_item_dict = {}
-    target = initial_target
+    target = total_cost
     for _ in range(0, currency_item_count):
         value = world.random.gauss(average_value, deviation)
         value = min(valid_currency_item_values, key=lambda x: abs(x - value))
@@ -311,7 +302,6 @@ def build_currency_item_dict(
             world,
             currency_item_count + 1,
             filler_item_count - 1,
-            initial_target,
             total_cost,
             currency_name,
             valid_currency_item_values,

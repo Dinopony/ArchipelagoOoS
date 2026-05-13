@@ -1,12 +1,27 @@
-from typing_extensions import Any
+from typing import Any
 
-from BaseClasses import Item, ItemClassification, Location, Region, LocationProgressType
-from ..world import OracleOfSeasonsWorld
-from ..Options import OracleOfSeasonsGoal, OracleOfSeasonsOldMenShuffle, OracleOfSeasonsLogicDifficulty
+from BaseClasses import Item, ItemClassification, Location, LocationProgressType, Region
+
 from ..data import LOCATIONS_DATA
-from ..data.Constants import GASHA_SPOT_REGIONS, ITEM_GROUPS, SCRUB_LOCATIONS, SUBROSIA_HIDDEN_DIGGING_SPOTS_LOCATIONS, RUPEE_OLD_MAN_LOCATIONS, \
-    SECRETS, LOCATION_GROUPS
-from ..data.Regions import REGIONS, NATZU_REGIONS, GASHA_REGIONS, D11_REGIONS
+from ..data.Constants import (
+    ITEM_GROUPS,
+    LOCATION_GROUPS,
+    RUPEE_OLD_MAN_LOCATIONS,
+    SCRUB_LOCATIONS,
+    SECRETS,
+    SUBROSIA_HIDDEN_DIGGING_SPOTS_LOCATIONS,
+)
+from ..data.Regions import (
+    D11_REGIONS,
+    GASHA_REGIONS,
+    GASHA_SPOT_REGIONS,
+    NATZU_REGIONS,
+    REGIONS,
+    SCRUB_REGIONS,
+    SECRET_REGIONS,
+)
+from ..Options import OracleOfSeasonsGoal, OracleOfSeasonsLogicDifficulty, OracleOfSeasonsOldMenShuffle
+from ..world import OracleOfSeasonsWorld
 
 
 def location_is_active(world: OracleOfSeasonsWorld, location_name: str, location_data: dict[str, Any]) -> Any:
@@ -57,6 +72,10 @@ def create_regions(world: OracleOfSeasonsWorld) -> None:
         region = Region(region_name, world.player, world.multiworld)
         world.multiworld.regions.append(region)
 
+    if world.options.advance_shop:
+        region = Region("advance shop", world.player, world.multiworld)
+        world.multiworld.regions.append(region)
+
     if world.options.logic_difficulty == OracleOfSeasonsLogicDifficulty.option_hell:
         region = Region("rooster adventure", world.player, world.multiworld)
         world.multiworld.regions.append(region)
@@ -64,6 +83,19 @@ def create_regions(world: OracleOfSeasonsWorld) -> None:
     if world.options.deterministic_gasha_locations > 0:
         for i in range(world.options.deterministic_gasha_locations):
             region = Region(GASHA_REGIONS[i], world.player, world.multiworld)
+            world.multiworld.regions.append(region)
+        for region_name in GASHA_SPOT_REGIONS:
+            region = Region(region_name, world.player, world.multiworld)
+            world.multiworld.regions.append(region)
+
+    if world.options.shuffle_business_scrubs:
+        for region_name in SCRUB_REGIONS:
+            region = Region(region_name, world.player, world.multiworld)
+            world.multiworld.regions.append(region)
+
+    if world.options.secret_locations:
+        for region_name in SECRET_REGIONS:
+            region = Region(region_name, world.player, world.multiworld)
             world.multiworld.regions.append(region)
 
     if world.options.linked_heros_cave:
@@ -114,8 +146,9 @@ def create_events(world: OracleOfSeasonsWorld) -> None:
         create_event(world, "ganon beaten", "_beaten_game")
 
     # Create events for reaching Gasha spots, used when Gasha-sanity is on
-    for region_name in GASHA_SPOT_REGIONS:
-        create_event(world, region_name, f"_reached_{region_name}")
+    if world.options.deterministic_gasha_locations > 0:
+        for region_name in GASHA_SPOT_REGIONS:
+            create_event(world, region_name, f"_reached_{region_name}")
 
     # Create event items to represent rupees obtained from Old Men, unless they are turned into locations
     if world.options.shuffle_old_men != OracleOfSeasonsOldMenShuffle.option_turn_into_locations:

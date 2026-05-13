@@ -204,6 +204,7 @@ VANILLA_SHOP_PRICES = {
     "subrosianMarket3": 40,
     "subrosianMarket4": 50,
     "subrosianMarket5": 60,
+    "subrosianMarket": 180,
     "spoolSwampScrub": 100,
     "samasaCaveScrub": 100,
     "d2Scrub": 30,
@@ -438,25 +439,6 @@ LOCATION_GROUPS = {
         "Sunken City: Syrup Shop #3",
     }
 }
-
-GASHA_SPOT_REGIONS = [
-    "impa gasha spot",
-    "horon gasha spot",
-    "suburbs gasha spot",
-    "holodrum plain gasha spot",
-    "holodrum plain island gasha spot",
-    "spool swamp north gasha spot",
-    "spool swamp south gasha spot",
-    "sunken city gasha spot",
-    "mt cucco gasha spot",
-    "goron mountain left gasha spot",
-    "goron mountain right gasha spot",
-    "eyeglass lake gasha spot",
-    "tarm ruins gasha spot",
-    "western coast gasha spot",
-    "samasa desert gasha spot",
-    "onox gasha spot",
-]
 
 TREASURE_SPAWN_INSTANT = 0x00
 TREASURE_SPAWN_POOF = 0x10

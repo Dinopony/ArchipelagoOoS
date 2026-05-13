@@ -46,7 +46,39 @@ D11_REGIONS = [
     "d11 floor 5 boomerang maze",
     "d11 final chest"
 ]
-
+SCRUB_REGIONS = [
+    "spool swamp scrub",
+    "samasa desert scrub",
+    "d2 scrub",
+    "d4 scrub",
+]
+GASHA_SPOT_REGIONS = [
+    "impa gasha spot",
+    "horon gasha spot",
+    "suburbs gasha spot",
+    "holodrum plain gasha spot",
+    "holodrum plain island gasha spot",
+    "spool swamp north gasha spot",
+    "spool swamp south gasha spot",
+    "sunken city gasha spot",
+    "mt cucco gasha spot",
+    "goron mountain left gasha spot",
+    "goron mountain right gasha spot",
+    "eyeglass lake gasha spot",
+    "tarm ruins gasha spot",
+    "western coast gasha spot",
+    "samasa desert gasha spot",
+    "onox gasha spot",
+]
+SECRET_REGIONS = [
+    "clock shop secret",
+    "graveyard secret",
+    "subrosian secret",
+    "diver secret",
+    "smith secret",
+    "natzu deku",
+    "deku secret"
+]
 REGIONS = [
     "impa's house",
     "horon village",
@@ -55,7 +87,6 @@ REGIONS = [
     "horon village SE chest",
     "horon village SW chest",
     "horon heart piece",
-    "advance shop",
     "dr. left reward",
     "old man trade",
     "malon trade",
@@ -130,7 +161,6 @@ REGIONS = [
     "spool swamp tree",
     "floodgate keeper's house",
     "floodgate keyhole",
-    "spool swamp scrub",
     "spool stump",
     "d3 entrance",
     "d1 island",
@@ -183,7 +213,6 @@ REGIONS = [
     "samasa desert",
     "samasa desert pit",
     "samasa desert chest",
-    "samasa desert scrub",
     "temple remains lower stump",
     "temple remains upper stump",
     "temple remains lower portal",
@@ -258,7 +287,6 @@ REGIONS = [
     "d2 rope chest",
     "d2 blade chest",
     "d2 alt entrances",
-    "d2 scrub",
     "d2 roller chest",
     "d2 spiral chest",
     "d2 spinner",
@@ -297,7 +325,6 @@ REGIONS = [
     "greater distance owl",
     "d4 stalfos stairs",
     "d4 terrace",
-    "d4 scrub",
     "d4 miniboss room",
     "d4 final minecart",
     "d4 torch chest",
@@ -414,29 +441,4 @@ REGIONS = [
     "subrosia market digging spot",
     "subrosia temple digging spot",
     "subrosia bridge digging spot",
-
-    "impa gasha spot",
-    "horon gasha spot",
-    "suburbs gasha spot",
-    "holodrum plain gasha spot",
-    "holodrum plain island gasha spot",
-    "spool swamp north gasha spot",
-    "spool swamp south gasha spot",
-    "sunken city gasha spot",
-    "mt cucco gasha spot",
-    "goron mountain left gasha spot",
-    "goron mountain right gasha spot",
-    "eyeglass lake gasha spot",
-    "tarm ruins gasha spot",
-    "western coast gasha spot",
-    "samasa desert gasha spot",
-    "onox gasha spot",
-
-    "clock shop secret",
-    "graveyard secret",
-    "subrosian secret",
-    "diver secret",
-    "smith secret",
-    "natzu deku",
-    "deku secret"
 ]
