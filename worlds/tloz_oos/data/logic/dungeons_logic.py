@@ -931,7 +931,7 @@ def make_d7_logic() -> list[LogicLine]:
         # 0 keys
         ("enter d7", "poe curse owl", False, oos_can_use_mystery_seeds()),
         ("enter d7", "d7 wizzrobe chest", False, oos_can_kill_normal_enemy_no_cane()),
-        ("enter d7", "d7 bombed wall chest", False, oos_can_break_crystal()),
+        ("enter d7", "d7 bombed wall chest", False, oos_can_remove_rockslide(False)),
         ("enter d7", "d7 entrance wild embers", False, oos_can_harvest_regrowing_bush()),
         # 1 key
         (

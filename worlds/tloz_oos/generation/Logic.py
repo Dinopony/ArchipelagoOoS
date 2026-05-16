@@ -117,9 +117,9 @@ def create_connections(world: OracleOfSeasonsWorld, origin_name: str, options):
             is_two_way = entrance_desc[2]
             rule = entrance_desc[3]
 
-            region_1.connect(region_2, None, rule)
+            world.create_entrance(region_1, region_2, rule)
             if is_two_way:
-                region_2.connect(region_1, None, rule)
+                world.create_entrance(region_2, region_1, rule)
 
 
 def apply_self_locking_rules(multiworld: MultiWorld, player: int):
