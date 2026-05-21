@@ -12,9 +12,7 @@
   dwbe $03a1, locations.subrosianHouse
   dwbe $07e3, locations.subrosian2dCave
   dwbe $0601, locations.d0HiddenBasement
-  dwbe $04e9, locations.makuTree3Essences
-  dwbe $04ea, locations.makuTree5Essences
-  dwbe $04ee, locations.makuTree7Essences
+  dwbe $0609, locations.d1Basement
   # ------- Digging spots -------
   dwbe $0140, locations.subrosianWildsDiggingSpot
   dwbe $0082, locations.spoolSwampDiggingSpot
@@ -75,9 +73,14 @@
 # staticHeartPiece (0x26381)
 09/6381/: call staticItemsReplacementsLookup
 # staticGashaSeed (0x26608)
-09/6608/: call staticItemsReplacementsLookup
-# sidescrollingStaticGashaSeed (0x266aa)
-09/66aa/: call staticItemsReplacementsLookup
+# Replace the staticGashaSeed by staticHeartPiece
+11/63da/: db $0a
+11/7031/: db $0a
+11/7067/: db $0a
+# Replace the only sidescrollingStaticGashaSeed by a staticHeartPiece
+11/70c3/: db $0a
+# Replace the only sidescrollingStaticSeedSatchel by a staticHeartPiece
+11/7111/: db $0a
 
 
 ### DIGGABLE ITEMS ###########################################
@@ -137,46 +140,121 @@
 15/55d8/aboveD7ZolButtonId: db locations.d7ZolButton.id
 15/55db/aboveD7ZolButtonSubid: db locations.d7ZolButton.subid
 
+### MAKU TREE ITEMS ###########################################
 
-### MAKU TREE MISSABLE GASHA SEEDS ###########################################
+11/5d81/: |
+  dw group1Map1bObjectData
+  dw group1Map1cObjectData
+  dw group1Map1dObjectData
 
-# Remove access to stairs behind Farore on 2 essences (this replaces the function that adds
-# a sign in front of Bipin & Blossom's house when the game is completed)
-04/6189/: |
-  call getEssenceCount
-  cp $03
-  ret nc
-  jp removeFaroreStairs
-04//removeFaroreStairs: |
-  ld hl,$cf0c
-  ld (hl),$b0
+11/5de1/: |
+  dw group1Map1dObjectData
+  dw group1Map4cObjectData
+  dw group1Map4dObjectData
+  dw group1Map4dObjectData
+
+11//makuItems3And5: |
+  db $f2,$6b,$1f,$48,$48
+  makuItem3:
+  db $f2,$6b,$1a,$68,$50
+  db $fe
+
+11//group1Map1cObjectData: |
+  db $f2,$4c,$03,$28,$90
+  group1Map1bObjectData:
+  db $f2,$4c,$02,$38,$10
+  db $f3
+  dw makuItem3
+  db $ff
+
+11//group1Map1dObjectData: |
+  db $f2
+  db $4c,$02,$28,$10
+  db $4c,$03,$18,$90
+  db $f3
+  dw makuItems3And5
+  db $ff
+
+11//group1Map4cObjectData: |
+  db $f2
+  db $4c,$02,$18,$10
+  db $4c,$03,$08,$90
+  db $f3
+  dw makuItems3And5
+  db $ff
+
+11//group1Map4dObjectData: |
+  db $f2
+  db $4c,$02,$08,$10
+  db $f3
+  dw makuItems3And5
+  db $ff
+
+11/63ae/: db $20
+11/63c3/: |
+  db $6b,$20,$68,$68
+  db $ff
+
+09/6126/: dw makuTreeItem3 ; underwaterGashaSeed / 1a
+
+09/6130/: |
+  dw makuTreeItem5 ; sidescrollingStaticGashaSeed / 1f
+  dw makuTreeItem7 ; sidescrollingStaticGashaSeed / 20
+
+09//makuTreeItem3: |
+  ld hl,locations.makuTree3Essences
+  ld c,$20
+  jp makuTreeItem
+
+09//makuTreeItem5: |
+  ld hl,locations.makuTree5Essences
+  ld c,$40
+  jp makuTreeItem
+
+09//makuTreeItem7: |
+  ld hl,locations.makuTree7Essences
+  ld c,$80
+  jp makuTreeItem
+
+09//makuTreeItem: |
+  ld e,$44 ; Interaction.state
+  ld a,(de)
+  or a
+  jp nz,@state1
+  
+  push hl
+  ; data about the 3 items is stored in 23b, since it's a maku screen with nothing in it
+  ld a,$01
+  ld b,$3b
+  call getRoomFlags
+  and c
+  pop bc
+  jp nz,interactionDelete
+  ld a,$01
+  ld (de),a ; increase state
+  call $6391 ; misc1_spawnTreasureBC
+  ld l,$77 ; Interaction.var37
+  ld (hl),d
+  ld e,l
+  ld a,h
+  ld (de),a
   ret
 
-# Remove 3 essence original item
-11/6373/: db $4c,$02,$38,$10,$ff
-# Add an item inside the hallway (accessible at 3+ essences) that replaces the item removed above
-11//hallwayMapObjects: |
-  db $f2
-  db $6b,$19,$58,$c8
-  db $ff
-11/611d/: dw hallwayMapObjects
+  @state1:
+  ld e,$77 ; Interaction.var37
+  ld a,(de) ; get the h of the linked treasure 
+  ld h,a
+  ld l,e
+  ld a,(hl)
+  cp d
+  ret z
+  
+  ; Treasure was collected since last frame
+  ld a,$01
+  ld b,$3b
+  call getRoomFlags
+  or c
+  ld (hl),a
+  jp interactionDelete
 
-# Remove 5 essences original item
-11/63ad/: db $4c,$02,$68,$10,$ff
-# Add an item inside the first refill pool (accessible at 5+ essences) that replaces the item removed above
-11//refillPool1Objects: |
-  db $f2
-  db $6b,$19,$80,$78
-  db $f3,$76,$40      ; spawn usual items
-  db $ff
-11/611f/: dw refillPool1Objects
-
-# Remove 7 essences original item
-11/6387/: db $4c,$02,$28,$10,$4c,$03,$18,$90,$ff
-# Add an item inside the second refill pool (accessible at 7+ essences) that replaces the item removed above
-11//refillPool2Objects: |
-  db $f2
-  db $6b,$19,$80,$78
-  db $f3,$60,$40      ; spawn usual items
-  db $ff
-11/6127/: dw refillPool2Objects
+# MISC1 staticGashaSeed / 19 is currently unused

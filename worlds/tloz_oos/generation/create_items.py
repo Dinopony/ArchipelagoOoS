@@ -55,24 +55,24 @@ def create_item(world: OracleOfSeasonsWorld, name: str) -> Item:
         and name in progression_items_in_medium_logic
     ):
         classification = ItemClassification.progression
-    if world.options.logic_difficulty >= OracleOfSeasonsLogicDifficulty.option_hard and name == "Heart Ring L-1":
+    elif world.options.logic_difficulty >= OracleOfSeasonsLogicDifficulty.option_hard and name == "Heart Ring L-1":
         classification = ItemClassification.progression
     # As many Gasha Seeds become progression as the number of deterministic Gasha Nuts
-    if world.remaining_progressive_gasha_seeds > 0 and name == "Gasha Seed":
+    elif world.remaining_progressive_gasha_seeds > 0 and name == "Gasha Seed":
         world.remaining_progressive_gasha_seeds -= 1
         classification = ItemClassification.progression_deprioritized
+    # Some number of containers depending on logic difficulty becomes prog
+    elif world.remaining_progressive_containers > 0 and name == "Heart Container":
+        world.remaining_progressive_containers -= 1
+        classification = ItemClassification.progression_skip_balancing
 
     # Players in Medium+ are expected to know the default paths through Lost Woods, Phonograph becomes filler
-    if (
-        world.options.logic_difficulty >= OracleOfSeasonsLogicDifficulty.option_medium
-        and not world.options.randomize_lost_woods_item_sequence
-        and name == "Phonograph"
+    elif (
+            world.options.logic_difficulty >= OracleOfSeasonsLogicDifficulty.option_medium
+            and not world.options.randomize_lost_woods_item_sequence
+            and name == "Phonograph"
     ):
         classification = ItemClassification.filler
-
-    # UT doesn't let us know if the item is progression or not, so it is always progression
-    if hasattr(world.multiworld, "generation_is_fake"):
-        classification = ItemClassification.progression
 
     return Item(name, classification, ap_code, world.player)
 

@@ -67,6 +67,7 @@ from .logic_predicates import (
     oos_has_flute,
     oos_has_fools_ore,
     oos_has_gale_seeds,
+    oos_has_hearts_by_difficulty,
     oos_has_magic_boomerang,
     oos_has_magnet_gloves,
     oos_has_mystery_seeds,
@@ -1498,6 +1499,7 @@ def make_holodrum_logic(origin_name: str, options: OracleOfSeasonsOptions) -> li
                 oos_has_sword(False),
                 oos_has_feather(),
                 Or(oos_option_hard_logic(), oos_has_rod()),
+                oos_has_hearts_by_difficulty(8, 6, 4)
             ),
         ),
         (

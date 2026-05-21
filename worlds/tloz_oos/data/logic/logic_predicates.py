@@ -1,6 +1,6 @@
 from rule_builder.field_resolvers import FromOption, FromWorldAttr
 from rule_builder.options import OptionFilter
-from rule_builder.rules import And, AtLeast, CanReachRegion, Has, HasFromList, HasGroup, Or
+from rule_builder.rules import And, AtLeast, CanReachRegion, Has, HasFromList, HasGroup, Or, True_
 
 from ...Options import (
     OracleOfSeasonsAnimalCompanion,
@@ -200,6 +200,20 @@ def oos_has_boss_key(dungeon_id: int) -> Rule:
             f"Master Key ({DUNGEON_NAMES[dungeon_id]})",
             options=[OptionFilter(OracleOfSeasonsMasterKeys, OracleOfSeasonsMasterKeys.option_all_dungeon_keys)],
         ),
+    )
+
+
+def oos_has_hearts(hearts: int, logic: int = OracleOfSeasonsLogicDifficulty.option_casual) -> Rule:
+    if hearts <= 3 or hearts > 10:
+        return True_()
+    return Has("Heart Container", hearts - 3, options=[OptionFilter(OracleOfSeasonsLogicDifficulty, logic, "ge")])
+
+
+def oos_has_hearts_by_difficulty(hearts_casual: int = 20, hearts_medium: int = 20, hearts_hard: int = 20) -> Rule:
+    return Or(
+        oos_has_hearts(hearts_casual, OracleOfSeasonsLogicDifficulty.option_casual),
+        oos_has_hearts(hearts_medium, OracleOfSeasonsLogicDifficulty.option_medium),
+        oos_has_hearts(hearts_hard, OracleOfSeasonsLogicDifficulty.option_hard),
     )
 
 
@@ -409,7 +423,7 @@ def oos_has_bombs_for_tiles() -> Rule:
 
 
 def oos_has_bombs_for_bombjump() -> Rule:
-    return oos_has_bombs(2)
+    return And(oos_has_bombs(2), oos_has_hearts(4))
 
 
 def oos_has_bombchus(amount: int = 1) -> Rule:

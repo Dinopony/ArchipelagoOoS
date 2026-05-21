@@ -12,7 +12,7 @@ from ..data.Constants import (
     SEASONS,
     VALID_RUPEE_PRICE_VALUES,
 )
-from ..Options import OracleOfSeasonsLinkedHerosCave, OracleOfSeasonsOldMenShuffle
+from ..Options import OracleOfSeasonsLinkedHerosCave, OracleOfSeasonsLogicDifficulty, OracleOfSeasonsOldMenShuffle
 from ..Util import get_old_man_values_pool
 from ..world import OracleOfSeasonsWorld
 
@@ -55,7 +55,7 @@ def generate_early(world: OracleOfSeasonsWorld) -> None:
 
     if world.options.randomize_samasa_gate_code:
         world.samasa_gate_code = []
-        for i in range(world.options.samasa_gate_code_length.value):
+        for _ in range(world.options.samasa_gate_code_length.value):
             world.samasa_gate_code.append(world.random.randint(0, 3))
 
     randomize_shop_order(world)
@@ -94,6 +94,13 @@ def generate_early(world: OracleOfSeasonsWorld) -> None:
         rupees = max(rupees, 0)  # We ignore negative value because they will most often do nothing
         # If this becomes an issue, state initialisation shall account for negative values
         world.item_mapping_collect[f"rupees from {old_man}"] = ("Rupees", rupees)
+
+    if world.options.logic_difficulty == OracleOfSeasonsLogicDifficulty.option_casual:
+        world.remaining_progressive_containers = 7
+    elif world.options.logic_difficulty == OracleOfSeasonsLogicDifficulty.option_medium:
+        world.remaining_progressive_containers = 5
+    else:
+        world.remaining_progressive_containers = 2
 
 
 def pick_essences_in_game(world: OracleOfSeasonsWorld) -> None:
@@ -213,7 +220,7 @@ def randomize_shop_prices(world: OracleOfSeasonsWorld) -> None:
         value = min(VALID_RUPEE_PRICE_VALUES, key=lambda x: abs(x - value))
         subrosia_total_price += value
         world.shop_prices[f"subrosianMarket{i}"] = value
-    world.shop_prices[f"subrosianMarket"] = subrosia_total_price // 2
+    world.shop_prices["subrosianMarket"] = subrosia_total_price // 2
 
 
 def compute_rupee_requirements(world: OracleOfSeasonsWorld) -> None:

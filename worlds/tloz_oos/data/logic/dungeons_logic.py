@@ -2,7 +2,6 @@ from rule_builder.rules import And, CanReachRegion, Has, Or, True_
 from worlds.tloz_oos.data.logic import LogicLine
 
 from ...Options import (
-    OracleOfSeasonsLinkedHerosCave,
     OracleOfSeasonsOptions,
 )
 from .logic_predicates import (
@@ -58,6 +57,8 @@ from .logic_predicates import (
     oos_has_flute,
     oos_has_fools_ore,
     oos_has_gale_seeds,
+    oos_has_hearts,
+    oos_has_hearts_by_difficulty,
     oos_has_hyper_slingshot,
     oos_has_magic_boomerang,
     oos_has_magnet_gloves,
@@ -648,7 +649,11 @@ def make_d5_logic() -> list[LogicLine]:
             "d5 syger lobby",
             "d5 post syger",
             False,
-            And(oos_has_small_keys(5, 3), oos_can_kill_armored_enemy(False, False)),
+            And(
+                oos_has_small_keys(5, 3),
+                oos_can_kill_armored_enemy(False, False),
+                oos_has_hearts_by_difficulty(5, 4, 3),
+            ),
         ),
         (
             "enter d5",
@@ -708,7 +713,7 @@ def make_d5_logic() -> list[LogicLine]:
                         oos_has_magnet_gloves(),
                         oos_can_kill_magunesu(),
                     ),
-                    And(oos_option_medium_logic(), oos_has_feather()),
+                    And(oos_option_medium_logic(), oos_has_feather(), oos_has_hearts(5)),
                 ),
                 # Basement
                 Or(oos_has_magnet_gloves(), And(oos_has_cane(), oos_can_jump_3_wide_pit())),
@@ -723,6 +728,7 @@ def make_d5_logic() -> list[LogicLine]:
                 oos_has_magnet_gloves(),
                 oos_has_boss_key(5),
                 Or(oos_option_medium_logic(), oos_has_feather()),
+                oos_has_hearts_by_difficulty(6, 4, 3),
             ),
         ),
     ]
@@ -839,6 +845,7 @@ def make_d6_logic() -> list[LogicLine]:
                         And(oos_can_remove_rockslide(False), oos_has_feather()),
                         Or(
                             # Kill Vire (the rest doesn't matter because we don't care about not being able to not spend a key somewhere)
+                            oos_has_hearts_by_difficulty(4, 3),
                             oos_has_sword(False),
                             oos_has_fools_ore(),
                             And(oos_option_medium_logic(), oos_has_bombs_to_fight()),
@@ -855,6 +862,7 @@ def make_d6_logic() -> list[LogicLine]:
                             # Go through beamos room
                             And(oos_can_remove_rockslide(False), oos_has_feather()),
                             # Kill Vire
+                            oos_has_hearts_by_difficulty(4, 3),
                             oos_has_sword(False),
                             oos_has_fools_ore(),
                             And(oos_option_medium_logic(), oos_has_bombs_to_fight()),
@@ -877,6 +885,7 @@ def make_d6_logic() -> list[LogicLine]:
                 oos_has_small_keys(6, 3),
                 Or(
                     # Kill Vire
+                    oos_has_hearts_by_difficulty(4, 3),
                     oos_has_sword(False),
                     oos_has_fools_ore(),
                     And(oos_option_medium_logic(), oos_has_bombs_to_fight()),
@@ -893,7 +902,6 @@ def make_d6_logic() -> list[LogicLine]:
             "d6 pre-boss room",
             False,
             And(
-                oos_has_small_keys(6, 3),
                 Or(
                     # Kill hardhats
                     oos_has_magnet_gloves(),
@@ -1026,7 +1034,7 @@ def make_d7_logic() -> list[LogicLine]:
                 ),
             ),
         ),
-        ("enter poe B", "d7 water stairs", False, oos_has_flippers()),
+        ("enter poe B", "d7 water stairs", False, And(oos_has_flippers(), oos_has_hearts_by_difficulty(5, 3))),
         (
             "d7 water stairs",
             "d7 darknut bridge trampolines",
@@ -1278,6 +1286,7 @@ def make_d8_logic() -> list[LogicLine]:
             "d8 spike room",
             False,
             And(
+                oos_has_hearts_by_difficulty(6, 5, 3),
                 oos_has_small_keys(8, 1),
                 Or(
                     oos_has_cape(),
@@ -1509,6 +1518,7 @@ def make_d11_logic(options: OracleOfSeasonsOptions) -> list[LogicLine]:
                         Or(oos_has_flute(), oos_has_bombs_to_fight(), oos_has_bombchus_to_fight()),
                         oos_can_kill_magunesu(),
                         oos_can_kill_spiked_beetle(),
+                        oos_has_hearts_by_difficulty(5, 4, 3),
                     ),
                     And(
                         # Use the cane press a button at the same time Link is on the button to skip the lowest wave

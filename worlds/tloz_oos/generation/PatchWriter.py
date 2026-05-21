@@ -12,6 +12,8 @@ def oos_create_ap_procedure_patch(world: OracleOfSeasonsWorld) -> OoSProcedurePa
     patch.player = world.player
     patch.player_name = world.multiworld.get_player_name(world.player)
 
+    del world.shop_prices["subrosianMarket"] # This was only used for rulebuilder and doesn't have a meaning in patch data
+
     patch_data = {
         "version": f"{world.version()}",
         "seed": world.multiworld.seed,
@@ -36,6 +38,7 @@ def oos_create_ap_procedure_patch(world: OracleOfSeasonsWorld) -> OoSProcedurePa
         # Skip event locations which are not real in-game locations that need to be patched
         if loc.address is None:
             continue
+        assert loc.item
         if loc.item.player == loc.player:
             patch_data["locations"][loc.name] = {
                 "item": loc.item.name
@@ -45,6 +48,10 @@ def oos_create_ap_procedure_patch(world: OracleOfSeasonsWorld) -> OoSProcedurePa
                 "item": loc.item.name,
                 "player": world.multiworld.get_player_name(loc.item.player),
                 "progression": loc.item.advancement
+            }
+        if loc.item.player == loc.player and "Seed" not in loc.item.name:
+            patch_data["locations"][loc.name] = {
+                "item": "Friendship Ring"
             }
 
     patch_data_item_hints = []

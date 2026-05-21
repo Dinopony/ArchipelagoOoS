@@ -83,6 +83,7 @@ class OracleOfSeasonsWorld(World):
 
     def __init__(self, multiworld: MultiWorld, player: int):
         super().__init__(multiworld, player)
+        self.item_mapping["uh"] = "oh"
 
         self.pre_fill_items: list[Item] = []
         self.default_seasons: dict[str, int] = DEFAULT_SEASONS.copy()
@@ -98,6 +99,7 @@ class OracleOfSeasonsWorld(World):
         self.essences_in_game: list[str] = sorted(ITEM_GROUPS["Essences"])
         self.random_rings_pool: list[str] = []
         self.remaining_progressive_gasha_seeds = 0
+        self.remaining_progressive_containers = 0
         self.item_mapping_collect: dict[str, tuple[str, int]] = {}
 
         self.made_hints = Event()
@@ -122,58 +124,8 @@ class OracleOfSeasonsWorld(World):
         self.set_completion_rule(Has("_beaten_game"))
 
     def create_item(self, name: str) -> Item:
-        # If item name has a "!PROG" suffix, force it to be progression. This is typically used to create the right
-        # amount of progression rupees while keeping them a filler item as default
-        if name.endswith("!PROG"):
-            name = name.removesuffix("!PROG")
-            classification = ItemClassification.progression_deprioritized_skip_balancing
-        elif name.endswith("!USEFUL"):
-            # Same for above but with useful. This is typically used for Required Rings,
-            # as we don't want those locked in a barren dungeon
-            name = name.removesuffix("!USEFUL")
-            classification = ITEMS_DATA[name]["classification"]
-            if classification == ItemClassification.filler:
-                classification = ItemClassification.useful
-        elif name.endswith("!FILLER"):
-            name = name.removesuffix("!FILLER")
-            classification = ItemClassification.filler
-        else:
-            classification = ITEMS_DATA[name]["classification"]
-        ap_code = self.item_name_to_id[name]
-
-        # A few items become progression only in hard logic
-        progression_items_in_medium_logic = [
-            "Expert's Ring",
-            "Fist Ring",
-            "Swimmer's Ring",
-            "Energy Ring",
-            "Heart Ring L-2",
-        ]
-        if (
-            self.options.logic_difficulty >= OracleOfSeasonsLogicDifficulty.option_medium
-            and name in progression_items_in_medium_logic
-        ):
-            classification = ItemClassification.progression
-        if self.options.logic_difficulty >= OracleOfSeasonsLogicDifficulty.option_hard and name == "Heart Ring L-1":
-            classification = ItemClassification.progression
-        # As many Gasha Seeds become progression as the number of deterministic Gasha Nuts
-        if self.remaining_progressive_gasha_seeds > 0 and name == "Gasha Seed":
-            self.remaining_progressive_gasha_seeds -= 1
-            classification = ItemClassification.progression_deprioritized
-
-        # Players in Medium+ are expected to know the default paths through Lost Woods, Phonograph becomes filler
-        if (
-            self.options.logic_difficulty >= OracleOfSeasonsLogicDifficulty.option_medium
-            and not self.options.randomize_lost_woods_item_sequence
-            and name == "Phonograph"
-        ):
-            classification = ItemClassification.filler
-
-        # UT doesn't let us know if the item is progression or not, so it is always progression
-        if hasattr(self.multiworld, "generation_is_fake"):
-            classification = ItemClassification.progression
-
-        return Item(name, classification, ap_code, self.player)
+        from .generation.create_items import create_item
+        return create_item(self, name)
 
     def create_items(self) -> None:
         from .generation.create_items import create_items
