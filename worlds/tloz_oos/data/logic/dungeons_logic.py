@@ -864,13 +864,15 @@ def make_d6_logic() -> list[LogicLine]:
                             # Kill Vire
                             And(
                                 oos_has_hearts_by_difficulty(4, 3),
-                                oos_has_sword(False),
-                                oos_has_fools_ore(),
-                                And(oos_option_medium_logic(), oos_has_bombs_to_fight()),
-                                And(
-                                    # Fist Ring doesn't damage Vire
-                                    Has("expert's ring"),
-                                    oos_option_medium_logic(),
+                                Or(
+                                    oos_has_sword(False),
+                                    oos_has_fools_ore(),
+                                    And(oos_option_medium_logic(), oos_has_bombs_to_fight()),
+                                    And(
+                                        # Fist Ring doesn't damage Vire
+                                        Has("expert's ring"),
+                                        oos_option_medium_logic(),
+                                    ),
                                 ),
                             ),
                         ),
