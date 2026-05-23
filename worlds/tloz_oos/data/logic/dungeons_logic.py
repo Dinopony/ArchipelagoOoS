@@ -843,9 +843,9 @@ def make_d6_logic() -> list[LogicLine]:
                         oos_has_small_keys(6, 1),
                         # Go through beamos room
                         And(oos_can_remove_rockslide(False), oos_has_feather()),
+                        # Kill Vire (the rest doesn't matter because we don't care about not being able to not spend a key somewhere)
+                        oos_has_hearts_by_difficulty(4, 3),
                         Or(
-                            # Kill Vire (the rest doesn't matter because we don't care about not being able to not spend a key somewhere)
-                            oos_has_hearts_by_difficulty(4, 3),
                             oos_has_sword(False),
                             oos_has_fools_ore(),
                             And(oos_option_medium_logic(), oos_has_bombs_to_fight()),
@@ -862,14 +862,16 @@ def make_d6_logic() -> list[LogicLine]:
                             # Go through beamos room
                             And(oos_can_remove_rockslide(False), oos_has_feather()),
                             # Kill Vire
-                            oos_has_hearts_by_difficulty(4, 3),
-                            oos_has_sword(False),
-                            oos_has_fools_ore(),
-                            And(oos_option_medium_logic(), oos_has_bombs_to_fight()),
                             And(
-                                # Fist Ring doesn't damage Vire
-                                Has("expert's ring"),
-                                oos_option_medium_logic(),
+                                oos_has_hearts_by_difficulty(4, 3),
+                                oos_has_sword(False),
+                                oos_has_fools_ore(),
+                                And(oos_option_medium_logic(), oos_has_bombs_to_fight()),
+                                And(
+                                    # Fist Ring doesn't damage Vire
+                                    Has("expert's ring"),
+                                    oos_option_medium_logic(),
+                                ),
                             ),
                         ),
                     ),
@@ -883,9 +885,9 @@ def make_d6_logic() -> list[LogicLine]:
             False,
             And(
                 oos_has_small_keys(6, 3),
+                # Kill Vire
+                oos_has_hearts_by_difficulty(4, 3),
                 Or(
-                    # Kill Vire
-                    oos_has_hearts_by_difficulty(4, 3),
                     oos_has_sword(False),
                     oos_has_fools_ore(),
                     And(oos_option_medium_logic(), oos_has_bombs_to_fight()),
