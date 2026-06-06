@@ -148,16 +148,16 @@ def apply_self_locking_rules(world: OracleOfSeasonsWorld):
             world, CanReachRegion("d1 railway chest"), f"Small Key ({DUNGEON_NAMES[1]})"
         ),
         "Snake's Remains: Chest on Terrace": AlwaysAllowRule(
-            world, oos_has_small_keys(2, 2) & CanReachRegion("d2 arrow room"), f"Small Key ({DUNGEON_NAMES[2]})"
+            world, And(CanReachRegion("d2 arrow room"), oos_has_small_keys(2, 2)), f"Small Key ({DUNGEON_NAMES[2]})"
         ),
         "Poison Moth's Lair (1F): Chest in Mimics Room": AlwaysAllowRule(
-            world, CanReachRegion("d3 water room") & oos_can_kill_normal_enemy(), f"Small Key ({DUNGEON_NAMES[3]})"
+            world, And(CanReachRegion("d3 water room"), oos_can_kill_normal_enemy()), f"Small Key ({DUNGEON_NAMES[3]})"
         ),
         "Dancing Dragon Dungeon (1F): Crumbling Room Chest": AlwaysAllowRule(
             world, CanReachRegion("d4 final minecart"), f"Small Key ({DUNGEON_NAMES[4]})"
         ),
         "Dancing Dragon Dungeon (1F): Eye Diving Spot Item": AlwaysAllowRule(
-            world, CanReachRegion("d4 final minecart") & oos_has_flippers(), f"Small Key ({DUNGEON_NAMES[4]})"
+            world, And(CanReachRegion("d4 final minecart"), oos_has_flippers()), f"Small Key ({DUNGEON_NAMES[4]})"
         ),
         "Unicorn's Cave: Magnet Gloves Chest": AlwaysAllowRule(
             world, CanReachRegion("enter d5"), f"Small Key ({DUNGEON_NAMES[5]})"
