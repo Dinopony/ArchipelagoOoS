@@ -1,8 +1,8 @@
 from BaseClasses import MultiWorld
 from Fill import fill_restrictive
 
-from ..data import LOCATIONS_DATA
 from ..data.Constants import DUNGEON_NAMES
+from ..data.locations import LOCATIONS_DATA
 from ..world import OracleOfSeasonsWorld
 
 

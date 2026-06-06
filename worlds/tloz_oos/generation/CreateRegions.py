@@ -2,7 +2,7 @@ from typing import Any
 
 from BaseClasses import Item, ItemClassification, Location, LocationProgressType, Region
 
-from ..data import LOCATIONS_DATA
+from ..data.locations import LOCATIONS_DATA
 from ..data.Constants import (
     ITEM_GROUPS,
     LOCATION_GROUPS,
@@ -11,7 +11,7 @@ from ..data.Constants import (
     SECRETS,
     SUBROSIA_HIDDEN_DIGGING_SPOTS_LOCATIONS,
 )
-from ..data.Regions import (
+from ..data.regions import (
     D11_REGIONS,
     GASHA_REGIONS,
     GASHA_SPOT_REGIONS,
@@ -37,8 +37,6 @@ def location_is_active(world: OracleOfSeasonsWorld, location_name: str, location
         return world.options.shuffle_old_men == OracleOfSeasonsOldMenShuffle.option_turn_into_locations
     if location_name in SCRUB_LOCATIONS:
         return world.options.shuffle_business_scrubs
-    if location_name == "Horon Village: Shop #3":
-        return not world.options.enforce_potion_in_shop
     if location_name.startswith("Gasha Nut #"):
         return int(location_name[11:]) <= world.options.deterministic_gasha_locations
     if location_name == "Horon Village: Item Inside Maku Tree (3+ Essences)":

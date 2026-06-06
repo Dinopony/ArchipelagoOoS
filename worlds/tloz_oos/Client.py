@@ -1,16 +1,17 @@
 import time
 from collections import defaultdict
-from typing import TYPE_CHECKING, Set, Dict, Any
+from typing import TYPE_CHECKING, Any, Dict, Set
 
-from NetUtils import ClientStatus
 import worlds._bizhawk as bizhawk
-from worlds._bizhawk.client import BizHawkClient
-from Utils import async_start
+from NetUtils import ClientStatus
 from settings import get_settings
+from Utils import async_start
+from worlds._bizhawk.client import BizHawkClient
+
+from .common.Util import build_item_id_to_name_dict, build_location_name_to_id_dict
 from .data import ITEMS_DATA
-from .data.Locations import LOCATIONS_DATA
+from .data.locations import LOCATIONS_DATA
 from .Options import OracleOfSeasonsGoal
-from .common.Util import build_location_name_to_id_dict, build_item_id_to_name_dict
 
 if TYPE_CHECKING:
     from worlds._bizhawk.context import BizHawkClientContext
@@ -201,12 +202,8 @@ class OracleOfSeasonsClient(BizHawkClient):
         for name, location in LOCATIONS_DATA.items():
             if "scouting_byte" not in location:
                 continue
-            # Do not hint forced shop slot if it is enabled, since it would cause an error on MultiServer's side
-            if name == "Horon Village: Shop #3":
-                if ctx.slot_data["options"]["enforce_potion_in_shop"]:
-                    continue
 
-            # Do not hint buisiness scrubs if disabled, since it would cause an error on MultiServer's side
+            # Do not hint business scrubs if disabled, since it would cause an error on MultiServer's side
             if name.endswith("Business Scrub"):
                 if not ctx.slot_data["options"]["shuffle_business_scrubs"]:
                     continue

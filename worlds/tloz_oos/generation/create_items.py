@@ -2,7 +2,7 @@ import logging
 
 from BaseClasses import Item, ItemClassification
 
-from ..data import ITEMS_DATA, LOCATIONS_DATA
+from ..data import ITEMS_DATA
 from ..data.Constants import (
     DUNGEON_NAMES,
     ITEM_GROUPS,
@@ -11,6 +11,7 @@ from ..data.Constants import (
     VALID_ORE_ITEM_VALUES,
     VALID_RUPEE_ITEM_VALUES,
 )
+from ..data.locations import LOCATIONS_DATA
 from ..generation.CreateRegions import location_is_active
 from ..Options import (
     OracleOfSeasonsDuplicateSeedTree,
@@ -97,6 +98,11 @@ def build_item_pool_dict(world: OracleOfSeasonsWorld) -> dict[str, int]:
     filler_item_count = 0
     rupee_item_count = 0
     ore_item_count = 0
+
+    if world.options.enforce_potion_in_shop:
+        world.get_location("Horon Village: Shop #3").place_locked_item(create_item(world, "Potion"))
+        filler_item_count -= 1
+
     for loc_name, loc_data in LOCATIONS_DATA.items():
         if not location_is_active(world, loc_name, loc_data):
             continue
@@ -146,7 +152,7 @@ def build_item_pool_dict(world: OracleOfSeasonsWorld) -> dict[str, int]:
             # Otherwise, the fill algorithm will take care of placing them anywhere in the multiworld.
             if not world.options.shuffle_essences:
                 essence_item = create_item(world, item_name)
-                world.multiworld.get_location(loc_name, world.player).place_locked_item(essence_item)
+                world.get_location(loc_name).place_locked_item(essence_item)
                 continue
 
         if item_name == "Gasha Seed":

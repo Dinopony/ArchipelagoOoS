@@ -2,13 +2,13 @@ import os
 from threading import Event
 from typing import Any, ClassVar, TextIO, cast
 
-from BaseClasses import CollectionState, Item, ItemClassification, Location, MultiWorld
+from BaseClasses import CollectionState, Item, Location, MultiWorld
 from Options import Option
 from rule_builder.rules import Has
 from worlds.AutoWorld import World
 
 from .common.Util import build_item_name_to_id_dict, build_location_name_to_id_dict
-from .data import ITEMS_DATA, LOCATIONS_DATA
+from .data import ITEMS_DATA
 from .data.Constants import (
     DEFAULT_SEASONS,
     DUNGEON_CONNECTIONS,
@@ -23,7 +23,8 @@ from .data.Constants import (
     SEASON_NAMES,
     VANILLA_SHOP_PRICES,
 )
-from .Options import OracleOfSeasonsLogicDifficulty, OracleOfSeasonsOptions
+from .data.locations import LOCATIONS_DATA
+from .Options import OracleOfSeasonsOptions
 from .Settings import OracleOfSeasonsSettings
 from .WebWorld import OracleOfSeasonsWeb
 
@@ -105,6 +106,7 @@ class OracleOfSeasonsWorld(World):
         self.made_hints = Event()
         self.region_hints: list[tuple[str, str | int]] = []
         self.item_hints: list[Item | None] = []
+        self.num_prog: int = 1 # initialized at 1 so that before pre_fill, any prog counts as all the progs
 
     def generate_early(self) -> None:
         from .generation.GenerateEarly import generate_early
@@ -117,10 +119,11 @@ class OracleOfSeasonsWorld(World):
         create_regions(self)
 
     def set_rules(self) -> None:
-        from .generation.Logic import apply_self_locking_rules, create_connections
+        from .generation.logic import apply_rule_forbiddance, apply_self_locking_rules, create_connections
 
         create_connections(self, self.origin_region_name, self.options)
-        apply_self_locking_rules(self.multiworld, self.player)
+        apply_self_locking_rules(self)
+        apply_rule_forbiddance(self)
         self.set_completion_rule(Has("_beaten_game"))
 
     def create_item(self, name: str) -> Item:
@@ -137,9 +140,12 @@ class OracleOfSeasonsWorld(World):
 
     @classmethod
     def stage_pre_fill(cls, multiworld: MultiWorld):
-        from .generation.PreFill import stage_pre_fill_dungeon_items
+        from .generation.pre_fill_dungeon import stage_pre_fill_dungeon_items
+        from .generation.pre_fill_prog_count import stage_pre_fill_check_prog
 
         stage_pre_fill_dungeon_items(multiworld)
+        stage_pre_fill_check_prog(multiworld)
+
 
     def get_filler_item_name(self) -> str:
         filler_item_names = [
@@ -284,6 +290,8 @@ class OracleOfSeasonsWorld(World):
         if mapping is not None:
             state.prog_items[self.player][mapping[0]] += mapping[1]
 
+        state.prog_items[self.player]["progs"] += 100 # Pre-multiply by 100 to not have to do it the following line
+        state.prog_items[self.player]["prog_percent"] = state.prog_items[self.player]["progs"] // self.num_prog
         return True
 
     def remove(self, state: CollectionState, item: Item) -> bool:
@@ -295,4 +303,6 @@ class OracleOfSeasonsWorld(World):
         if mapping is not None:
             state.prog_items[self.player][mapping[0]] -= mapping[1]
 
+        state.prog_items[self.player]["progs"] -= 100 # Pre-multiply by 100 to not have to do it the following line
+        state.prog_items[self.player]["prog_percent"] = state.prog_items[self.player]["progs"] // self.num_prog
         return True

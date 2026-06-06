@@ -1,4 +1,6 @@
-from BaseClasses import EntranceType, Item, MultiWorld
+from typing import cast
+
+from BaseClasses import CollectionState, EntranceType, Item, Region
 from Options import Accessibility
 from rule_builder.rules import And, CanReachRegion, Or, True_
 
@@ -22,14 +24,15 @@ from ..data.logic.logic_predicates import (
     oos_can_kill_magunesu,
     oos_can_kill_normal_enemy,
     oos_can_kill_stalfos,
-    oos_can_swim,
     oos_has_feather,
+    oos_has_flippers,
     oos_has_magnet_gloves,
     oos_has_small_keys,
     oos_option_hard_logic,
     oos_option_medium_logic,
 )
 from ..data.logic.overworld_logic import make_holodrum_logic
+from ..data.logic.rulebuilder import Rule
 from ..data.logic.subrosia_logic import make_subrosia_logic
 from ..world import OracleOfSeasonsWorld
 
@@ -122,68 +125,77 @@ def create_connections(world: OracleOfSeasonsWorld, origin_name: str, options):
                 world.create_entrance(region_2, region_1, rule)
 
 
-def apply_self_locking_rules(multiworld: MultiWorld, player: int):
-    if multiworld.worlds[player].options.accessibility == Accessibility.option_full:
+class AlwaysAllowRule:
+    def __init__(self, world: OracleOfSeasonsWorld, rule: Rule, *item_names: str):
+        self.rule = rule.resolve(world)
+        self.item_names = item_names
+        self.player = world.player
+
+    def __call__(self, state: CollectionState, item: Item):
+        return item.player == self.player and item.name in self.item_names and self.rule(state)
+
+
+def apply_self_locking_rules(world: OracleOfSeasonsWorld):
+    if world.options.accessibility == Accessibility.option_full:
         return
 
     # Process self-locking keys first
     key_rules = {
-        "Hero's Cave: Final Chest": lambda state, item: any(
-            [is_small_key(item, player, 0), is_item(item, player, f"Master Key ({DUNGEON_NAMES[0]})")]
+        "Hero's Cave: Final Chest": AlwaysAllowRule(
+            world, CanReachRegion("enter d0"), f"Small Key ({DUNGEON_NAMES[0]})", f"Master Key ({DUNGEON_NAMES[0]})"
         ),
-        "Gnarled Root Dungeon: Item in Basement": lambda state, item: all(
-            [is_small_key(item, player, 1), oos_has_small_keys(1, 1).resolve(multiworld.worlds[player])(state)]
+        "Gnarled Root Dungeon: Item in Basement": AlwaysAllowRule(
+            world, CanReachRegion("d1 railway chest"), f"Small Key ({DUNGEON_NAMES[1]})"
         ),
-        "Snake's Remains: Chest on Terrace": lambda state, item: all(
-            [is_small_key(item, player, 2), oos_has_small_keys(2, 2).resolve(multiworld.worlds[player])(state)]
+        "Snake's Remains: Chest on Terrace": AlwaysAllowRule(
+            world, oos_has_small_keys(2, 2) & CanReachRegion("d2 arrow room"), f"Small Key ({DUNGEON_NAMES[2]})"
         ),
-        "Poison Moth's Lair (1F): Chest in Mimics Room": lambda state, item: all(
-            [is_small_key(item, player, 3), oos_can_kill_normal_enemy().resolve(multiworld.worlds[player])(state)]
+        "Poison Moth's Lair (1F): Chest in Mimics Room": AlwaysAllowRule(
+            world, CanReachRegion("d3 water room") & oos_can_kill_normal_enemy(), f"Small Key ({DUNGEON_NAMES[3]})"
         ),
-        "Dancing Dragon Dungeon (1F): Crumbling Room Chest": lambda state, item: all(
-            [is_small_key(item, player, 4), oos_has_small_keys(4, 2).resolve(multiworld.worlds[player])(state)]
+        "Dancing Dragon Dungeon (1F): Crumbling Room Chest": AlwaysAllowRule(
+            world, CanReachRegion("d4 final minecart"), f"Small Key ({DUNGEON_NAMES[4]})"
         ),
-        "Dancing Dragon Dungeon (1F): Eye Diving Spot Item": lambda state, item: all(
-            [
-                is_small_key(item, player, 4),
-                (oos_has_small_keys(4, 2) & oos_can_swim(False)).resolve(multiworld.worlds[player])(state),
-            ]
+        "Dancing Dragon Dungeon (1F): Eye Diving Spot Item": AlwaysAllowRule(
+            world, CanReachRegion("d4 final minecart") & oos_has_flippers(), f"Small Key ({DUNGEON_NAMES[4]})"
         ),
-        "Unicorn's Cave: Magnet Gloves Chest": lambda state, item: is_small_key(item, player, 5),
-        "Unicorn's Cave: Treadmills Basement Item": lambda state, item: all(
-            [
-                is_small_key(item, player, 5),
-                And(
-                    oos_has_small_keys(5, 3),
-                    CanReachRegion("d5 drop ball"),
-                    oos_has_magnet_gloves(),
-                    Or(oos_can_kill_magunesu(), And(oos_option_medium_logic(), oos_has_feather())),
-                ).resolve(multiworld.worlds[player])(state),
-            ]
+        "Unicorn's Cave: Magnet Gloves Chest": AlwaysAllowRule(
+            world, CanReachRegion("enter d5"), f"Small Key ({DUNGEON_NAMES[5]})"
         ),
-        "Explorer's Crypt (B1F): Chest in Jumping Stalfos Room": lambda state, item: all(
-            [
-                is_small_key(item, player, 7),
-                And(
-                    oos_has_small_keys(7, 4),
-                    Or(oos_can_jump_5_wide_pit(), And(oos_option_hard_logic(), oos_can_jump_1_wide_pit(False))),
-                    oos_can_kill_stalfos(),
-                ).resolve(multiworld.worlds[player])(state),
-            ]
+        "Unicorn's Cave: Treadmills Basement Item": AlwaysAllowRule(
+            world,
+            And(
+                CanReachRegion("enter d5"),
+                oos_has_small_keys(5, 3),
+                CanReachRegion("d5 drop ball"),
+                oos_has_magnet_gloves(),
+                Or(oos_can_kill_magunesu(), And(oos_option_medium_logic(), oos_has_feather())),
+            ),
+            f"Small Key ({DUNGEON_NAMES[5]})",
         ),
-        "Explorer's Crypt (1F): Chest Right of Entrance": lambda state, item: all(
-            [
-                is_small_key(item, player, 7),
-                And(
-                    oos_can_kill_normal_enemy(),
-                    oos_has_small_keys(7, 1),
-                ).resolve(multiworld.worlds[player])(state),
-            ]
+        "Explorer's Crypt (B1F): Chest in Jumping Stalfos Room": AlwaysAllowRule(
+            world,
+            And(
+                CanReachRegion("enter d7"),
+                oos_has_small_keys(7, 4),
+                Or(oos_can_jump_5_wide_pit(), And(oos_option_hard_logic(), oos_can_jump_1_wide_pit(False))),
+                oos_can_kill_stalfos(),
+            ),
+            f"Small Key ({DUNGEON_NAMES[7]})",
+        ),
+        "Explorer's Crypt (1F): Chest Right of Entrance": AlwaysAllowRule(
+            world,
+            And(
+                CanReachRegion("enter d7"),
+                oos_can_kill_normal_enemy(),
+                oos_has_small_keys(7, 1),
+            ),
+            f"Small Key ({DUNGEON_NAMES[7]})",
         ),
     }
 
     for location_name, key_rule in key_rules.items():
-        location = multiworld.get_location(location_name, player)
+        location = world.get_location(location_name)
         location.always_allow = key_rule
 
     # Process other self-locking items
@@ -201,30 +213,51 @@ def apply_self_locking_rules(multiworld: MultiWorld, player: int):
         "Sunken City: Master's Plaque Trade": "Master's Plaque",
         "Subrosia: Market #1": "Star Ore",
     }
-    if not multiworld.worlds[player].options.secret_locations:
+    if not world.options.secret_locations:
         OTHER_SELF_LOCKING_ITEMS["Goron Mountain: Biggoron Trade"] = "Lava Soup"
 
     for loc_name, item_name in OTHER_SELF_LOCKING_ITEMS.items():
-        location = multiworld.get_location(loc_name, player)
-        location.always_allow = make_self_locking_item_lambda(player, item_name)
+        location = world.get_location(loc_name)
+        region = cast(Region, location.parent_region)
+        parent_region = cast(Region, region.entrances[0].parent_region)
+        location.always_allow = AlwaysAllowRule(world, CanReachRegion(parent_region.name), item_name)
 
     # Great Furnace special case
-    location = multiworld.get_location("Subrosia: Item Smelted in Great Furnace", player)
-    location.always_allow = lambda state, item: item.player == player and item.name in ["Red Ore", "Blue Ore"]
+    location = world.get_location("Subrosia: Item Smelted in Great Furnace")
+    location.always_allow = AlwaysAllowRule(world, CanReachRegion("great furnace"), "Red Ore", "Blue Ore")
 
 
-def is_small_key(item: Item, player: int, dungeon: int):
-    return is_item(item, player, f"Small Key ({DUNGEON_NAMES[dungeon]})")
+def apply_rule_forbiddance(world: OracleOfSeasonsWorld):
+    rupee_shops = [
+        "Horon Village: Shop #1",
+        "Horon Village: Shop #2",
+        "Horon Village: Shop #3",
+        "Horon Village: Member's Shop #1",
+        "Horon Village: Member's Shop #2",
+        "Horon Village: Member's Shop #3",
+        "Sunken City: Syrup Shop #1",
+        "Sunken City: Syrup Shop #2",
+        "Sunken City: Syrup Shop #3",
+    ]
+    if world.options.advance_shop:
+        rupee_shops.extend(
+            [
+                "Horon Village: Advance Shop #1",
+                "Horon Village: Advance Shop #2",
+                "Horon Village: Advance Shop #3",
+            ]
+        )
 
+    def rupee_rule(item: Item):
+        return item.player != world.player or not item.code or ((item.code & 0xFF00) != 0x28)  # 28 being rupees
 
-def is_item(item: Item, player: int, item_name: str):
-    return item.player == player and item.name == item_name
+    for rupee_shop in rupee_shops:
+        location = world.get_location(rupee_shop)
+        location.item_rule = rupee_rule
 
+    def ore_rule(item: Item):
+        return item.player != world.player or not item.code or ((item.code & 0xFF00) != 0x37)  # 37 being ores
 
-def make_self_locking_item_lambda(player: int, item_name: str, required_count: int = 0):
-    if required_count == 0:
-        return lambda state, item: item.player == player and item.name == item_name
-
-    return lambda state, item: (
-        item.player == player and item.name == item_name and state.has(item_name, player, required_count)
-    )
+    for ore_shop in ["Subrosia: Market #2", "Subrosia: Market #3", "Subrosia: Market #4", "Subrosia: Market #5"]:
+        location = world.get_location(ore_shop)
+        location.item_rule = ore_rule

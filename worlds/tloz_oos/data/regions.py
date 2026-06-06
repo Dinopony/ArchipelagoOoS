@@ -1,16 +1,7 @@
 NATZU_REGIONS = {
-    "ricky": [
-        "natzu west (ricky)",
-        "natzu east (ricky)"
-    ],
-    "dimitri": [
-        "natzu west (dimitri)",
-        "natzu east (dimitri)"
-    ],
-    "moosh": [
-        "natzu west (moosh)",
-        "natzu east (moosh)"
-    ]
+    "ricky": ["natzu west (ricky)", "natzu east (ricky)"],
+    "dimitri": ["natzu west (dimitri)", "natzu east (dimitri)"],
+    "moosh": ["natzu west (moosh)", "natzu east (moosh)"],
 }
 GASHA_REGIONS = [
     "gasha tree 1",
@@ -28,7 +19,7 @@ GASHA_REGIONS = [
     "gasha tree 13",
     "gasha tree 14",
     "gasha tree 15",
-    "gasha tree 16"
+    "gasha tree 16",
 ]
 D11_REGIONS = [
     "d11 entrance",
@@ -44,7 +35,7 @@ D11_REGIONS = [
     "d11 floor 4 chest",
     "d11 floor 5 gauntlet",
     "d11 floor 5 boomerang maze",
-    "d11 final chest"
+    "d11 final chest",
 ]
 SCRUB_REGIONS = [
     "spool swamp scrub",
@@ -77,7 +68,7 @@ SECRET_REGIONS = [
     "diver secret",
     "smith secret",
     "natzu deku",
-    "deku secret"
+    "deku secret",
 ]
 REGIONS = [
     "impa's house",
@@ -441,4 +432,8 @@ REGIONS = [
     "subrosia market digging spot",
     "subrosia temple digging spot",
     "subrosia bridge digging spot",
+    "maple rare item 1",
+    "maple rare item 2",
+    "maple rare item 3",
+    "maple rare item 4",
 ]

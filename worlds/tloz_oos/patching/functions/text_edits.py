@@ -3,8 +3,8 @@ from typing import Any, cast
 from ...common.patching.text import normalize_text
 from ...common.patching.Util import simple_hex
 from ...common.patching.z80asm.Assembler import Z80Assembler
-from ...data import LOCATIONS_DATA
 from ...data.Constants import SEED_ITEMS
+from ...data.locations import LOCATIONS_DATA
 from ...generation.hints import make_hint_texts
 
 

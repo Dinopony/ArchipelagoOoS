@@ -109,6 +109,7 @@ from .logic_predicates import (
     oos_season_in_western_coast,
     oos_season_in_woods_of_winter,
     oos_self_locking_item,
+    oos_has_prog,
 )
 from .rulebuilder import from_option
 
@@ -179,6 +180,10 @@ def make_holodrum_logic(origin_name: str, options: OracleOfSeasonsOptions) -> li
             False,
             Or(Has("Lon Lon Egg"), oos_self_locking_item("Maple Trade", "Lon Lon Egg")),
         ),
+        ("maple encounter", "maple rare item 1", False, oos_has_prog(15)),
+        ("maple rare item 1", "maple rare item 2", False, oos_has_prog(30)),
+        ("maple rare item 2", "maple rare item 3", False, oos_has_prog(45)),
+        ("maple rare item 3", "maple rare item 4", False, oos_has_prog(60)),
         ("horon village", "mayor's gift", False, True_()),
         ("horon village", "vasu's gift", False, True_()),
         ("horon village", "mayor's house secret room", False, oos_can_remove_rockslide(False)),
@@ -1499,7 +1504,7 @@ def make_holodrum_logic(origin_name: str, options: OracleOfSeasonsOptions) -> li
                 oos_has_sword(False),
                 oos_has_feather(),
                 Or(oos_option_hard_logic(), oos_has_rod()),
-                oos_has_hearts_by_difficulty(8, 6, 4)
+                oos_has_hearts_by_difficulty(8, 6, 4),
             ),
         ),
         (

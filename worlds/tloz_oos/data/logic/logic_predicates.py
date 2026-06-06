@@ -22,7 +22,7 @@ from ...Options import (
     OracleOfSeasonsTreehouseOldManRequirement,
 )
 from ..Constants import DUNGEON_NAMES, SEASON_AUTUMN, SEASON_ITEMS, SEASON_SPRING, SEASON_SUMMER, SEASON_WINTER
-from ..Regions import GASHA_SPOT_REGIONS
+from ..regions import GASHA_SPOT_REGIONS
 from .rulebuilder import ItemInLocation, LostWoods, Rule, from_bool, from_option, from_world_field
 
 # Items predicates ############################################################
@@ -216,6 +216,8 @@ def oos_has_hearts_by_difficulty(hearts_casual: int = 20, hearts_medium: int = 2
         oos_has_hearts(hearts_hard, OracleOfSeasonsLogicDifficulty.option_hard),
     )
 
+def oos_has_prog(prog_percent: int):
+    return Has("prog_percent", prog_percent)
 
 # Options and generation predicates ###########################################
 

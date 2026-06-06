@@ -2,7 +2,7 @@ import logging
 
 from Options import OptionError
 
-from ..data import ITEMS_DATA, LOCATIONS_DATA
+from ..data import ITEMS_DATA
 from ..data.Constants import (
     AVERAGE_PRICE_PER_LOCATION,
     DIRECTION_LEFT,
@@ -12,6 +12,7 @@ from ..data.Constants import (
     SEASONS,
     VALID_RUPEE_PRICE_VALUES,
 )
+from ..data.locations import LOCATIONS_DATA
 from ..Options import OracleOfSeasonsLinkedHerosCave, OracleOfSeasonsLogicDifficulty, OracleOfSeasonsOldMenShuffle
 from ..Util import get_old_man_values_pool
 from ..world import OracleOfSeasonsWorld

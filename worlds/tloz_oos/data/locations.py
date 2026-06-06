@@ -1,6 +1,18 @@
 from typing import Any
 
-from .Constants import *
+from .Constants import (
+    COLLECT_CHEST,
+    COLLECT_D4_SCRUB_ROOM,
+    COLLECT_D5_ARMOS_PUZZLE,
+    COLLECT_DIG,
+    COLLECT_DIVE,
+    COLLECT_DIVER_ROOM,
+    COLLECT_DROP,
+    COLLECT_MAKU_TREE,
+    COLLECT_POE_SKIP_ROOM,
+    COLLECT_POOF,
+    COLLECT_TOUCH,
+)
 
 LOCATIONS_DATA: dict[str, dict[str, Any]] = {
     "North Horon: Chest Across Bridge": {
@@ -347,7 +359,6 @@ LOCATIONS_DATA: dict[str, dict[str, Any]] = {
         "vanilla_item": "Potion",  # Flute should be there, but it was moved to Syrup Shop for practical reasons
         "flag_byte": 0xc640,       # when enabling "Enforce Potion in Horon Shop".
         "bit_mask": 0x80,
-        "conditional": True,
         "scouting_byte": 0xc8a6,
         "room": 0x03a6,
         "collect": COLLECT_TOUCH,
@@ -379,7 +390,8 @@ LOCATIONS_DATA: dict[str, dict[str, Any]] = {
     "Horon Village: Member's Shop #3": {
         "region_id": "member's shop",
         "vanilla_item": "Seed Satchel",
-        # Add a 3rd satchel that is usually obtained in linked games (99 seeds) while removing the treasure map which is not implemented yet
+        # Add a 3rd satchel that is usually obtained in linked games (99 seeds)
+        # while removing the treasure map which is not implemented yet
         "flag_byte": 0xc63f,
         "bit_mask": 0x08,
         "scouting_byte": 0xc8b0,
@@ -2411,6 +2423,34 @@ LOCATIONS_DATA: dict[str, dict[str, Any]] = {
         "dungeon": 11,
         "room": 0x0534,
         "collect": COLLECT_CHEST,
+    },
+    "Maple Rare Drop #1": {
+        "region_id": "maple rare item 1",
+        "vanilla_item": "Gasha Seed",
+        "flag_byte": 0xc641,
+        "bit_mask": 0x10,
+        "collect": COLLECT_TOUCH,
+    },
+    "Maple Rare Drop #2": {
+        "region_id": "maple rare item 2",
+        "vanilla_item": "Random Ring",
+        "flag_byte": 0xc641,
+        "bit_mask": 0x20,
+        "collect": COLLECT_TOUCH,
+    },
+    "Maple Rare Drop #3": {
+        "region_id": "maple rare item 3",
+        "vanilla_item": "Random Ring",
+        "flag_byte": 0xc641,
+        "bit_mask": 0x40,
+        "collect": COLLECT_TOUCH,
+    },
+    "Maple Rare Drop #4": {
+        "region_id": "maple rare item 4",
+        "vanilla_item": "Piece of Heart",
+        "flag_byte": 0xc641,
+        "bit_mask": 0x80,
+        "collect": COLLECT_TOUCH,
     },
 }
 
