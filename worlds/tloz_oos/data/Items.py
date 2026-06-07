@@ -145,57 +145,68 @@ ITEMS_DATA: dict[str, dict[str, Any]] = {
     "Rupees (1)": {
         "classification": ItemClassification.filler,
         "id": 0x28,
-        "subid": 0x00
+        "subid": 0x00,
+        "repeatable": True
     },
     "Rupees (5)": {
         "classification": ItemClassification.filler,
         "id": 0x28,
-        "subid": 0x01
+        "subid": 0x01,
+        "repeatable": True
     },
     "Rupees (10)": {
         "classification": ItemClassification.filler,
         "id": 0x28,
-        "subid": 0x02
+        "subid": 0x02,
+        "repeatable": True
     },
     "Rupees (20)": {
         "classification": ItemClassification.filler,
         "id": 0x28,
-        "subid": 0x03
+        "subid": 0x03,
+        "repeatable": True
     },
     "Rupees (30)": {
         "classification": ItemClassification.filler,
         "id": 0x28,
-        "subid": 0x04
+        "subid": 0x04,
+        "repeatable": True
     },
     "Rupees (50)": {
         "classification": ItemClassification.filler,
         "id": 0x28,
-        "subid": 0x05
+        "subid": 0x05,
+        "repeatable": True
     },
     "Rupees (100)": {
         "classification": ItemClassification.filler,
         "id": 0x28,
-        "subid": 0x06
+        "subid": 0x06,
+        "repeatable": True
     },
     "Rupees (200)": {
         "classification": ItemClassification.filler,
         "id": 0x28,
-        "subid": 0x08
+        "subid": 0x08,
+        "repeatable": True
     },
     "Ore Chunks (10)": {
         "classification": ItemClassification.filler,
         "id": 0x37,
-        "subid": 0x02
+        "subid": 0x02,
+        "repeatable": True
     },
     "Ore Chunks (25)": {
         "classification": ItemClassification.filler,
         "id": 0x37,
-        "subid": 0x01
+        "subid": 0x01,
+        "repeatable": True
     },
     "Ore Chunks (50)": {
         "classification": ItemClassification.filler,
         "id": 0x37,
-        "subid": 0x00
+        "subid": 0x00,
+        "repeatable": True
     },
     "Heart Container": {
         "classification": ItemClassification.useful,
@@ -217,7 +228,8 @@ ITEMS_DATA: dict[str, dict[str, Any]] = {
     },
     "Potion": {
         "classification": ItemClassification.filler,
-        "id": 0x2f
+        "id": 0x2f,
+        "repeatable": True
     },
 
     "Small Key (Hero's Cave)": {
