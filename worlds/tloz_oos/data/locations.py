@@ -249,6 +249,7 @@ LOCATIONS_DATA: dict[str, dict[str, Any]] = {
         "collect": COLLECT_TOUCH,
         "map_tile": 0x5e,
         "symbolic_name": "syrupShop1",
+        "shop": True,
     },
     "Sunken City: Syrup Shop #2": {
         "region_id": "syrup shop",
@@ -261,6 +262,7 @@ LOCATIONS_DATA: dict[str, dict[str, Any]] = {
         "collect": COLLECT_TOUCH,
         "map_tile": 0x5e,
         "symbolic_name": "syrupShop2",
+        "shop": True,
     },
     "Sunken City: Syrup Shop #3": {
         "region_id": "syrup shop",
@@ -273,6 +275,7 @@ LOCATIONS_DATA: dict[str, dict[str, Any]] = {
         "collect": COLLECT_TOUCH,
         "map_tile": 0x5e,
         "symbolic_name": "syrupShop3",
+        "shop": True,
     },
 
     "Eyeglass Lake: Chest in Dried Lake East Cave": {
@@ -342,6 +345,7 @@ LOCATIONS_DATA: dict[str, dict[str, Any]] = {
         "collect": COLLECT_TOUCH,
         "map_tile": 0xe6,
         "symbolic_name": "horonShop1",
+        "shop": True,
     },
     "Horon Village: Shop #2": {
         "region_id": "horon shop",
@@ -353,6 +357,7 @@ LOCATIONS_DATA: dict[str, dict[str, Any]] = {
         "collect": COLLECT_TOUCH,
         "map_tile": 0xe6,
         "symbolic_name": "horonShop2",
+        "shop": True,
     },
     "Horon Village: Shop #3": {
         "region_id": "horon shop",
@@ -364,6 +369,7 @@ LOCATIONS_DATA: dict[str, dict[str, Any]] = {
         "collect": COLLECT_TOUCH,
         "map_tile": 0xe6,
         "symbolic_name": "horonShop3",
+        "shop": True,
     },
     "Horon Village: Member's Shop #1": {
         "region_id": "member's shop",
@@ -375,6 +381,7 @@ LOCATIONS_DATA: dict[str, dict[str, Any]] = {
         "collect": COLLECT_TOUCH,
         "map_tile": 0xe6,
         "symbolic_name": "memberShop1",
+        "shop": True,
     },
     "Horon Village: Member's Shop #2": {
         "region_id": "member's shop",
@@ -386,6 +393,7 @@ LOCATIONS_DATA: dict[str, dict[str, Any]] = {
         "collect": COLLECT_TOUCH,
         "map_tile": 0xe6,
         "symbolic_name": "memberShop2",
+        "shop": True,
     },
     "Horon Village: Member's Shop #3": {
         "region_id": "member's shop",
@@ -399,6 +407,7 @@ LOCATIONS_DATA: dict[str, dict[str, Any]] = {
         "collect": COLLECT_TOUCH,
         "map_tile": 0xe6,
         "symbolic_name": "memberShop3",
+        "shop": True,
     },
     "Horon Village: Advance Shop #1": {
         "region_id": "advance shop",
@@ -411,6 +420,7 @@ LOCATIONS_DATA: dict[str, dict[str, Any]] = {
         "collect": COLLECT_TOUCH,
         "map_tile": 0xc5,
         "symbolic_name": "advanceShop1",
+        "shop": True,
     },
     "Horon Village: Advance Shop #2": {
         "region_id": "advance shop",
@@ -423,6 +433,7 @@ LOCATIONS_DATA: dict[str, dict[str, Any]] = {
         "collect": COLLECT_TOUCH,
         "map_tile": 0xc5,
         "symbolic_name": "advanceShop2",
+        "shop": True,
     },
     "Horon Village: Advance Shop #3": {
         "region_id": "advance shop",
@@ -435,6 +446,7 @@ LOCATIONS_DATA: dict[str, dict[str, Any]] = {
         "collect": COLLECT_TOUCH,
         "map_tile": 0xc5,
         "symbolic_name": "advanceShop3",
+        "shop": True,
     },
     "Subrosia: Tower of Winter": {
         "region_id": "tower of winter",
@@ -2429,28 +2441,24 @@ LOCATIONS_DATA: dict[str, dict[str, Any]] = {
         "vanilla_item": "Gasha Seed",
         "flag_byte": 0xc641,
         "bit_mask": 0x10,
-        "collect": COLLECT_TOUCH,
     },
     "Maple Rare Drop #2": {
         "region_id": "maple rare item 2",
         "vanilla_item": "Random Ring",
         "flag_byte": 0xc641,
         "bit_mask": 0x20,
-        "collect": COLLECT_TOUCH,
     },
     "Maple Rare Drop #3": {
         "region_id": "maple rare item 3",
         "vanilla_item": "Random Ring",
         "flag_byte": 0xc641,
         "bit_mask": 0x40,
-        "collect": COLLECT_TOUCH,
     },
     "Maple Rare Drop #4": {
         "region_id": "maple rare item 4",
         "vanilla_item": "Piece of Heart",
         "flag_byte": 0xc641,
         "bit_mask": 0x80,
-        "collect": COLLECT_TOUCH,
     },
 }
 

@@ -326,6 +326,12 @@ def define_location_constants(
         assembler.define_byte(f"locations.{symbolic_name}.id", item_id)
         assembler.define_byte(f"locations.{symbolic_name}.subid", item_subid)
         assembler.define_word(f"locations.{symbolic_name}", (item_id << 8) + item_subid)
+        if "shop" in location_data:
+            item = item_data[item["item"]]
+            if "repeatable" in item:
+                assembler.define_byte(f"locations.{symbolic_name}.shopByte", 0x80)
+            else:
+                assembler.define_byte(f"locations.{symbolic_name}.shopByte", 0xff)
 
     # Process deterministic Gasha Nut locations to define a table
     deterministic_gasha_table = []

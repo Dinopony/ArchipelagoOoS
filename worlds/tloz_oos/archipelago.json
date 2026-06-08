@@ -12,6 +12,7 @@
   "license": "MIT",
   "repo_url": "https://github.com/Dinopony/ArchipelagoOoS",
   "flags": [
-    "supports_deathlink"
+    "supports_deathlink",
+    "supports_movelink"
   ]
 }

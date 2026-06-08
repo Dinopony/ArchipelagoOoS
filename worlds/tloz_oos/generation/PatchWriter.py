@@ -49,10 +49,6 @@ def oos_create_ap_procedure_patch(world: OracleOfSeasonsWorld) -> OoSProcedurePa
                 "player": world.multiworld.get_player_name(loc.item.player),
                 "progression": loc.item.advancement
             }
-        if loc.item.player == loc.player and "Seed" not in loc.item.name:
-            patch_data["locations"][loc.name] = {
-                "item": "Friendship Ring"
-            }
 
     patch_data_item_hints = []
     for item_hint in world.item_hints:

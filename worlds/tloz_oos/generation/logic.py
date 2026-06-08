@@ -249,14 +249,14 @@ def apply_rule_forbiddance(world: OracleOfSeasonsWorld):
         )
 
     def rupee_rule(item: Item):
-        return item.player != world.player or not item.code or ((item.code & 0xFF00) != 0x28)  # 28 being rupees
+        return item.player != world.player or not item.code or ((item.code & 0xFF00) != 0x2800)  # 28 being rupees
 
     for rupee_shop in rupee_shops:
         location = world.get_location(rupee_shop)
         location.item_rule = rupee_rule
 
     def ore_rule(item: Item):
-        return item.player != world.player or not item.code or ((item.code & 0xFF00) != 0x37)  # 37 being ores
+        return item.player != world.player or not item.code or ((item.code & 0xFF00) != 0x3700)  # 37 being ores
 
     for ore_shop in ["Subrosia: Market #2", "Subrosia: Market #3", "Subrosia: Market #4", "Subrosia: Market #5"]:
         location = world.get_location(ore_shop)
