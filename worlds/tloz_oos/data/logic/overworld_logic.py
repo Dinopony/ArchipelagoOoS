@@ -2,7 +2,6 @@ from rule_builder.rules import And, CanReachRegion, Has, Or, True_
 
 from ...Options import (
     OracleOfSeasonsIncludeSecretLocations,
-    OracleOfSeasonsLinkedHerosCave,
     OracleOfSeasonsLogicDifficulty,
     OracleOfSeasonsOptions,
     OracleOfSeasonsRemoveD0AltEntrance,
@@ -73,6 +72,7 @@ from .logic_predicates import (
     oos_has_mystery_seeds,
     oos_has_noble_sword,
     oos_has_pegasus_seeds,
+    oos_has_prog,
     oos_has_required_jewels,
     oos_has_rod,
     oos_has_rupees_for_shop,
@@ -109,7 +109,6 @@ from .logic_predicates import (
     oos_season_in_western_coast,
     oos_season_in_woods_of_winter,
     oos_self_locking_item,
-    oos_has_prog,
 )
 from .rulebuilder import from_option
 
@@ -1157,7 +1156,7 @@ def make_holodrum_logic(origin_name: str, options: OracleOfSeasonsOptions) -> li
                 Or(
                     oos_has_bombs_for_tiles(),
                     And(  # Bombchu can only destroy the second block, so we need to use cape to jump around the first
-                        oos_option_medium_logic(), oos_has_bombchus_for_tiles(), oos_can_use_pegasus_seeds()
+                        oos_option_hard_logic(), oos_has_bombchus_for_tiles(), oos_can_use_pegasus_seeds()
                     ),
                 ),
             ),
