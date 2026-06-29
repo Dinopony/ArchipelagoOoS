@@ -107,7 +107,7 @@ def generate_early(world: OracleOfSeasonsWorld) -> None:
 def pick_essences_in_game(world: OracleOfSeasonsWorld) -> None:
     # -1 is the named range to set the placed essences equal to the required essences
     if world.options.placed_essences.value == -1:
-        world.options.placed_essences.value = world.options.placed_essences.value
+        world.options.placed_essences.value = world.options.required_essences.value
 
     # If the value for "Placed Essences" is lower than "Required Essences" (which can happen when using random
     # values for both), a new random value is automatically picked in the valid range.
