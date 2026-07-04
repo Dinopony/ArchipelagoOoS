@@ -216,8 +216,10 @@ def oos_has_hearts_by_difficulty(hearts_casual: int = 20, hearts_medium: int = 2
         oos_has_hearts(hearts_hard, OracleOfSeasonsLogicDifficulty.option_hard),
     )
 
+
 def oos_has_prog(prog_percent: int):
     return Has("prog_percent", prog_percent)
+
 
 # Options and generation predicates ###########################################
 
@@ -685,8 +687,10 @@ def oos_can_break_crystal() -> Rule:
         oos_has_sword(),
         oos_has_bombs_for_tiles(),
         oos_has_bracelet(),
-        And(oos_option_medium_logic(), Has("Expert's Ring")),
-        And(oos_option_medium_logic(), oos_has_bombchus_for_tiles()),
+        And(
+            oos_option_medium_logic(),
+            Or(Has("Expert's Ring"), oos_has_bombchus_for_tiles(), oos_can_use_ember_seeds(False)),
+        ),
     )
 
 
