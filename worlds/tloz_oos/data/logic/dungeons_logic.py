@@ -1,6 +1,7 @@
 from rule_builder.rules import And, CanReachRegion, Has, Or, True_
 from worlds.tloz_oos.data.logic import LogicLine
 
+from ... import OracleOfSeasonsWorld
 from ...Options import (
     OracleOfSeasonsOptions,
 )
@@ -172,10 +173,16 @@ def make_d1_logic() -> list[LogicLine]:
     ]
 
 
-def make_d2_logic(options: OracleOfSeasonsOptions) -> list[LogicLine]:
+def make_d2_logic(world: OracleOfSeasonsWorld, options: OracleOfSeasonsOptions) -> list[LogicLine]:
     return [
         # 0 keys
-        ("enter d2", "d2 torch room", True, True_()),
+        (
+            "enter d2",
+            "d2 torch room",
+            # Do not allow for turning back if the dungeon is excluded
+            not options.exclude_dungeons_without_essence.value or "Gift of Time" in world.essences_in_game,
+            True_(),
+        ),
         ("d2 torch room", "d2 left from entrance", False, True_()),
         ("d2 torch room", "d2 rope drop", False, Or(oos_can_kill_normal_enemy(), oos_has_switch_hook())),
         ("d2 torch room", "d2 arrow room", False, oos_can_use_ember_seeds(True)),
@@ -227,8 +234,6 @@ def make_d2_logic(options: OracleOfSeasonsOptions) -> list[LogicLine]:
             False,
             And(oos_has_small_keys(2, 2), oos_self_locking_small_key("Snake's Remains: Chest on Terrace", 2)),
         ),
-        # You can take the Facade miniboss teleporter to reach dungeon entrance, even if you entered the dungeon
-        # through the alt-entrance
         (
             "d2 spinner",
             "d2 wild bombs",
@@ -244,6 +249,8 @@ def make_d2_logic(options: OracleOfSeasonsOptions) -> list[LogicLine]:
                 ),
             ),
         ),
+        # You can take the Facade miniboss teleporter to reach dungeon entrance, even if you entered the dungeon
+        # through the alt-entrance
         ("d2 spinner", "d2 torch room", False, True_()),
         ("d2 spinner", "dodongo owl", False, oos_can_use_mystery_seeds()),
         (

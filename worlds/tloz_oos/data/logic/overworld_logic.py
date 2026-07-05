@@ -1,5 +1,6 @@
 from rule_builder.rules import And, CanReachRegion, Has, Or, True_
 
+from ... import OracleOfSeasonsWorld
 from ...Options import (
     OracleOfSeasonsIncludeSecretLocations,
     OracleOfSeasonsLogicDifficulty,
@@ -113,9 +114,15 @@ from .logic_predicates import (
 from .rulebuilder import from_option
 
 
-def make_holodrum_logic(origin_name: str, options: OracleOfSeasonsOptions) -> list[LogicLine]:
+def make_holodrum_logic(world: OracleOfSeasonsWorld, options: OracleOfSeasonsOptions) -> list[LogicLine]:
     return [
-        (origin_name, "gasha tree 1", False, oos_can_harvest_gasha(1), options.deterministic_gasha_locations >= 1),
+        (
+            world.origin_region_name,
+            "gasha tree 1",
+            False,
+            oos_can_harvest_gasha(1),
+            options.deterministic_gasha_locations >= 1,
+        ),
         ("gasha tree 1", "gasha tree 2", False, oos_can_harvest_gasha(2), options.deterministic_gasha_locations >= 2),
         ("gasha tree 2", "gasha tree 3", False, oos_can_harvest_gasha(3), options.deterministic_gasha_locations >= 3),
         ("gasha tree 3", "gasha tree 4", False, oos_can_harvest_gasha(4), options.deterministic_gasha_locations >= 4),
@@ -438,7 +445,8 @@ def make_holodrum_logic(origin_name: str, options: OracleOfSeasonsOptions) -> li
         (
             "d2 roof",
             "d2 alt entrances",
-            True,
+            # Do not allow for turning back if the dungeon is excluded
+            not options.exclude_dungeons_without_essence.value or "Gift of Time" in world.essences_in_game,
             from_option(OracleOfSeasonsRemoveD2AltEntrance, OracleOfSeasonsRemoveD2AltEntrance.option_false),
         ),
         # EYEGLASS LAKE SECTOR #########################################################################################

@@ -121,7 +121,7 @@ class OracleOfSeasonsWorld(World):
     def set_rules(self) -> None:
         from .generation.logic import apply_rule_forbiddance, apply_self_locking_rules, create_connections
 
-        create_connections(self, self.origin_region_name, self.options)
+        create_connections(self, self.options)
         apply_self_locking_rules(self)
         apply_rule_forbiddance(self)
         self.set_completion_rule(Has("_beaten_game"))

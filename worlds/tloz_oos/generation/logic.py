@@ -63,13 +63,13 @@ def create_randomizable_connections(
         entrance.randomization_type = EntranceType.TWO_WAY
 
 
-def create_connections(world: OracleOfSeasonsWorld, origin_name: str, options):
+def create_connections(world: OracleOfSeasonsWorld, options):
     all_logic: list[list[LogicLine]] = [
-        make_holodrum_logic(origin_name, options),
+        make_holodrum_logic(world, options),
         make_subrosia_logic(options),
         make_d0_logic(),
         make_d1_logic(),
-        make_d2_logic(options),
+        make_d2_logic(world, options),
         make_d3_logic(),
         make_d4_logic(options),
         make_d5_logic(),
