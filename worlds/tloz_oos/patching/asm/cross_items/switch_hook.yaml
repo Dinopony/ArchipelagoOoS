@@ -1,8 +1,5 @@
 # Note: in ages, INTERAC_DOOR_CONTROLLER checks the switch hook state to not close during switches,
 # this is not yet implemented (does it even impact the game?)
-# TODO: Graphics are corrupted when switching with a flower.
-# This could be fixed by adding the flower sprite to the switch hook (used) sprite,
-# then editing the bank 47 redirect to use that sprite
 
 46/4b16/parentItemCode_switchHook_46: |
   /copy o,$06,$0b16,$51

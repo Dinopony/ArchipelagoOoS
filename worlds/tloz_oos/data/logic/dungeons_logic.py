@@ -20,6 +20,7 @@ from .logic_predicates import (
     oos_can_jump_4_wide_pit,
     oos_can_jump_5_wide_liquid,
     oos_can_jump_5_wide_pit,
+    oos_can_jump_6_wide_liquid,
     oos_can_jump_6_wide_pit,
     oos_can_kill_armored_enemy,
     oos_can_kill_d2_far_moblin,
@@ -1317,8 +1318,11 @@ def make_d8_logic() -> list[LogicLine]:
             False,
             Or(
                 oos_has_magnet_gloves(),
+                # Jump from the right side onto the button directly
+                oos_can_jump_6_wide_liquid(),
                 And(
-                    # Clip into the block right of staircase with pegasus seeds and use the cane of somaria to activate the bridge, save&exit and redo the whole dungeon to get to the other side
+                    # Clip into the block right of staircase with pegasus seeds and use the cane of somaria to
+                    # activate the bridge, save&exit and redo the whole dungeon to get to the other side
                     oos_option_hard_logic(),
                     oos_can_use_pegasus_seeds(),
                     oos_has_cane(),

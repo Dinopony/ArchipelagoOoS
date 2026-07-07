@@ -522,6 +522,15 @@ def oos_can_jump_5_wide_liquid() -> Rule:
     )
 
 
+def oos_can_jump_6_wide_liquid() -> Rule:
+    return And(
+        oos_option_hard_logic(),
+        oos_has_cape(),
+        oos_can_use_pegasus_seeds(),
+        oos_has_bombs_for_bombjump(),
+    )
+
+
 def oos_can_jump_1_wide_pit(can_summon_companion: bool) -> Rule:
     return Or(
         oos_has_feather(), And(from_bool(can_summon_companion), Or(oos_can_summon_moosh(), oos_can_summon_ricky()))
