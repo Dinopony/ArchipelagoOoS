@@ -84,8 +84,6 @@ class OracleOfSeasonsWorld(World):
 
     def __init__(self, multiworld: MultiWorld, player: int):
         super().__init__(multiworld, player)
-        self.item_mapping["uh"] = "oh"
-
         self.pre_fill_items: list[Item] = []
         self.default_seasons: dict[str, int] = DEFAULT_SEASONS.copy()
         self.dungeon_entrances: dict[str, str] = DUNGEON_CONNECTIONS.copy()
