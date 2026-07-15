@@ -1,6 +1,6 @@
 import time
 from collections import defaultdict
-from typing import TYPE_CHECKING, Any, Dict, Set
+from typing import TYPE_CHECKING, Any
 
 import worlds._bizhawk as bizhawk
 from NetUtils import ClientStatus
@@ -30,29 +30,28 @@ RAM_ADDRS = {
     "received_item_index": (0xC6A0, 2, "System Bus"),
     "received_item": (0xCBFB, 1, "System Bus"),
     "location_flags": (0xC600, 0x500, "System Bus"),
-
     "current_map_group": (0xCC49, 1, "System Bus"),
     "current_map_id": (0xCC4C, 1, "System Bus"),
     "is_dead": (0xCC34, 1, "System Bus"),
 }
 
 GASHA_ADDRS = {
-    "Mount Cucco Gasha Spot": (0xc71f, 0x00),
-    "Tarm Ruins Gasha Spot": (0xc722, 0x01),
-    "Goron Mountain West Gasha Spot": (0xc738, 0x02),
-    "Goron Mountain East Gasha Spot": (0xc73b, 0x03),
-    "Onox Gasha Spot": (0xc744, 0x04),
-    "Sunken City Gasha Spot": (0xc73f, 0x05),
-    "Holodrum Plain Island Gasha Spot": (0xc775, 0x06),
-    "Spool Swamp North Gasha Spot": (0xc780, 0x07),
-    "Eyeglass Lake Gasha Spot": (0xc789, 0x08),
-    "Lower Holodrum Plain Gasha Spot": (0xc795, 0x09),
-    "North Horon Gasha Spot": (0xc7a6, 0x0a),
-    "Eastern Suburbs Gasha Spot": (0xc7ac, 0x0b),
-    "Spool Swamp South Gasha Spot": (0xc7c0, 0x0c),
-    "Samasa Desert Gasha Spot": (0xc7ef, 0x0d),
-    "Western Coast Gasha Spot": (0xc7f0, 0x0e),
-    "Horon Village Gasha Spot": (0xc7c8, 0x0f),
+    "Mount Cucco Gasha Spot": (0xC71F, 0x00),
+    "Tarm Ruins Gasha Spot": (0xC722, 0x01),
+    "Goron Mountain West Gasha Spot": (0xC738, 0x02),
+    "Goron Mountain East Gasha Spot": (0xC73B, 0x03),
+    "Onox Gasha Spot": (0xC744, 0x04),
+    "Sunken City Gasha Spot": (0xC73F, 0x05),
+    "Holodrum Plain Island Gasha Spot": (0xC775, 0x06),
+    "Spool Swamp North Gasha Spot": (0xC780, 0x07),
+    "Eyeglass Lake Gasha Spot": (0xC789, 0x08),
+    "Lower Holodrum Plain Gasha Spot": (0xC795, 0x09),
+    "North Horon Gasha Spot": (0xC7A6, 0x0A),
+    "Eastern Suburbs Gasha Spot": (0xC7AC, 0x0B),
+    "Spool Swamp South Gasha Spot": (0xC7C0, 0x0C),
+    "Samasa Desert Gasha Spot": (0xC7EF, 0x0D),
+    "Western Coast Gasha Spot": (0xC7F0, 0x0E),
+    "Horon Village Gasha Spot": (0xC7C8, 0x0F),
 }
 
 
@@ -60,11 +59,11 @@ class OracleOfSeasonsClient(BizHawkClient):
     game = "The Legend of Zelda - Oracle of Seasons"
     system = "GBC"
     patch_suffix = ".apoos"
-    local_checked_locations: Set[int]
-    local_scouted_locations: Dict[int, set[int]]
-    local_tracker: Dict[str, Any]
-    item_id_to_name: Dict[int, str]
-    location_name_to_id: Dict[str, int]
+    local_checked_locations: set[int]
+    local_scouted_locations: dict[int, set[int]]
+    local_tracker: dict[str, Any]
+    item_id_to_name: dict[int, str]
+    location_name_to_id: dict[str, int]
 
     def __init__(self) -> None:
         super().__init__()
@@ -130,25 +129,28 @@ class OracleOfSeasonsClient(BizHawkClient):
             await ctx.update_death_link(True)
 
         try:
-            read_result = await bizhawk.read(ctx.bizhawk_ctx, [
-                RAM_ADDRS["game_state"],  # Current state of game (is the player actually in-game?)
-                RAM_ADDRS["received_item_index"],  # Number of received items
-                RAM_ADDRS["received_item"],  # Received item still pending?
-                RAM_ADDRS["location_flags"],  # Location flags
-                RAM_ADDRS["current_map_group"],  # Current map group & id where the player is currently located
-                RAM_ADDRS["current_map_id"],  # ^^^
-                RAM_ADDRS["is_dead"]
-            ])
+            read_result = await bizhawk.read(
+                ctx.bizhawk_ctx,
+                [
+                    RAM_ADDRS["game_state"],  # Current state of game (is the player actually in-game?)
+                    RAM_ADDRS["received_item_index"],  # Number of received items
+                    RAM_ADDRS["received_item"],  # Received item still pending?
+                    RAM_ADDRS["location_flags"],  # Location flags
+                    RAM_ADDRS["current_map_group"],  # Current map group & id where the player is currently located
+                    RAM_ADDRS["current_map_id"],  # ^^^
+                    RAM_ADDRS["is_dead"],
+                ],
+            )
 
             # If player is not in-game, don't do anything else
             if read_result is None or read_result[0][0] != 2:
                 return
 
             num_received_items = int.from_bytes(read_result[1], "little")
-            received_item_is_empty = (read_result[2][0] == 0)
+            received_item_is_empty = read_result[2][0] == 0
             flag_bytes = read_result[3]
             current_room = (read_result[4][0] << 8) | read_result[5][0]
-            is_dead = (read_result[6][0] != 0)
+            is_dead = read_result[6][0] != 0
 
             if "MoveLink" in ctx.tags:
                 # We need to move the player first to not teleport the player away from an item
@@ -229,11 +231,7 @@ class OracleOfSeasonsClient(BizHawkClient):
                     self.local_scouted_locations[player].add(location_id)
 
         for player in new_scouted_locations:
-            await ctx.send_msgs([{
-                "cmd": "CreateHints",
-                "locations": new_scouted_locations[player],
-                "player": player
-            }])
+            await ctx.send_msgs([{"cmd": "CreateHints", "locations": new_scouted_locations[player], "player": player}])
             # We could use _read_hints_{self.ctx.team}_{player} to check if the hint was created
 
     async def process_received_items(self, ctx: "BizHawkClientContext", num_received_items: int):
@@ -244,18 +242,20 @@ class OracleOfSeasonsClient(BizHawkClient):
             item_id = next_item // 0x100
             item_subid = next_item % 0x100
             if item_id == 0x30:  # Small or master key
-                item_subid = item_subid & 0x7F  # TODO: Remove this if/when both master and small can be obtained in the same world
+                item_subid = (
+                    item_subid & 0x7F
+                )  # TODO: Remove this if/when both master and small can be obtained in the same world
             await bizhawk.write(ctx.bizhawk_ctx, [(0xCBFB, [item_id, item_subid], "System Bus")])
 
     async def process_game_completion(self, ctx: "BizHawkClientContext", flag_bytes, current_room: int):
         game_clear = False
         if ctx.slot_data["options"]["goal"] == OracleOfSeasonsGoal.option_beat_onox:
             # Room with Din's descending crystal was reached, it's a win
-            game_clear = (current_room == ROOM_AFTER_DRAGONOX)
+            game_clear = current_room == ROOM_AFTER_DRAGONOX
         elif ctx.slot_data["options"]["goal"] == OracleOfSeasonsGoal.option_beat_ganon:
             # Room with Zelda lying down was reached, and Ganon was beaten
             ganon_flag_offset = 0xCA9A - RAM_ADDRS["location_flags"][0]
-            ganon_was_beaten = (flag_bytes[ganon_flag_offset] & 0x80 == 0x80)
+            ganon_was_beaten = flag_bytes[ganon_flag_offset] & 0x80 == 0x80
             game_clear = (current_room == ROOM_ZELDA_ENDING) and ganon_was_beaten
 
         if game_clear:
@@ -263,10 +263,7 @@ class OracleOfSeasonsClient(BizHawkClient):
                 get_settings().tloz_oos_options.beat_tutorial = True
                 get_settings()._changed = True
 
-            await ctx.send_msgs([{
-                "cmd": "StatusUpdate",
-                "status": ClientStatus.CLIENT_GOAL
-            }])
+            await ctx.send_msgs([{"cmd": "StatusUpdate", "status": ClientStatus.CLIENT_GOAL}])
 
     async def process_deathlink(self, ctx: "BizHawkClientContext", is_dead):
         if ctx.last_death_link > self.last_deathlink and not is_dead:
@@ -294,7 +291,7 @@ class OracleOfSeasonsClient(BizHawkClient):
         local_tracker = dict(self.local_tracker)
 
         # Gasha handling
-        byte_offset = 0xC64a - RAM_ADDRS["location_flags"][0]
+        byte_offset = 0xC64A - RAM_ADDRS["location_flags"][0]
         gasha_seed_bytes = flag_bytes[byte_offset] + flag_bytes[byte_offset + 1] * 0x100
         for gasha_name in GASHA_ADDRS:
             (byte_addr, flag) = GASHA_ADDRS[gasha_name]
@@ -315,13 +312,8 @@ class OracleOfSeasonsClient(BizHawkClient):
         local_tracker["Current Room"] = current_room
 
         # Beast tracking
-        byte_offset = 0xc6c9 - RAM_ADDRS["location_flags"][0]
-        golden_beast_data = [
-            (0x01, "Octorock"),
-            (0x02, "Moblin"),
-            (0x04, "Darknut"),
-            (0x08, "Lynel")
-        ]
+        byte_offset = 0xC6C9 - RAM_ADDRS["location_flags"][0]
+        golden_beast_data = [(0x01, "Octorock"), (0x02, "Moblin"), (0x04, "Darknut"), (0x08, "Lynel")]
         golden_beast_flags = flag_bytes[byte_offset]
         for mask, name in golden_beast_data:
             if golden_beast_flags & mask:
@@ -336,7 +328,7 @@ class OracleOfSeasonsClient(BizHawkClient):
             (0x23, "Gale"),
             (0x24, "Mystery"),
         ]
-        base_offset = 0xc692 - RAM_ADDRS["location_flags"][0]
+        base_offset = 0xC692 - RAM_ADDRS["location_flags"][0]
         for item_id, item_name in wild_item_data:
             byte_offset = base_offset + item_id // 8
             mask = 0x01 << item_id % 8
@@ -344,47 +336,43 @@ class OracleOfSeasonsClient(BizHawkClient):
                 local_tracker[f"Obtained {item_name}"] = True
 
         # Lost woods deku
-        byte_offset = 0xc8b7 - RAM_ADDRS["location_flags"][0]
+        byte_offset = 0xC8B7 - RAM_ADDRS["location_flags"][0]
         if flag_bytes[byte_offset] & 0x20:
             local_tracker["Learned Lost Woods Sequence"] = True
         # Pedestal deku
-        byte_offset = 0xc9f8 - RAM_ADDRS["location_flags"][0]
+        byte_offset = 0xC9F8 - RAM_ADDRS["location_flags"][0]
         if flag_bytes[byte_offset] & 0x20:
             local_tracker["Learned Pedestal Sequence"] = True
 
         # Blown up remains
-        base_offset = 0xc6ca - RAM_ADDRS["location_flags"][0]
+        base_offset = 0xC6CA - RAM_ADDRS["location_flags"][0]
         blown_up_flag = 0x15
         byte_offset = base_offset + blown_up_flag // 8
         mask = 0x01 << blown_up_flag % 8
         if flag_bytes[byte_offset] & mask:
             local_tracker["Blew Up Volcano"] = True
 
-        updates = {}
-        for key, value in local_tracker.items():
-            if key not in self.local_tracker or self.local_tracker[key] != value:
-                updates[key] = value
+        updates = {
+            key: value
+            for key, value in local_tracker.items()
+            if key not in self.local_tracker or self.local_tracker[key] != value
+        }
 
         if "Current Room" in updates:
-            await ctx.send_msgs([{
-                "cmd": "Bounce",
-                "slots": [ctx.slot],
-                "data": {
-                    "Current Room": current_room
-                }
-            }])
+            await ctx.send_msgs([{"cmd": "Bounce", "slots": [ctx.slot], "data": {"Current Room": current_room}}])
             del updates["Current Room"]
 
         if len(updates) > 0:
-            await ctx.send_msgs([{
-                "cmd": "Set",
-                "key": f"OoS_{ctx.team}_{ctx.slot}",
-                "default": {},
-                "operations": [{
-                    "operation": "update",
-                    "value": updates
-                }],
-            }])
+            await ctx.send_msgs(
+                [
+                    {
+                        "cmd": "Set",
+                        "key": f"OoS_{ctx.team}_{ctx.slot}",
+                        "default": {},
+                        "operations": [{"operation": "update", "value": updates}],
+                    }
+                ]
+            )
 
         self.local_tracker = local_tracker
 
@@ -405,16 +393,15 @@ class OracleOfSeasonsClient(BizHawkClient):
                     accumulator["y"] += y - last_y
             if now - accumulator["time"] >= 1:
                 if abs(accumulator["x"]) > 0.2 or abs(accumulator["y"]) > 0.2:
-                    await ctx.send_msgs([{
-                        "cmd": "Bounce",
-                        "tags": ["MoveLink"],
-                        "data": {
-                            "slot": ctx.slot,
-                            "timespan": 1,
-                            "x": accumulator["x"],
-                            "y": accumulator["y"]
-                        }
-                    }])
+                    await ctx.send_msgs(
+                        [
+                            {
+                                "cmd": "Bounce",
+                                "tags": ["MoveLink"],
+                                "data": {"slot": ctx.slot, "timespan": 1, "x": accumulator["x"], "y": accumulator["y"]},
+                            }
+                        ]
+                    )
                     self.movelink_data["accumulator"] = {"x": 0, "y": 0, "time": now}
             self.movelink_data["room"] = current_room
         else:
@@ -425,7 +412,7 @@ class OracleOfSeasonsClient(BizHawkClient):
                     "y": 0,
                     "time": now,
                 },
-                "room": current_room
+                "room": current_room,
             }
             can_move = False
 
@@ -461,4 +448,6 @@ class OracleOfSeasonsClient(BizHawkClient):
             self.movelink_data["position"] = None
 
         if has_moved:
-            await bizhawk.write(ctx.bizhawk_ctx, [(0xD00A, [y % 0x100, y // 0x100, x % 0x100, x // 0x100], "System Bus")])
+            await bizhawk.write(
+                ctx.bizhawk_ctx, [(0xD00A, [y % 0x100, y // 0x100, x % 0x100, x // 0x100], "System Bus")]
+            )
