@@ -8,6 +8,7 @@ from ..data.Constants import (
     DIRECTION_LEFT,
     DIRECTION_UP,
     DIRECTIONS,
+    ITEM_GROUPS,
     SEASON_NAMES,
     SEASONS,
     VALID_RUPEE_PRICE_VALUES,
@@ -40,19 +41,17 @@ def generate_early(world: OracleOfSeasonsWorld) -> None:
         # Pick 4 random seasons & directions (last one has to be "left")
         world.lost_woods_item_sequence = []
         for i in range(4):
-            world.lost_woods_item_sequence.append([
-                world.random.choice(DIRECTIONS) if i < 3 else DIRECTION_LEFT,
-                world.random.choice(SEASONS)
-            ])
+            world.lost_woods_item_sequence.append(
+                [world.random.choice(DIRECTIONS) if i < 3 else DIRECTION_LEFT, world.random.choice(SEASONS)]
+            )
 
     if world.options.randomize_lost_woods_main_sequence:
         # Pick 4 random seasons & directions (last one has to be "up")
         world.lost_woods_main_sequence = []
         for i in range(4):
-            world.lost_woods_main_sequence.append([
-                world.random.choice(DIRECTIONS) if i < 3 else DIRECTION_UP,
-                world.random.choice(SEASONS)
-            ])
+            world.lost_woods_main_sequence.append(
+                [world.random.choice(DIRECTIONS) if i < 3 else DIRECTION_UP, world.random.choice(SEASONS)]
+            )
 
     if world.options.randomize_samasa_gate_code:
         world.samasa_gate_code = []
@@ -79,14 +78,11 @@ def generate_early(world: OracleOfSeasonsWorld) -> None:
         "Rupees (200)": ("Rupees", 200),
         "_reached_d2_rupee_room": ("Rupees", 150),
         "_reached_d6_rupee_room": ("Rupees", 90),
-
         "Ore Chunks (10)": ("Ore Chunks", 10),
         "Ore Chunks (25)": ("Ore Chunks", 25),
         "Ore Chunks (50)": ("Ore Chunks", 50),
-
         "Bombs (10)": ("Bombs", 1),
         "Bombs (20)": ("Bombs", 2),
-
         "Bombchus (10)": ("Bombchus", 1),
         "Bombchus (20)": ("Bombchus", 2),
     }
@@ -113,17 +109,21 @@ def pick_essences_in_game(world: OracleOfSeasonsWorld) -> None:
     # values for both), a new random value is automatically picked in the valid range.
     elif world.options.required_essences > world.options.placed_essences:
         new_placed_essences = world.random.randint(world.options.required_essences.value, 8)
-        logging.warn(f"Essences placed for {world.player_name} required to be {world.options.placed_essences.value} "
-                     f"but {world.options.required_essences} essences are required to beat the seed.\n"
-                     f"Increased the value to {new_placed_essences}. "
-                     f"You might want to set the range to 'included essences' or use triggers instead.")
+        logging.warning(
+            f"Essences placed for {world.player_name} required to be {world.options.placed_essences.value} "
+            f"but {world.options.required_essences} essences are required to beat the seed.\n"
+            f"Increased the value to {new_placed_essences}. "
+            f"You might want to set the range to 'included essences' or use triggers instead."
+        )
         world.options.placed_essences.value = new_placed_essences
 
     # If some essence pedestal locations were excluded and essences are not shuffled,
     # remove those essences in priority
     if not world.options.shuffle_essences:
-        excluded_locations_data = {name: data for name, data in LOCATIONS_DATA.items() if name in world.options.exclude_locations.value}
-        for loc_name, loc_data in excluded_locations_data.items():
+        excluded_locations_data = {
+            name: data for name, data in LOCATIONS_DATA.items() if name in world.options.exclude_locations.value
+        }
+        for loc_data in excluded_locations_data.values():
             if "essence" in loc_data and loc_data["essence"] is True:
                 world.essences_in_game.remove(loc_data["vanilla_item"])
         if len(world.essences_in_game) < world.options.required_essences:
@@ -131,7 +131,7 @@ def pick_essences_in_game(world: OracleOfSeasonsWorld) -> None:
 
     # If we need to remove more essences, pick them randomly
     world.random.shuffle(world.essences_in_game)
-    world.essences_in_game = world.essences_in_game[0:world.options.placed_essences]
+    world.essences_in_game = world.essences_in_game[0 : world.options.placed_essences]
 
 
 def restrict_non_local_items(world: OracleOfSeasonsWorld) -> None:
@@ -187,7 +187,7 @@ def randomize_shop_order(world: OracleOfSeasonsWorld) -> None:
     world.shop_order = [
         ["horonShop1", "horonShop2", "horonShop3"],
         ["memberShop1", "memberShop2", "memberShop3"],
-        ["syrupShop1", "syrupShop2", "syrupShop3"]
+        ["syrupShop1", "syrupShop2", "syrupShop3"],
     ]
     if world.options.advance_shop:
         world.shop_order.append(["advanceShop1", "advanceShop2", "advanceShop3"])
@@ -244,7 +244,11 @@ def create_random_rings_pool(world: OracleOfSeasonsWorld) -> None:
     ring_names = [name for name, idata in ITEMS_DATA.items() if "ring" in idata]
 
     # Remove required rings because they'll be added later anyway
-    ring_names = [name for name in ring_names if name not in world.options.required_rings.value and name not in world.options.excluded_rings.value]
+    ring_names = [
+        name
+        for name in ring_names
+        if name not in world.options.required_rings.value and name not in world.options.excluded_rings.value
+    ]
 
     world.random.shuffle(ring_names)
     world.random_rings_pool = ring_names

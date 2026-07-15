@@ -4,6 +4,7 @@ from BaseClasses import Item, ItemClassification, Location, LocationProgressType
 
 from ..data.locations import LOCATIONS_DATA
 from ..data.Constants import (
+    ESSENCES,
     ITEM_GROUPS,
     LOCATION_GROUPS,
     RUPEE_OLD_MAN_LOCATIONS,
@@ -169,7 +170,7 @@ def exclude_locations_automatically(world: OracleOfSeasonsWorld) -> None:
 
     # If dungeons without essence need to be excluded, do it if conditions are met
     if world.options.exclude_dungeons_without_essence and not world.options.shuffle_essences:
-        for i, essence_name in enumerate(ITEM_GROUPS["Essences"]):
+        for i, essence_name in enumerate(ESSENCES):
             if essence_name not in world.essences_in_game:
                 locations_to_exclude.update(world.location_name_groups[f"D{i + 1}"])
 

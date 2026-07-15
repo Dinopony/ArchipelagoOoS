@@ -7,31 +7,21 @@ DIRECTION_UP = 0
 DIRECTION_RIGHT = 1
 DIRECTION_DOWN = 2
 DIRECTION_LEFT = 3
-DIRECTIONS = [
-    DIRECTION_UP,
-    DIRECTION_RIGHT,
-    DIRECTION_DOWN,
-    DIRECTION_LEFT
-]
+DIRECTIONS = [DIRECTION_UP, DIRECTION_RIGHT, DIRECTION_DOWN, DIRECTION_LEFT]
 
 SEASON_SPRING = 0x00
 SEASON_SUMMER = 0x01
 SEASON_AUTUMN = 0x02
 SEASON_WINTER = 0x03
 SEASON_CHAOTIC = 0xFF
-SEASONS = [
-    SEASON_SPRING,
-    SEASON_SUMMER,
-    SEASON_AUTUMN,
-    SEASON_WINTER
-]
+SEASONS = [SEASON_SPRING, SEASON_SUMMER, SEASON_AUTUMN, SEASON_WINTER]
 
 SEASON_NAMES = {
     SEASON_SPRING: "spring",
     SEASON_SUMMER: "summer",
     SEASON_AUTUMN: "autumn",
     SEASON_WINTER: "winter",
-    SEASON_CHAOTIC: "chaotic"
+    SEASON_CHAOTIC: "chaotic",
 }
 
 SEASON_ITEMS = {
@@ -61,18 +51,12 @@ DUNGEON_NAMES = [
     "Sword & Shield Dungeon",
     "",
     "",
-    "Linked Hero's Cave"
+    "Linked Hero's Cave",
 ]
 
-VALID_RUPEE_PRICE_VALUES = [
-    1, 2, 5, 10, 20, 25, 30, 40, 50, 60, 70, 80, 100, 150, 200, 300, 400, 500, 900, 999
-]
-VALID_RUPEE_ITEM_VALUES = [
-    1, 5, 10, 20, 30, 50, 100, 200
-]
-VALID_ORE_ITEM_VALUES = [
-    10, 25, 50
-]
+VALID_RUPEE_PRICE_VALUES = [1, 2, 5, 10, 20, 25, 30, 40, 50, 60, 70, 80, 100, 150, 200, 300, 400, 500, 900, 999]
+VALID_RUPEE_ITEM_VALUES = [1, 5, 10, 20, 30, 50, 100, 200]
+VALID_ORE_ITEM_VALUES = [10, 25, 50]
 MARKET_LOCATIONS = ["subrosianMarket2", "subrosianMarket3", "subrosianMarket4", "subrosianMarket5"]
 
 DEFAULT_SEASONS = {
@@ -86,7 +70,7 @@ DEFAULT_SEASONS = {
     "TEMPLE_REMAINS": SEASON_WINTER,
     "LOST_WOODS": SEASON_AUTUMN,
     "TARM_RUINS": SEASON_SPRING,
-    "HORON_VILLAGE": SEASON_CHAOTIC
+    "HORON_VILLAGE": SEASON_CHAOTIC,
 }
 
 DUNGEON_CONNECTIONS = {
@@ -134,7 +118,7 @@ OLD_MAN_RUPEE_VALUES = {
     "old man in horon": 100,
     "old man near d6": -200,
     "old man near holly's house": -50,
-    "old man near mrs. ruul": -100
+    "old man near mrs. ruul": -100,
 }
 
 RUPEE_OLD_MAN_LOCATIONS = [
@@ -145,14 +129,14 @@ RUPEE_OLD_MAN_LOCATIONS = [
     "Western Coast: Old Man",
     "Woods of Winter: Old Man",
     "Holodrum Plain: Old Man Near Mrs. Ruul's House",
-    "Tarm Ruins: Old Man Near D6"
+    "Tarm Ruins: Old Man Near D6",
 ]
 
 SCRUB_LOCATIONS = [
     "Spool Swamp: Business Scrub",
     "Snake's Remains: Business Scrub",
     "Dancing Dragon Dungeon (1F): Business Scrub",
-    "Samasa Desert: Business Scrub"
+    "Samasa Desert: Business Scrub",
 ]
 
 SUBROSIA_HIDDEN_DIGGING_SPOTS_LOCATIONS = [
@@ -162,7 +146,7 @@ SUBROSIA_HIDDEN_DIGGING_SPOTS_LOCATIONS = [
     "Subrosia: Temple of Seasons Digging Spot",
     "Subrosia: Northern Volcanoes Digging Spot",
     "Subrosia: D8 Portal Digging Spot",
-    "Subrosia: Western Volcanoes Digging Spot"
+    "Subrosia: Western Volcanoes Digging Spot",
 ]
 
 SECRETS = [
@@ -175,17 +159,12 @@ SECRETS = [
     "Subrosia: Temple Secret",
     "Natzu Region: Deku Secret",
     "Goron Mountain: Biggoron Secret",
-    "Horon Village: Mayor Secret"
+    "Horon Village: Mayor Secret",
 ]
 
 SAMASA_GATE_CODE = [2, 2, 1, 0, 0, 3, 3, 3]
 
-AVERAGE_PRICE_PER_LOCATION = {
-    "cheap": 50,
-    "reasonable": 100,
-    "expensive": 200,
-    "outrageous": 350
-}
+AVERAGE_PRICE_PER_LOCATION = {"cheap": 50, "reasonable": 100, "expensive": 200, "outrageous": 350}
 
 VANILLA_SHOP_PRICES = {
     "horonShop1": 20,
@@ -210,6 +189,17 @@ VANILLA_SHOP_PRICES = {
     "d2Scrub": 30,
     "d4Scrub": 20,
 }
+
+ESSENCES = [
+    "Fertile Soil",
+    "Gift of Time",
+    "Bright Sun",
+    "Soothing Rain",
+    "Nurturing Warmth",
+    "Blowing Wind",
+    "Seed of Life",
+    "Changing Seasons",
+]
 
 ITEM_GROUPS = {
     "Small Keys": {
@@ -266,22 +256,8 @@ ITEM_GROUPS = {
         "Master Key (Sword & Shield Dungeon)",
         "Master Key (Linked Hero's Cave)",
     },
-    "Essences": {
-        "Fertile Soil",
-        "Gift of Time",
-        "Bright Sun",
-        "Soothing Rain",
-        "Nurturing Warmth",
-        "Blowing Wind",
-        "Seed of Life",
-        "Changing Seasons",
-    },
-    "Jewels": {
-        "Square Jewel",
-        "Pyramid Jewel",
-        "Round Jewel",
-        "X-Shaped Jewel"
-    }
+    "Essences": set(ESSENCES),
+    "Jewels": {"Square Jewel", "Pyramid Jewel", "Round Jewel", "X-Shaped Jewel"},
 }
 
 LOCATION_GROUPS = {
@@ -418,7 +394,7 @@ LOCATION_GROUPS = {
         "Linked Hero's Cave: Fourth Reward",
         "Linked Hero's Cave: Gauntlet",
         "Linked Hero's Cave: Boomerang Maze",
-        "Linked Hero's Cave: Final Reward"
+        "Linked Hero's Cave: Final Reward",
     },
     "Trade Sequence": {
         "Horon Village: Dr. Left Reward",
@@ -437,7 +413,7 @@ LOCATION_GROUPS = {
         "Sunken City: Syrup Shop #1",
         "Sunken City: Syrup Shop #2",
         "Sunken City: Syrup Shop #3",
-    }
+    },
 }
 
 TREASURE_SPAWN_INSTANT = 0x00

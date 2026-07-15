@@ -12,6 +12,7 @@ from .data import ITEMS_DATA
 from .data.Constants import (
     DEFAULT_SEASONS,
     DUNGEON_CONNECTIONS,
+    ESSENCES,
     ITEM_GROUPS,
     LOCATION_GROUPS,
     LOST_WOODS_ITEM_SEQUENCE,
@@ -95,7 +96,7 @@ class OracleOfSeasonsWorld(World):
         self.shop_prices: dict[str, int] = VANILLA_SHOP_PRICES.copy()
         self.shop_order: list[list[str]] = []
         self.shop_rupee_requirements: dict[str, int] = {}
-        self.essences_in_game: list[str] = sorted(ITEM_GROUPS["Essences"])
+        self.essences_in_game: list[str] = ESSENCES
         self.random_rings_pool: list[str] = []
         self.remaining_progressive_gasha_seeds = 0
         self.remaining_progressive_containers = 0

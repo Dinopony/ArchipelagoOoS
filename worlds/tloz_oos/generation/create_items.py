@@ -5,6 +5,7 @@ from BaseClasses import Item, ItemClassification
 from ..data import ITEMS_DATA
 from ..data.Constants import (
     DUNGEON_NAMES,
+    ESSENCES,
     ITEM_GROUPS,
     MARKET_LOCATIONS,
     SEED_ITEMS,
@@ -89,7 +90,7 @@ def create_items(world: OracleOfSeasonsWorld) -> None:
 def build_item_pool_dict(world: OracleOfSeasonsWorld) -> dict[str, int]:
     excluded_mapass = set()
     if world.options.exclude_dungeons_without_essence and not world.options.shuffle_essences:
-        for i, essence_name in enumerate(ITEM_GROUPS["Essences"], 1):
+        for i, essence_name in enumerate(ESSENCES, 1):
             if essence_name not in world.essences_in_game:
                 excluded_mapass.add(f"Dungeon Map ({DUNGEON_NAMES[i]})")
                 excluded_mapass.add(f"Compass ({DUNGEON_NAMES[i]})")
@@ -319,7 +320,7 @@ def filter_confined_dungeon_items_from_pool(world: OracleOfSeasonsWorld, items: 
     confined_dungeon_items = []
     excluded_dungeons = []
     if world.options.exclude_dungeons_without_essence and not world.options.shuffle_essences:
-        for i, essence_name in enumerate(ITEM_GROUPS["Essences"]):
+        for i, essence_name in enumerate(ESSENCES):
             if essence_name not in world.essences_in_game:
                 excluded_dungeons.append(i + 1)
 
