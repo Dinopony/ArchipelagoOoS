@@ -42,6 +42,7 @@ from .logic_predicates import (
     oos_can_use_mystery_seeds,
     oos_can_use_pegasus_seeds,
     oos_can_use_scent_seeds,
+    oos_has_bombchus_for_bombjump,
     oos_has_bombchus_for_tiles,
     oos_has_bombchus_to_fight,
     oos_has_bombs,
@@ -403,7 +404,7 @@ def make_d4_logic(options: OracleOfSeasonsOptions) -> list[LogicLine]:
                         oos_option_hell_logic(),
                         oos_has_cape(),
                         oos_can_use_pegasus_seeds(),
-                        oos_has_bombs_for_bombjump(),
+                        oos_has_bombs_for_bombjump() | oos_has_bombchus_for_bombjump(),
                     ),
                 ),
             ),
@@ -571,7 +572,7 @@ def make_d5_logic() -> list[LogicLine]:
         ("enter d5", "d5 terrace chest", False, oos_has_magnet_gloves()),
         ("d5 terrace chest", "armos knights owl", False, oos_can_use_mystery_seeds()),
         ("d5 terrace chest", "d5 armos chest", False, And(oos_can_kill_moldorm(), oos_can_kill_normal_enemy())),
-        ("enter d5", "d5 cart bay", False, Or(oos_has_flippers(), oos_can_jump_2_wide_liquid())),
+        ("enter d5", "d5 cart bay", False, Or(oos_has_flippers(), oos_can_jump_2_wide_liquid(allow_bombchus=True))),
         (
             "d5 cart bay",
             "d5 terrace chest",
@@ -690,8 +691,8 @@ def make_d5_logic() -> list[LogicLine]:
                     oos_has_flippers(),
                     And(
                         # Lower route pushing secret blocks requires knowledge, therefore is medium+.
-                        # Going there requires jumping a 3.2 wide liquid gap which corresponds the best to a "4 wide pit"
-                        # in terms of logic requirements.
+                        # Going there requires jumping a 3.2 wide liquid gap which corresponds the best to a
+                        # "4 wide pit" in terms of logic requirements.
                         oos_can_jump_4_wide_pit(),
                         oos_option_medium_logic(),
                         # Upper route would require 6 wide liquid that can only be jumped above with a bomb jump,
@@ -851,7 +852,8 @@ def make_d6_logic() -> list[LogicLine]:
                         oos_has_small_keys(6, 1),
                         # Go through beamos room
                         And(oos_can_remove_rockslide(False), oos_has_feather()),
-                        # Kill Vire (the rest doesn't matter because we don't care about not being able to not spend a key somewhere)
+                        # Kill Vire (the rest doesn't matter because
+                        # we don't care about not being able to not spend a key somewhere)
                         oos_has_hearts_by_difficulty(4, 3),
                         Or(
                             oos_has_sword(False),
@@ -973,7 +975,8 @@ def make_d7_logic() -> list[LogicLine]:
                         oos_has_rod(),
                     ),
                     And(
-                        # Mystery isn't reasonable due to having only ~8.8% chance of not getting a gale before killing the sister
+                        # Mystery isn't reasonable due to having only
+                        # ~8.8% chance of not getting a gale before killing the sister
                         oos_has_ember_seeds(),
                         Or(oos_option_medium_logic(), oos_has_satchel(2)),
                     ),
@@ -1319,7 +1322,7 @@ def make_d8_logic() -> list[LogicLine]:
             Or(
                 oos_has_magnet_gloves(),
                 # Jump from the right side onto the button directly
-                oos_can_jump_6_wide_liquid(),
+                oos_can_jump_6_wide_liquid(allow_bombchus=True),
                 And(
                     # Clip into the block right of staircase with pegasus seeds and use the cane of somaria to
                     # activate the bridge, save&exit and redo the whole dungeon to get to the other side
@@ -1342,7 +1345,12 @@ def make_d8_logic() -> list[LogicLine]:
             False,
             Or(
                 oos_has_magnet_gloves(),
-                And(oos_option_hell_logic(), oos_can_use_pegasus_seeds(), oos_has_cape(), oos_has_bombs_for_bombjump()),
+                And(
+                    oos_option_hell_logic(),
+                    oos_can_use_pegasus_seeds(),
+                    oos_has_cape(),
+                    oos_has_bombs_for_bombjump() | oos_has_bombchus_for_bombjump(),
+                ),
             ),
         ),
         ("frypolar entrance", "frypolar owl", False, oos_can_use_mystery_seeds()),
@@ -1419,8 +1427,10 @@ def make_d8_logic() -> list[LogicLine]:
                 ),
                 # The means of throwing the seeds do not matter:
                 # beat frypolar only leads to d8 ice puzzle room in hard-, which requires a HSS.
-                # In hell, this is the only place where this region is used without HSS, but then, even satchel is enough
-                # (In all honesty, hell players are probably doing HSS skip to come here, so the route is not *that* bad)
+                # In hell, this is the only place where this region is used without HSS,
+                # but then, even satchel is enough
+                # (In all honesty, hell players are probably doing HSS skip to come here,
+                # so the route is not *that* bad)
             ),
         ),
         ("beat frypolar", "d8 spinner chest", False, True_()),
@@ -1546,7 +1556,8 @@ def make_d11_logic(options: OracleOfSeasonsOptions) -> list[LogicLine]:
                         # 5- Iron Mask
                         # 6- Pol's Voice
                         # 7- Stalfos
-                        # We need to fight at least 5 of these 8 waves, minimal requirement is oos_can_kill_normal_enemy_no_cane
+                        # We need to fight at least 5 of these 8 waves,
+                        # minimal requirement is oos_can_kill_normal_enemy_no_cane
                         # Waves 1, 5 and 7 can be beaten by it
                         # oos_can_kill_armored_enemy can clear waves 2 and 4, skipping 0, 3 and 6
                         # Otherwise, since we know we have embers already, we can also beat 4, but we need more seeds
@@ -1554,7 +1565,8 @@ def make_d11_logic(options: OracleOfSeasonsOptions) -> list[LogicLine]:
                         # Skip waves 0, 3 and 6 while finishing the waves 1, 5 and 7 with embers
                         # Now there are two waves left, 4 and 2, which can be beaten by cane
                         # A route can be wave 4 -> wave 5 (skip 3) -> wave 7 (skip 6) -> wave 1 (skip 0) -> wave 2
-                        # (With enough bombs left, it's probably easier to switch wave 6 and wave 4 as lynels hurt a lot)
+                        # (With enough bombs left,
+                        # it's probably easier to switch wave 6 and wave 4 as lynels hurt a lot)
                         oos_option_hard_logic(),
                         oos_has_cane(),
                         Or(oos_can_kill_armored_enemy(False, True), oos_has_satchel(2)),

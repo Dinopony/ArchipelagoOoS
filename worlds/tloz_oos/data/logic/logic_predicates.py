@@ -442,6 +442,10 @@ def oos_has_bombchus_for_tiles() -> Rule:
     return oos_has_bombchus(4)
 
 
+def oos_has_bombchus_for_bombjump() -> Rule:
+    return And(oos_has_bombchus(2), oos_has_hearts(4))
+
+
 def oos_has_flute() -> Rule:
     return Or(oos_can_summon_ricky(), oos_can_summon_moosh(), oos_can_summon_dimitri())
 
@@ -476,7 +480,7 @@ def oos_can_jump_1_wide_liquid(can_summon_companion: bool) -> Rule:
     )
 
 
-def oos_can_jump_2_wide_liquid() -> Rule:
+def oos_can_jump_2_wide_liquid(allow_bombchus: bool = False) -> Rule:
     return Or(
         oos_has_cape(),
         And(oos_has_feather(), oos_can_use_pegasus_seeds()),
@@ -486,10 +490,11 @@ def oos_can_jump_2_wide_liquid() -> Rule:
             oos_has_feather(),
             oos_has_bombs_for_bombjump(),
         ),
+        And(from_bool(allow_bombchus), oos_option_hell_logic(), oos_has_feather(), oos_has_bombchus_for_bombjump()),
     )
 
 
-def oos_can_jump_3_wide_liquid() -> Rule:
+def oos_can_jump_3_wide_liquid(allow_bombchus: bool = False) -> Rule:
     return Or(
         oos_has_cape(),
         And(
@@ -498,10 +503,17 @@ def oos_can_jump_3_wide_liquid() -> Rule:
             oos_can_use_pegasus_seeds(),
             oos_has_bombs_for_bombjump(),
         ),
+        And(
+            from_bool(allow_bombchus),
+            oos_option_hell_logic(),
+            oos_has_feather(),
+            oos_can_use_pegasus_seeds(),
+            oos_has_bombchus_for_bombjump(),
+        ),
     )
 
 
-def oos_can_jump_4_wide_liquid() -> Rule:
+def oos_can_jump_4_wide_liquid(allow_bombchus: bool = False) -> Rule:
     return And(
         oos_has_cape(),
         Or(
@@ -511,6 +523,7 @@ def oos_can_jump_4_wide_liquid() -> Rule:
                 oos_option_hard_logic(),
                 oos_has_bombs_for_bombjump(),
             ),
+            And(from_bool(allow_bombchus), oos_option_hell_logic(), oos_has_bombchus_for_bombjump()),
         ),
     )
 
@@ -522,12 +535,21 @@ def oos_can_jump_5_wide_liquid() -> Rule:
     )
 
 
-def oos_can_jump_6_wide_liquid() -> Rule:
+def oos_can_jump_6_wide_liquid(allow_bombchus: bool = False) -> Rule:
     return And(
-        oos_option_hard_logic(),
         oos_has_cape(),
         oos_can_use_pegasus_seeds(),
-        oos_has_bombs_for_bombjump(),
+        Or(
+            And(
+                oos_option_hard_logic(),
+                oos_has_bombs_for_bombjump(),
+            ),
+            And(
+                from_bool(allow_bombchus),
+                oos_option_hard_logic(),
+                oos_has_bombchus_for_bombjump(),
+            ),
+        ),
     )
 
 

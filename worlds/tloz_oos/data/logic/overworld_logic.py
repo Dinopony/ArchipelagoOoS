@@ -54,6 +54,7 @@ from .logic_predicates import (
     oos_has_bombchus,
     oos_has_bombchus_for_tiles,
     oos_has_bombs,
+    oos_has_bombs_for_bombjump,
     oos_has_bombs_for_tiles,
     oos_has_bracelet,
     oos_has_cane,
@@ -94,6 +95,7 @@ from .logic_predicates import (
     oos_is_default_season,
     oos_not_season_in_eastern_suburbs,
     oos_option_hard_logic,
+    oos_option_hell_logic,
     oos_option_medium_logic,
     oos_roosters,
     oos_season_in_central_woods_of_winter,
@@ -110,6 +112,7 @@ from .logic_predicates import (
     oos_season_in_western_coast,
     oos_season_in_woods_of_winter,
     oos_self_locking_item,
+    oos_has_bombchus_for_bombjump,
 )
 from .rulebuilder import from_option
 
@@ -215,7 +218,11 @@ def make_holodrum_logic(world: OracleOfSeasonsWorld, options: OracleOfSeasonsOpt
             False,
             And(
                 oos_can_remove_rockslide(False),
-                Or(oos_can_swim(False), oos_season_in_horon_village(SEASON_WINTER), oos_can_jump_2_wide_liquid()),
+                Or(
+                    oos_can_swim(False),
+                    oos_season_in_horon_village(SEASON_WINTER),
+                    oos_can_jump_2_wide_liquid(allow_bombchus=True),
+                ),
             ),
         ),
         (
@@ -384,7 +391,12 @@ def make_holodrum_logic(world: OracleOfSeasonsWorld, options: OracleOfSeasonsOpt
                 ),
             ),
         ),
-        ("moblin road", "woods of winter, 2nd cave", False, Or(oos_can_swim(False), oos_can_jump_3_wide_liquid())),
+        (
+            "moblin road",
+            "woods of winter, 2nd cave",
+            False,
+            Or(oos_can_swim(False), oos_can_jump_3_wide_liquid(allow_bombchus=True)),
+        ),
         ("moblin road", "holly's house", False, oos_season_in_woods_of_winter(SEASON_WINTER)),
         ("moblin road", "old man near holly's house", False, oos_can_use_ember_seeds(False)),
         (
@@ -950,7 +962,7 @@ def make_holodrum_logic(world: OracleOfSeasonsWorld, options: OracleOfSeasonsOpt
         ("spool swamp south (spring)", "spool swamp heart piece", False, oos_can_swim(True)),
         # NATZU REGION #############################################################################################
         ("north horon", "natzu west", True, True_()),
-        ("moblin keep bridge", "moblin keep", True, Or(oos_has_flippers(), oos_can_jump_4_wide_liquid())),
+        ("moblin keep bridge", "moblin keep", True, Or(oos_has_flippers(), oos_can_jump_4_wide_liquid(True))),
         ("moblin keep", "moblin keep chest", False, oos_has_bracelet()),
         ("moblin keep", "sunken city", False, True_()),
         ("natzu river bank", "goron mountain entrance", True, oos_can_swim(True)),
@@ -1166,6 +1178,7 @@ def make_holodrum_logic(world: OracleOfSeasonsWorld, options: OracleOfSeasonsOpt
                     And(  # Bombchu can only destroy the second block, so we need to use cape to jump around the first
                         oos_option_hard_logic(), oos_has_bombchus_for_tiles(), oos_can_use_pegasus_seeds()
                     ),
+                    And(oos_option_hell_logic(), oos_has_bombchus_for_tiles(), oos_has_bombchus_for_bombjump()),
                 ),
             ),
         ),
@@ -1174,7 +1187,7 @@ def make_holodrum_logic(world: OracleOfSeasonsWorld, options: OracleOfSeasonsOpt
             "goron mountain entrance",
             "goron mountain",
             False,
-            Or(oos_has_flippers(), oos_can_jump_4_wide_liquid(), oos_has_tight_switch_hook()),
+            Or(oos_has_flippers(), oos_can_jump_4_wide_liquid(allow_bombchus=True), oos_has_tight_switch_hook()),
         ),
         (
             "goron mountain",
@@ -1182,7 +1195,7 @@ def make_holodrum_logic(world: OracleOfSeasonsWorld, options: OracleOfSeasonsOpt
             False,
             Or(
                 oos_has_flippers(),
-                oos_can_jump_4_wide_liquid(),
+                oos_can_jump_4_wide_liquid(allow_bombchus=True),
                 And(
                     # You can't see the other side from this point
                     oos_option_medium_logic(),
@@ -1190,7 +1203,13 @@ def make_holodrum_logic(world: OracleOfSeasonsWorld, options: OracleOfSeasonsOpt
                 ),
             ),
         ),
-        ("goron mountain entrance", "temple remains lower stump", True, oos_can_jump_3_wide_pit()),
+        (
+            "goron mountain entrance",
+            "temple remains lower stump",
+            False,
+            Or(oos_can_jump_3_wide_pit(), oos_can_dimitri_clip()),
+        ),
+        ("temple remains lower stump", "goron mountain entrance", False, oos_can_jump_3_wide_pit()),
         # TARM RUINS ###############################################################################################
         ("spool swamp north", "tarm ruins", False, oos_has_required_jewels()),
         ("tarm ruins", "spool swamp north", False, True_()),
@@ -1228,7 +1247,7 @@ def make_holodrum_logic(world: OracleOfSeasonsWorld, options: OracleOfSeasonsOpt
             False,
             And(
                 oos_has_autumn(),
-                Or(oos_can_jump_2_wide_liquid(), oos_can_swim(False)),
+                Or(oos_can_jump_2_wide_liquid(True), oos_can_swim(False)),
                 oos_can_break_mushroom(False),
                 oos_has_shield(),
             ),
