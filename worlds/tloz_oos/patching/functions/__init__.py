@@ -75,12 +75,16 @@ def define_foreign_item_data(
         location_content = all_locations[location]
         if "player" not in location_content:
             continue
-        unique_item_name = (f"{location_content['item']}|{location_content['player']}|"
-                            f"{'P' if location_content['progression'] else 'N'}")
+        item_name: str = location_content["item"]
+        player_name: str = location_content["player"]
+        unique_item_name = f"{item_name}|{player_name}|{'P' if location_content['progression'] else 'N'}"
         if unique_item_name in item_data:
             continue
+        # Forbid \, they're not supported and they'd be interpreted as control sequences
+        item_name = item_name.replace("\\", "/")
+        player_name = player_name.replace("\\", "/")
         texts[f"TX_0c{simple_hex(current_subid)}"] = normalize_text(
-            f"You got a 🟥{location_content['item']}⬜ for 🟦{location_content['player']}⬜!"
+            f"You got a 🟥{item_name}⬜ for 🟦{player_name}⬜!"
         )
         item_data[unique_item_name] = {
             "id": 0x41,
@@ -141,10 +145,8 @@ def write_chest_contents(rom: RomData, patch_data: dict[str, Any], item_data: di
     locations_data = patch_data["locations"]
     for location_name, location_data in LOCATIONS_DATA.items():
         if (
-            (location_data.get("collect", COLLECT_TOUCH) != COLLECT_CHEST
-            and not location_data.get("is_chest", False))
-            or location_name not in locations_data
-        ):
+            location_data.get("collect", COLLECT_TOUCH) != COLLECT_CHEST and not location_data.get("is_chest", False)
+        ) or location_name not in locations_data:
             continue
         chest_addr = rom.get_chest_addr(location_data["room"], 0x15, 0x4F6C)
         item = locations_data[location_name]
@@ -326,12 +328,14 @@ def define_location_constants(
         assembler.define_byte(f"locations.{symbolic_name}.id", item_id)
         assembler.define_byte(f"locations.{symbolic_name}.subid", item_subid)
         assembler.define_word(f"locations.{symbolic_name}", (item_id << 8) + item_subid)
-        if "shop" in location_data:
+        if "shop" in location_data and "player" not in item:  # Only local items can be repeatable
             item = item_data[item["item"]]
             if "repeatable" in item:
                 assembler.define_byte(f"locations.{symbolic_name}.shopByte", 0x80)
             else:
-                assembler.define_byte(f"locations.{symbolic_name}.shopByte", 0xff)
+                assembler.define_byte(f"locations.{symbolic_name}.shopByte", 0xFF)
+        else:
+            assembler.define_byte(f"locations.{symbolic_name}.shopByte", 0xFF)
 
     # Process deterministic Gasha Nut locations to define a table
     deterministic_gasha_table = []
