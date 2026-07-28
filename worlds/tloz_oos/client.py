@@ -11,7 +11,7 @@ from worlds._bizhawk.client import BizHawkClient
 from .common.Util import build_item_id_to_name_dict, build_location_name_to_id_dict
 from .data import ITEMS_DATA
 from .data.locations import LOCATIONS_DATA
-from .Options import OracleOfSeasonsGoal
+from .options import OracleOfSeasonsGoal
 
 if TYPE_CHECKING:
     from worlds._bizhawk.context import BizHawkClientContext

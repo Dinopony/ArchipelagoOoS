@@ -1,7 +1,7 @@
 import json
 from collections import defaultdict
 
-from ..Options import OracleOfSeasonsOptions
+from ..options import OracleOfSeasonsOptions
 from ..patching.procedure_patch import OoSProcedurePatch
 from ..world import OracleOfSeasonsWorld
 

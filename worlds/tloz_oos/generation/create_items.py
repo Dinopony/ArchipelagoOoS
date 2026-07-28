@@ -14,7 +14,7 @@ from ..data.Constants import (
 )
 from ..data.locations import LOCATIONS_DATA
 from ..generation.CreateRegions import location_is_active
-from ..Options import (
+from ..options import (
     OracleOfSeasonsDuplicateSeedTree,
     OracleOfSeasonsFoolsOre,
     OracleOfSeasonsLogicDifficulty,

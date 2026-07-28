@@ -14,7 +14,7 @@ from ..common.patching.rooms.encoding import write_room_data
 from ..common.patching.text.encoding import write_text_data
 from ..common.patching.z80asm.Assembler import GameboyAddress, Z80Assembler, Z80Block
 from ..data.Constants import ROM_HASH
-from ..Options import OracleOfSeasonsLinkedHerosCave
+from ..options import OracleOfSeasonsLinkedHerosCave
 from .Constants import CAVE_DATA, DEFINES, DUNGEON_ENTRANCES, DUNGEON_EXITS
 from .data_manager.text import apply_ages_edits, get_modded_seasons_text_data
 from .functions import (

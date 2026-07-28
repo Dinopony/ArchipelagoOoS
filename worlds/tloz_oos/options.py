@@ -5,17 +5,18 @@ from Options import (
     Choice,
     DeathLink,
     DefaultOnToggle,
-    PerGameCommonOptions,
-    Range,
-    Toggle,
-    StartInventoryPool,
     ItemDict,
     ItemsAccessibility,
     ItemSet,
-    Visibility,
-    OptionGroup,
     NamedRange,
+    OptionGroup,
+    PerGameCommonOptions,
+    Range,
+    StartInventoryPool,
+    Toggle,
+    Visibility,
 )
+
 from .data.Items import ITEMS_DATA
 
 
@@ -86,7 +87,7 @@ class OracleOfSeasonsPlacedEssences(NamedRange):
     range_end = 8
 
     default = 8
-    special_range_names = {"included essences": -1}
+    special_range_names = {"included essences": -1}  # noqa: RUF012
 
 
 class OracleOfSeasonsDefaultSeasons(Choice):
@@ -311,7 +312,8 @@ class OracleOfSeasonsShowDungeonsWithEssence(Choice):
     - Always: Dungeons with an essence are always shown on the map
     """
 
-    # TODO: - With Treasure Map: Dungeons with an essence all become highlighted when you obtain the unique Treasure Map item
+    # TODO: With Treasure Map: Dungeons with an essence all become highlighted when you obtain the unique Treasure Map
+    #  item
     display_name = "Show Dungeons With Essence"
 
     option_disabled = 0
@@ -379,9 +381,11 @@ class OracleOfSeasonsMapCompassShuffle(Toggle):
 
 class OracleOfSeasonsRemoveD0AltEntrance(Toggle):
     """
-    If enabled, remove the hole acting as an alternate entrance to Hero’s Cave. Stairs will be added inside the dungeon to make the chest reachable.
+    If enabled, remove the hole acting as an alternate entrance to Hero's Cave.
+    Stairs will be added inside the dungeon to make the chest reachable.
     This is especially useful when shuffling dungeons, since only main dungeon entrances are shuffled.
-    If this option is not set in such a case, you could potentially have two distant entrances leading to the same dungeon.
+    If this option is not set in such a case, you could potentially have two distant entrances leading to the
+    same dungeon.
     """
 
     display_name = "Remove Hero's Cave Alt. Entrance"
@@ -392,9 +396,11 @@ class OracleOfSeasonsRemoveD0AltEntrance(Toggle):
 
 class OracleOfSeasonsRemoveD2AltEntrance(Toggle):
     """
-    If enabled, remove both stairs acting as alternate entrances to Snake’s Remains and connect them together inside the dungeon.
+    If enabled, remove both stairs acting as alternate entrances to Snake's Remains and connect them together
+    inside the dungeon.
     This is especially useful when shuffling dungeons, since only main dungeon entrances are shuffled.
-    If this option is not set in such a case, you could potentially have two distant entrances leading to the same dungeon.
+    If this option is not set in such a case, you could potentially have two distant entrances leading to the
+    same dungeon.
     """
 
     display_name = "Remove D2 Alt. Entrance"
@@ -463,7 +469,7 @@ class OracleOfSeasonsSignGuyRequirement(NamedRange):
     range_end = 250
 
     default = 10
-    special_range_names = {"vanilla": 100}
+    special_range_names = {"vanilla": 100}  # noqa: RUF012
     include_in_patch = True
 
 
@@ -479,7 +485,7 @@ class OracleOfSeasonsGashaNutKillRequirement(NamedRange):
     range_end = 250
 
     default = 20
-    special_range_names = {"vanilla": 40}
+    special_range_names = {"vanilla": 40}  # noqa: RUF012
     include_in_patch = True
 
 
@@ -571,7 +577,7 @@ class OracleOfSeasonsRequiredRings(ItemSet):
     """
 
     display_name = "Required Rings"
-    valid_keys = {name for name, idata in ITEMS_DATA.items() if "ring" in idata}
+    valid_keys = frozenset(name for name, idata in ITEMS_DATA.items() if "ring" in idata)
 
 
 class OracleOfSeasonsExcludedRings(ItemSet):
@@ -581,8 +587,8 @@ class OracleOfSeasonsExcludedRings(ItemSet):
     """
 
     display_name = "Excluded Rings"
-    default = {name for name, idata in ITEMS_DATA.items() if "ring" in idata and idata["ring"] == "useless"}
-    valid_keys = {name for name, idata in ITEMS_DATA.items() if "ring" in idata}
+    default = frozenset(name for name, idata in ITEMS_DATA.items() if "ring" in idata and idata["ring"] == "useless")
+    valid_keys = frozenset(name for name, idata in ITEMS_DATA.items() if "ring" in idata)
 
 
 class OracleOfSeasonsShopPrices(Choice):
@@ -840,7 +846,7 @@ class OracleOfSeasonsBirdHint(Choice):
 
 @dataclass
 class OracleOfSeasonsOptions(PerGameCommonOptions):
-    accessibility: ItemsAccessibility
+    accessibility: ItemsAccessibility  # pyright: ignore[reportIncompatibleVariableOverride]
     goal: OracleOfSeasonsGoal
     logic_difficulty: OracleOfSeasonsLogicDifficulty
     death_link: OracleOfSeasonsDeathLink

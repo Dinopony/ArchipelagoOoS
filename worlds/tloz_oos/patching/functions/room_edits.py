@@ -6,7 +6,7 @@ from settings import get_settings
 from ... import patching
 from ...common.patching.RomData import RomData
 from ...common.patching.rooms.decoding import decompress_rooms
-from ...Options import OracleOfSeasonsLinkedHerosCave
+from ...options import OracleOfSeasonsLinkedHerosCave
 
 ### How rooms work:
 # Room number 0xYZZ = group Y, room ZZ

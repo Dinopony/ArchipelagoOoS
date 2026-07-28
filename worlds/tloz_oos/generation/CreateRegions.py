@@ -21,7 +21,7 @@ from ..data.regions import (
     SCRUB_REGIONS,
     SECRET_REGIONS,
 )
-from ..Options import OracleOfSeasonsGoal, OracleOfSeasonsLogicDifficulty, OracleOfSeasonsOldMenShuffle
+from ..options import OracleOfSeasonsGoal, OracleOfSeasonsLogicDifficulty, OracleOfSeasonsOldMenShuffle
 from ..world import OracleOfSeasonsWorld
 
 

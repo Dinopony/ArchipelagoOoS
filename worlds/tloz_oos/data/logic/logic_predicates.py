@@ -2,7 +2,7 @@ from rule_builder.field_resolvers import FromOption, FromWorldAttr
 from rule_builder.options import OptionFilter
 from rule_builder.rules import And, AtLeast, CanReachRegion, Has, HasFromList, HasGroup, Or, True_
 
-from ...Options import (
+from ...options import (
     OracleOfSeasonsAnimalCompanion,
     OracleOfSeasonsDefaultSeedType,
     OracleOfSeasonsDungeonShuffle,

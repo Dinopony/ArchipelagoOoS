@@ -25,9 +25,9 @@ from .data.Constants import (
     VANILLA_SHOP_PRICES,
 )
 from .data.locations import LOCATIONS_DATA
-from .Options import OracleOfSeasonsOptions
-from .Settings import OracleOfSeasonsSettings
-from .WebWorld import OracleOfSeasonsWeb
+from .options import OracleOfSeasonsOptions
+from .settings import OracleOfSeasonsSettings
+from .web_world import OracleOfSeasonsWeb
 
 
 class OracleOfSeasonsWorld(World):

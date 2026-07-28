@@ -1,7 +1,7 @@
 from rule_builder.rules import And, CanReachRegion, Has, Or, True_
 
 from ... import OracleOfSeasonsWorld
-from ...Options import (
+from ...options import (
     OracleOfSeasonsIncludeSecretLocations,
     OracleOfSeasonsLogicDifficulty,
     OracleOfSeasonsOptions,

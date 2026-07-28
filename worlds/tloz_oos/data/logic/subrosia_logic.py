@@ -1,6 +1,6 @@
 from rule_builder.rules import And, CanReachRegion, Has, Or, True_
 
-from ...Options import (
+from ...options import (
     OracleOfSeasonsOptions,
 )
 from . import LogicLine

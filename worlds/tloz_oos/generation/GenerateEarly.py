@@ -14,8 +14,8 @@ from ..data.Constants import (
     VALID_RUPEE_PRICE_VALUES,
 )
 from ..data.locations import LOCATIONS_DATA
-from ..Options import OracleOfSeasonsLinkedHerosCave, OracleOfSeasonsLogicDifficulty, OracleOfSeasonsOldMenShuffle
-from ..Util import get_old_man_values_pool
+from ..options import OracleOfSeasonsLinkedHerosCave, OracleOfSeasonsLogicDifficulty, OracleOfSeasonsOldMenShuffle
+from ..util import get_old_man_values_pool
 from ..world import OracleOfSeasonsWorld
 
 

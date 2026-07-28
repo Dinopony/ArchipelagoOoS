@@ -1,6 +1,7 @@
 from BaseClasses import Tutorial
 from worlds.AutoWorld import WebWorld
-from .Options import oos_option_groups
+
+from .options import oos_option_groups
 
 
 class OracleOfSeasonsWeb(WebWorld):
@@ -22,5 +23,5 @@ class OracleOfSeasonsWeb(WebWorld):
         "oos_setup/fr",
         ["Deoxis"]
     )
-    tutorials = [setup_en, setup_fr]
+    tutorials = [setup_en, setup_fr]  # noqa: RUF012
     option_groups = oos_option_groups

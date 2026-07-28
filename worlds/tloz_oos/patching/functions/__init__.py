@@ -31,7 +31,7 @@ from ...data.Constants import (
     TREASURE_SPAWN_POOF,
 )
 from ...data.locations import LOCATIONS_DATA
-from ...Options import (
+from ...options import (
     OracleOfSeasonsAnimalCompanion,
     OracleOfSeasonsFoolsOre,
     OracleOfSeasonsGoal,
