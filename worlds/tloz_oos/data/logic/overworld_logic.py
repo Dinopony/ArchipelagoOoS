@@ -1207,7 +1207,18 @@ def make_holodrum_logic(world: OracleOfSeasonsWorld, options: OracleOfSeasonsOpt
             "goron mountain entrance",
             "temple remains lower stump",
             False,
-            Or(oos_can_jump_3_wide_pit(), oos_can_dimitri_clip()),
+            Or(
+                oos_can_jump_3_wide_pit(),
+                And(
+                    oos_can_dimitri_clip(),
+                    oos_can_jump_2_wide_pit(),
+                    Or(
+                        # The bombs are actually to clip out of the rock
+                        oos_has_bombs_for_bombjump(),
+                        oos_has_bombchus_for_bombjump(),
+                    ),
+                ),
+            ),
         ),
         ("temple remains lower stump", "goron mountain entrance", False, oos_can_jump_3_wide_pit()),
         # TARM RUINS ###############################################################################################
