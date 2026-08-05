@@ -9,6 +9,7 @@
   dwbe $00b1, locations.spoolSwampHeartPiece
   dwbe $05c7, locations.templeRemainsHeartPiece
   dwbe $0387, locations.mayorsHouseSecretRoom
+  dwbe $0066, locations.underwaterItemBelowNatzuBridge
   dwbe $03a1, locations.subrosianHouse
   dwbe $07e3, locations.subrosian2dCave
   dwbe $0601, locations.d0HiddenBasement
@@ -77,6 +78,8 @@
 11/63da/: db $0a
 11/7031/: db $0a
 11/7067/: db $0a
+# Replace the underwaterGashaSeed by staticHeartPiece
+11/6855/: db $0a
 # Replace the only sidescrollingStaticGashaSeed by a staticHeartPiece
 11/70c3/: db $0a
 # Replace the only sidescrollingStaticSeedSatchel by a staticHeartPiece
