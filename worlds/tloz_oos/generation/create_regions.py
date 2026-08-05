@@ -1,17 +1,15 @@
 from typing import Any
 
 from BaseClasses import Item, ItemClassification, Location, LocationProgressType, Region
-
-from ..data.locations import LOCATIONS_DATA
 from ..data.Constants import (
     ESSENCES,
-    ITEM_GROUPS,
     LOCATION_GROUPS,
     RUPEE_OLD_MAN_LOCATIONS,
     SCRUB_LOCATIONS,
     SECRETS,
     SUBROSIA_HIDDEN_DIGGING_SPOTS_LOCATIONS,
 )
+from ..data.locations import LOCATIONS_DATA
 from ..data.regions import (
     D11_REGIONS,
     GASHA_REGIONS,
@@ -50,15 +48,21 @@ def location_is_active(world: OracleOfSeasonsWorld, location_name: str, location
         return world.options.secret_locations
     if location_name in LOCATION_GROUPS["D11"]:
         return world.options.linked_heros_cave
+    if "owl_id" in location_data:
+        return world.options.bird_hint.owl()
     return False
 
 
-def create_location(world: OracleOfSeasonsWorld, region_name: str, location_name: str, local: bool) -> None:
+def create_location(
+    world: OracleOfSeasonsWorld, region_name: str, location_name: str, local: bool, event: bool
+) -> Location:
     region = world.multiworld.get_region(region_name, world.player)
-    location = Location(world.player, location_name, world.location_name_to_id[location_name], region)
+    location_id = None if event else world.location_name_to_id[location_name]
+    location = Location(world.player, location_name, location_id, region)
     region.locations.append(location)
     if local:
         location.item_rule = lambda item: item.player == world.player
+    return location
 
 
 def create_regions(world: OracleOfSeasonsWorld) -> None:
@@ -107,7 +111,11 @@ def create_regions(world: OracleOfSeasonsWorld) -> None:
             continue
 
         is_local = "local" in location_data and location_data["local"] is True
-        create_location(world, location_data["region_id"], location_name, is_local)
+        is_owl = "owl_id" in location_data
+        location = create_location(world, location_data["region_id"], location_name, is_local, is_owl)
+        if is_owl:
+            location.place_locked_item(Item("Hint", ItemClassification.filler, None, world.player))
+
     create_events(world)
     exclude_locations_automatically(world)
 

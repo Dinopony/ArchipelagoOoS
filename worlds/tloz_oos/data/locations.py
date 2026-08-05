@@ -2217,7 +2217,8 @@ LOCATIONS_DATA: dict[str, dict[str, Any]] = {
 
     # Placeholder locations for the owls
     "Dodongo Owl": {
-        "region_id": None,
+        "region_id": "dodongo owl",
+        "vanilla_item": "Hint",
         "conditional": True,
         "flag_byte": None,
         "owl_id": 0,
@@ -2226,7 +2227,8 @@ LOCATIONS_DATA: dict[str, dict[str, Any]] = {
         "room": 0x0428
     },
     "Gohma Owl": {
-        "region_id": None,
+        "region_id": "gohma owl",
+        "vanilla_item": "Hint",
         "conditional": True,
         "flag_byte": None,
         "owl_id": 1,
@@ -2234,8 +2236,9 @@ LOCATIONS_DATA: dict[str, dict[str, Any]] = {
         "scouting_mask": 0x40,
         "room": 0x0461
     },
-    "Armos Owl": {
-        "region_id": None,
+    "Armos Knights Owl": {
+        "region_id": "armos knights owl",
+        "vanilla_item": "Hint",
         "conditional": True,
         "flag_byte": None,
         "owl_id": 2,
@@ -2244,7 +2247,8 @@ LOCATIONS_DATA: dict[str, dict[str, Any]] = {
         "room": 0x0492
     },
     "Silent Watch Owl": {
-        "region_id": None,
+        "region_id": "silent watch owl",
+        "vanilla_item": "Hint",
         "conditional": True,
         "flag_byte": None,
         "owl_id": 3,
@@ -2253,7 +2257,8 @@ LOCATIONS_DATA: dict[str, dict[str, Any]] = {
         "room": 0x0573
     },
     "Magical Ice Owl": {
-        "region_id": None,
+        "region_id": "magical ice owl",
+        "vanilla_item": "Hint",
         "conditional": True,
         "flag_byte": None,
         "owl_id": 4,
@@ -2262,7 +2267,8 @@ LOCATIONS_DATA: dict[str, dict[str, Any]] = {
         "room": 0x0584
     },
     "Mystery Owl": {
-        "region_id": None,
+        "region_id": "mystery owl",
+        "vanilla_item": "Hint",
         "conditional": True,
         "flag_byte": None,
         "owl_id": 5,
@@ -2271,7 +2277,8 @@ LOCATIONS_DATA: dict[str, dict[str, Any]] = {
         "room": 0x009e
     },
     "Omuai Owl": {
-        "region_id": None,
+        "region_id": "omuai owl",
+        "vanilla_item": "Hint",
         "conditional": True,
         "flag_byte": None,
         "owl_id": 6,
@@ -2280,7 +2287,8 @@ LOCATIONS_DATA: dict[str, dict[str, Any]] = {
         "room": 0x0449
     },
     "Poe Curse Owl": {
-        "region_id": None,
+        "region_id": "poe curse owl",
+        "vanilla_item": "Hint",
         "conditional": True,
         "flag_byte": None,
         "owl_id": 7,
@@ -2289,7 +2297,8 @@ LOCATIONS_DATA: dict[str, dict[str, Any]] = {
         "room": 0x0559
     },
     "Spiked Beetles Owl": {
-        "region_id": None,
+        "region_id": "spiked beetles owl",
+        "vanilla_item": "Hint",
         "conditional": True,
         "flag_byte": None,
         "owl_id": 8,
@@ -2298,7 +2307,8 @@ LOCATIONS_DATA: dict[str, dict[str, Any]] = {
         "room": 0x0446
     },
     "Trampoline Owl": {
-        "region_id": None,
+        "region_id": "trampoline owl",
+        "vanilla_item": "Hint",
         "conditional": True,
         "flag_byte": None,
         "owl_id": 9,
@@ -2307,7 +2317,8 @@ LOCATIONS_DATA: dict[str, dict[str, Any]] = {
         "room": 0x043e
     },
     "Greater Distance Owl": {
-        "region_id": None,
+        "region_id": "greater distance owl",
+        "vanilla_item": "Hint",
         "conditional": True,
         "flag_byte": None,
         "owl_id": 10,
@@ -2316,7 +2327,8 @@ LOCATIONS_DATA: dict[str, dict[str, Any]] = {
         "room": 0x0478
     },
     "Frypolar Owl": {
-        "region_id": None,
+        "region_id": "frypolar owl",
+        "vanilla_item": "Hint",
         "conditional": True,
         "flag_byte": None,
         "owl_id": 11,
@@ -2325,7 +2337,8 @@ LOCATIONS_DATA: dict[str, dict[str, Any]] = {
         "room": 0x0571
     },
     "Shining Blue Owl": {
-        "region_id": None,
+        "region_id": "shining blue owl",
+        "vanilla_item": "Hint",
         "conditional": True,
         "flag_byte": None,
         "owl_id": 12,
@@ -2334,7 +2347,8 @@ LOCATIONS_DATA: dict[str, dict[str, Any]] = {
         "room": 0x0557
     },
     "Floodgate Owl": {
-        "region_id": None,
+        "region_id": "floodgate owl",
+        "vanilla_item": "Hint",
         "conditional": True,
         "flag_byte": None,
         "owl_id": 13,

@@ -13,7 +13,7 @@ from ..data.Constants import (
     VALID_RUPEE_ITEM_VALUES,
 )
 from ..data.locations import LOCATIONS_DATA
-from ..generation.CreateRegions import location_is_active
+from ..generation.create_regions import location_is_active
 from ..options import (
     OracleOfSeasonsDuplicateSeedTree,
     OracleOfSeasonsFoolsOre,
@@ -111,6 +111,8 @@ def build_item_pool_dict(world: OracleOfSeasonsWorld) -> dict[str, int]:
             continue
 
         item_name = loc_data["vanilla_item"]
+        if item_name == "Hint":
+            continue
         if "Ring" in item_name:
             item_name = "Random Ring"
         if item_name == "Filler Item":

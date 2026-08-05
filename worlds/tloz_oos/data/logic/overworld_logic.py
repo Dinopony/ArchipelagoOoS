@@ -461,6 +461,7 @@ def make_holodrum_logic(world: OracleOfSeasonsWorld, options: OracleOfSeasonsOpt
             not options.exclude_dungeons_without_essence.value or "Gift of Time" in world.essences_in_game,
             from_option(OracleOfSeasonsRemoveD2AltEntrance, OracleOfSeasonsRemoveD2AltEntrance.option_false),
         ),
+        ("central woods of winter", "mystery owl", False, oos_can_use_mystery_seeds()),
         # EYEGLASS LAKE SECTOR #########################################################################################
         ("impa's house", "horon village", True, True_()),
         ("impa's house", "maple encounter", False, oos_can_meet_maple()),
@@ -793,6 +794,7 @@ def make_holodrum_logic(world: OracleOfSeasonsWorld, options: OracleOfSeasonsOpt
             False,
             And(oos_season_in_spool_swamp(SEASON_SUMMER), oos_has_shovel()),
         ),
+        ("floodgate keeper's house", "floodgate owl", False, oos_can_use_mystery_seeds()),
         (
             "floodgate keeper's house",
             "floodgate keyhole",

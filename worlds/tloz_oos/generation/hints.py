@@ -5,6 +5,7 @@ from BaseClasses import Item
 
 from ..common.patching.text import normalize_text
 from ..common.patching.Util import simple_hex
+from ..data.locations import LOCATIONS_DATA
 from ..world import OracleOfSeasonsWorld
 
 know_it_all_birds = [
@@ -22,7 +23,7 @@ know_it_all_birds = [
 owl_statues = [
     "TX_390d",  # "Dodongo Owl",
     "TX_390e",  # "Gohma Owl",
-    "TX_390f",  # "Armos Owl",
+    "TX_390f",  # "Armos Knights Owl",
     "TX_3910",  # "Silent Watch Owl",
     "TX_3911",  # "Magical Ice Owl",
     "TX_3914",  # "Mystery Owl",
@@ -308,12 +309,43 @@ def create_region_hints(world: OracleOfSeasonsWorld) -> list[tuple[str, str | in
 
 
 def create_item_hints(world: OracleOfSeasonsWorld) -> list[Item | None]:
-    hintable_items: list[Item | None] = [location.item for location in world.multiworld.get_filled_locations()
-                                         if cast(Item, location.item).player == world.player
-                                         and cast(Item, location.item).advancement
-                                         and not cast(Item, location.item).deprioritized
-                                         and not location.is_event
-                                         and not location.locked]
-    hintable_items.append(None)
-    hinted_items: list[Item | None] = world.random.choices(hintable_items, k=len(owl_statues))
-    return hinted_items
+    spheres = world.multiworld.get_spheres()
+    non_hintable: dict[int, set[Item]] = {}
+    past_items: set[Item] = set()
+
+    for sphere in spheres:
+        if len(sphere) == 0:
+            break
+        current_items = set()
+        for location in sphere:
+            item = location.item
+            assert item is not None
+            if item.player == world.player:
+                if item.name == "Hint":
+                    non_hintable[LOCATIONS_DATA[location.name]["owl_id"]] = past_items
+                elif item.advancement and not item.deprioritized and not location.is_event and not location.locked:
+                    current_items.add(item)
+            past_items.update(current_items)
+
+    hinted_items: dict[int, Item | None] = {}
+    random_order_owl = list(range(len(owl_statues)))
+    world.random.shuffle(random_order_owl)
+    for owl_id in random_order_owl:
+        if world.random.randrange(30) == 0:
+            hinted_items[owl_id] = None
+        if owl_id in non_hintable:
+            hintables = past_items.difference(non_hintable[owl_id])
+            if not hintables:
+                # It was a last-sphere item, take a random one then
+                hintables = past_items
+        else:
+            # Owl is logically unreachable, take a random item
+            hintables = past_items
+        if hintables:
+            hintables_list = sorted(hintables)
+            item = world.random.choice(hintables_list)
+            hinted_items[owl_id] = item
+            past_items.remove(item)
+        else:
+            hinted_items[owl_id] = None
+    return [hinted_items[i] for i in range(len(random_order_owl))]

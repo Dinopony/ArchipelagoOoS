@@ -113,7 +113,7 @@ class OracleOfSeasonsWorld(World):
         generate_early(self)
 
     def create_regions(self) -> None:
-        from .generation.CreateRegions import create_regions
+        from .generation.create_regions import create_regions
 
         create_regions(self)
 
@@ -251,7 +251,7 @@ class OracleOfSeasonsWorld(World):
         return slot_data
 
     def write_spoiler(self, spoiler_handle: TextIO):
-        from .generation.CreateRegions import location_is_active
+        from .generation.create_regions import location_is_active
 
         spoiler_handle.write(f"\n\nDefault Seasons ({self.multiworld.player_name[self.player]}):\n")
         for region_name, season in self.default_seasons.items():

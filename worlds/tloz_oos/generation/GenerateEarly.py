@@ -8,7 +8,6 @@ from ..data.Constants import (
     DIRECTION_LEFT,
     DIRECTION_UP,
     DIRECTIONS,
-    ITEM_GROUPS,
     SEASON_NAMES,
     SEASONS,
     VALID_RUPEE_PRICE_VALUES,
