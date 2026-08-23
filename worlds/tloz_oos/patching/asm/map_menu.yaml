@@ -1,11 +1,13 @@
-# map pop-up icons for seed trees
-02/6c60/: db locations.horonVillageSeedTree.id - $0b
-02/6c5d/: db locations.woodsOfWinterSeedTree.id - $0b
-02/6c57/: db locations.northHoronSeedTree.id - $0b
-02/6c5a/: db locations.spoolSwampSeedTree.id - $0b
-02/6c54/: db locations.sunkenCitySeedTree.id - $0b
-02/6c51/: db locations.tarmRuinsSeedTree.id - $0b
-02/6c61/: db $2d,$44 ; New warp to cucco mountain as QOl
+# gale warp menu
+02/6c4f/treewarps: |
+  db $10,$34,locations.tarmRuinsSeedTree.id - $0b ;  tarm
+  db $2d,$44,$00 ; mt cucco (unique to rando)
+  db $5f,$43,locations.sunkenCitySeedTree.id - $0b ; sunken
+  db $67,$23,locations.spoolSwampSeedTree.id - $0b ; swamp
+  db $72,$44,locations.northHoronSeedTree.id - $0b ; north horon
+  db $9e,$45,locations.woodsOfWinterSeedTree.id - $0b ; wow
+  db $f8,$33,locations.horonVillageSeedTree.id - $0b ; horon
+  db $00,$00,$00
 
 # Store a few additional variables when checking the SELECT button to open map
 02//extendedMenuOpenCheck: |
