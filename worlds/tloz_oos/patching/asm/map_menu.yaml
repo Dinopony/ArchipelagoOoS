@@ -1,4 +1,4 @@
-# gale warp menu
+# gale warp menu (map, drop position, sprite)
 02/6c4f/treewarps: |
   db $10,$34,locations.tarmRuinsSeedTree.id - $0b ;  tarm
   db $2d,$44,$00 ; mt cucco (unique to rando)
