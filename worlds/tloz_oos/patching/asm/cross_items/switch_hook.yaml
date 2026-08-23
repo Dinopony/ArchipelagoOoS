@@ -187,3 +187,19 @@
   pop de
   pop bc
   ret
+
+# Disable flower while hooking
+06/513c/: |
+  call disableHookJump
+  nop
+
+06//disableHookJump: |
+  ld a,($d201) ; w1ParentItem2.id
+  cp $0a ; ITEM_SWITCH_HOOK
+  jr nz,@end
+  scf
+  ret
+  @end:
+  ld a,($cc48) ; (wLinkObjectIndex)
+  rrca
+  ret
