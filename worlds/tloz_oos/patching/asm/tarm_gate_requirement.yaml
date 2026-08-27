@@ -9,3 +9,17 @@
   call getInsertedJewelsCount
   cp option.tarmGateRequiredJewels
 
+# Leave the gate interaction after it is open so that more jewels may be placed
+# When entering
+0a/4fc0/: |
+  ret
+  
+  reset_substate:
+  ld e,$45 ; interaction.substate
+  xor a
+  ld (de),a
+  ret
+  ; 3 free bytes
+
+# After opening
+0a/5139/: jp reset_substate
