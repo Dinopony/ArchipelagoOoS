@@ -297,6 +297,7 @@ def define_additional_tile_replacements(assembler: Z80Assembler, patch_data: dic
             0x00, 0xef, 0x20, 0x66, 0xe1,  # Samasa Desert: Gasha Spot
             0x00, 0x44, 0x20, 0x44, 0xe1,  # Path to Onox Castle: Gasha Spot
         ])
+
     assembler.add_floating_chunk("additionalTileReplacements", table)
 
 

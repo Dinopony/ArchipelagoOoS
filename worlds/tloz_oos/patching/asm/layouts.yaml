@@ -6,6 +6,21 @@
 # - tile to put in place of the original one
 04//tileReplacementsTable: |
     db $00,$01,$01,$52,$04  ; Permanently remove flower outside D6 when cut
+    
+    ; subrosia digging spots
+    db $01,$06,$20,$18,$e1
+    db $01,$57,$20,$38,$e1
+    db $01,$47,$20,$33,$e1
+    db $01,$3a,$20,$46,$e1
+    db $01,$07,$20,$13,$e1
+    db $01,$20,$20,$68,$e1
+    db $01,$42,$20,$14,$e1
+    ; Star ores
+    db $01,$65,$20,$57,$e1
+    db $01,$66,$20,$56,$e1
+    db $01,$75,$20,$27,$e1
+    db $01,$76,$20,$24,$e1
+    
     /include additionalTileReplacements
     db $ff
 
