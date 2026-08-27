@@ -15,9 +15,53 @@
     rst 10
     ret
 
+3f//customPartSpriteJumpTable: |
+    ; PART_ITEM_FROM_MAPLE_2
+    dwbe $1500, locations.mapleItem1
+    dwbe $1501, locations.mapleItem2
+    dwbe $1502, locations.mapleItem3
+    dwbe $1503, locations.mapleItem4
+    db $00
+
+# overrides the sprite data loaded for certain interactions. this is mostly
+# used for "non-item" interactions that depict items, like the ones in shops.
+3f//checkLoadCustomPartSprite: |
+    pop bc
+    ldi a,(hl)
+    push af
+    push hl
+    push bc
+    
+    ld a,(de)
+    ld b,a
+    inc e
+    ld a,(de)
+    ld c,a
+    ld e,$02
+    ld hl,customPartSpriteJumpTable
+    call searchDoubleKey
+    jr c,@customSprite
+    pop bc
+    pop hl
+    pop af
+    ret
+
+    @customSprite:
+    pop bc
+    ldi a,(hl)
+    ld b,a
+    ld c,(hl)
+    pop hl
+    call lookupItemSprite_body
+    pop af
+    ret
+
+# 3f/4352/: jp checkLoadCustomPartSprite
+# TODO: Only needed for maple's drops. Also, it really lags the game on screen transition
+
 # format (ID, subID, jump address). these functions *must* pop af as the last
 # instruction before returning.
-3f//customSpriteJumpTable: |
+3f//customInteractionSpriteJumpTable: |
     dwbe $4700, locations.memberShop1
     dwbe $4702, locations.memberShop2
     dwbe $4705, locations.memberShop3
@@ -42,20 +86,20 @@
 
 # overrides the sprite data loaded for certain interactions. this is mostly
 # used for "non-item" interactions that depict items, like the ones in shops.
-3f//checkLoadCustomSprite: |
+3f//checkLoadCustomInteractionSprite: |
     call $4437  ; _interactionGetData
     push af
     push hl
     push bc
     
-    ld e,$41
+    ld e,$41 ; interaction.id
     ld a,(de)
     ld b,a
     inc e
     ld a,(de)
     ld c,a
     ld e,$02
-    ld hl,customSpriteJumpTable
+    ld hl,customInteractionSpriteJumpTable
     call searchDoubleKey
     jr c,@customSprite
     pop bc
@@ -72,7 +116,7 @@
     call lookupItemSprite_body
     pop af
     ret
-3f/4356/: call checkLoadCustomSprite
+3f/4356/: call checkLoadCustomInteractionSprite
 
 
 # Make the rod of seasons interaction behave like a regular item, graphically.
@@ -94,8 +138,8 @@
 
 # give the noble sword (lost woods pedestal) object OAM pointers compatible
 # with normal treasure graphics.
-14/53d7/: dw 5719
-14/55a7/: dw 684f
+14/53d7/: dw $5719
+14/55a7/: dw $684f
 
 
 # give items that don't normally appear as treasure interactions entries in

@@ -188,7 +188,7 @@ class OracleOfSeasonsWorld(World):
         progitempool: list[Item],
         usefulitempool: list[Item],
         filleritempool: list[Item],
-        fill_locations,
+        fill_locations: list[Location],
     ):
         from .generation.OrderPool import order_pool
 

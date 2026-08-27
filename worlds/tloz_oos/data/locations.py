@@ -2450,29 +2450,42 @@ LOCATIONS_DATA: dict[str, dict[str, Any]] = {
         "room": 0x0534,
         "collect": COLLECT_CHEST,
     },
-    "Maple Rare Drop #1": {
+    # Maple locations, disabled for now
+    "Maple Rare Drop #1": { # There are technically 2 of them but this is not visible, and we only have room for 4 items
         "region_id": "maple rare item 1",
-        "vanilla_item": "Gasha Seed",
+        "vanilla_item": "Random Ring",
+        "conditional": True,
         "flag_byte": 0xc641,
-        "bit_mask": 0x10,
+        "bit_mask": 0x20,
+        "symbolic_name": "mapleItem1",
+        "renewable": True,
     },
     "Maple Rare Drop #2": {
         "region_id": "maple rare item 2",
-        "vanilla_item": "Random Ring",
+        "vanilla_item": "Potion",
+        "conditional": True,
         "flag_byte": 0xc641,
-        "bit_mask": 0x20,
+        "bit_mask": 0x10,
+        "symbolic_name": "mapleItem2",
+        "renewable": True,
     },
     "Maple Rare Drop #3": {
         "region_id": "maple rare item 3",
-        "vanilla_item": "Random Ring",
+        "vanilla_item": "Gasha Seed",
+        "conditional": True,
         "flag_byte": 0xc641,
         "bit_mask": 0x40,
+        "symbolic_name": "mapleItem3",
+        "renewable": True,
     },
     "Maple Rare Drop #4": {
         "region_id": "maple rare item 4",
         "vanilla_item": "Piece of Heart",
+        "conditional": True,
         "flag_byte": 0xc641,
         "bit_mask": 0x80,
+        "symbolic_name": "mapleItem4",
+        "renewable": True,
     },
 }
 

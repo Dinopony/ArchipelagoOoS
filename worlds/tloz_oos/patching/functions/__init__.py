@@ -2,7 +2,7 @@ import os
 import random
 from collections import defaultdict
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 import Utils
 from settings import get_settings
@@ -319,23 +319,24 @@ def define_location_constants(
 
         symbolic_name = location_data["symbolic_name"]
         if location_name in patch_data["locations"]:
-            item = patch_data["locations"][location_name]
+            item: dict[str, str | bool] = patch_data["locations"][location_name]
         else:
-            # Put a fake item for disabled locations, since they are unreachable anwyway
+            # Put a fake item for disabled locations, since they are unreachable anyway
             item = {"item": "Friendship Ring"}
 
         item_id, item_subid = get_item_id_and_subid(item_data, item)
         assembler.define_byte(f"locations.{symbolic_name}.id", item_id)
         assembler.define_byte(f"locations.{symbolic_name}.subid", item_subid)
         assembler.define_word(f"locations.{symbolic_name}", (item_id << 8) + item_subid)
-        if "shop" in location_data and "player" not in item:  # Only local items can be repeatable
-            item = item_data[item["item"]]
-            if "repeatable" in item:
-                assembler.define_byte(f"locations.{symbolic_name}.shopByte", 0x80)
+        if "shop" in location_data:  # Only local items can be repeatable
+            if "player" not in item:
+                item = item_data[cast(str, item["item"])]
+                if "repeatable" in item:
+                    assembler.define_byte(f"locations.{symbolic_name}.shopByte", 0x80)
+                else:
+                    assembler.define_byte(f"locations.{symbolic_name}.shopByte", 0xFF)
             else:
                 assembler.define_byte(f"locations.{symbolic_name}.shopByte", 0xFF)
-        else:
-            assembler.define_byte(f"locations.{symbolic_name}.shopByte", 0xFF)
 
     # Process deterministic Gasha Nut locations to define a table
     deterministic_gasha_table = []

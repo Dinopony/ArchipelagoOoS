@@ -127,7 +127,6 @@
   db $64,$05
   db $89,$06
   db $bb,$07
-  db $e8,$08 ; Remove access to stairs behind Farore on 2 essences (static_items.yaml), replacing bipin&blossom sign
   /ifdef d3Entrance
   db d3Entrance,$03 ; Add water tiles to the entrance of the dungeon, replacing the shop minigame
   /endif

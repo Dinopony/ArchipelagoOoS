@@ -9,6 +9,8 @@ if __name__ == "__main__":
     for filename in os.listdir(dir_name):
         if filename.endswith(".yaml"):
             asm_files["base"].append(f"asm/{filename}")
+        elif filename == "disabled":
+            continue
         elif filename == "conditional":
             for subfilename in os.listdir(f"{dir_name}/conditional"):
                 asm_files[subfilename[:-5]] = [f"asm/conditional/{subfilename}"]
