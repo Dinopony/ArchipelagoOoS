@@ -1013,7 +1013,7 @@ def make_holodrum_logic(world: OracleOfSeasonsWorld, options: OracleOfSeasonsOpt
             ),
         ),
         (
-            # Go back to the entrance, usseful when starting/coming from Sunken
+            # Go back to the entrance, useful when starting/coming from Sunken
             "sunken city dimitri", "sunken city entrance", False, True_()
         ),
         (

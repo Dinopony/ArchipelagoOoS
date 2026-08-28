@@ -192,6 +192,8 @@ class OracleOfSeasonsStartingPosition(Choice):
     Where the game starts:
     - Horon: The vanilla starting position
     - Sunken city: Next to the house at the entrance of Sunken City
+
+    Note: Not starting in Horon may add items to your starting inventory
     """
 
     display_name = "Starting Position"
