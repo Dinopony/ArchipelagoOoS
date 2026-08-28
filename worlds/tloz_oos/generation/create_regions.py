@@ -15,9 +15,9 @@ from ..data.regions import (
     GASHA_REGIONS,
     GASHA_SPOT_REGIONS,
     NATZU_REGIONS,
-    REGIONS,
     SCRUB_REGIONS,
     SECRET_REGIONS,
+    RegionNames,
 )
 from ..options import OracleOfSeasonsGoal, OracleOfSeasonsLogicDifficulty, OracleOfSeasonsOldMenShuffle, OracleOfSeasonsStartingPosition
 from ..world import OracleOfSeasonsWorld
@@ -54,7 +54,7 @@ def location_is_active(world: OracleOfSeasonsWorld, location_name: str, location
 
 
 def create_location(
-    world: OracleOfSeasonsWorld, region_name: str, location_name: str, local: bool, event: bool
+        world: OracleOfSeasonsWorld, region_name: str, location_name: str, local: bool, event: bool
 ) -> Location:
     region = world.multiworld.get_region(region_name, world.player)
     location_id = None if event else world.location_name_to_id[location_name]
@@ -67,7 +67,7 @@ def create_location(
 
 def create_regions(world: OracleOfSeasonsWorld) -> None:
     # Create regions
-    for region_name in REGIONS:
+    for region_name in RegionNames:
         region = Region(region_name, world.player, world.multiworld)
         world.multiworld.regions.append(region)
 

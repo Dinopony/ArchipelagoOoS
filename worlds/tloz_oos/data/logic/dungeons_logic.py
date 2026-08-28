@@ -1,5 +1,6 @@
 from rule_builder.rules import And, CanReachRegion, Has, Or, True_
 from worlds.tloz_oos.data.logic import LogicLine
+from ..regions import RegionNames
 
 from ... import OracleOfSeasonsWorld
 from ...options import (
@@ -93,25 +94,25 @@ from .logic_predicates import (
 def make_d0_logic() -> list[LogicLine]:
     return [
         # 0 keys
-        ("enter d0", "d0 key chest", False, True_()),
+        (RegionNames.enter_d0, RegionNames.d0_key_chest, False, True_()),
         (
-            "enter d0",
-            "d0 rupee chest",
+            RegionNames.enter_d0,
+            RegionNames.d0_rupee_chest,
             False,
             # If hole is removed, stairs are added inside dungeon to make the chest reachable
             oos_option_no_d0_alt_entrance(),
         ),
-        ("d0 rupee chest", "enter d0", False, True_()),
+        (RegionNames.d0_rupee_chest, RegionNames.enter_d0, False, True_()),
         (
-            "enter d0",
-            "d0 hidden 2d section",
+            RegionNames.enter_d0,
+            RegionNames.d0_hidden_2d_section,
             False,
             Or(oos_can_kill_normal_enemy(), oos_has_boomerang(), oos_has_switch_hook()),
         ),
         # 1 key
         (
-            "enter d0",
-            "d0 sword chest",
+            RegionNames.enter_d0,
+            RegionNames.d0_sword_chest,
             False,
             Or(
                 oos_has_small_keys(0, 1),
@@ -1617,7 +1618,7 @@ def make_d11_logic(options: OracleOfSeasonsOptions) -> list[LogicLine]:
             options.linked_heros_cave.is_alt_entrance,
         ),
         (
-            "enter d0",
+            RegionNames.enter_d0,
             "enter d11",
             False,
             True_(),

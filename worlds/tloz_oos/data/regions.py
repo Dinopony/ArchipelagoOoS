@@ -1,3 +1,5 @@
+from enum import StrEnum
+
 NATZU_REGIONS = {
     "ricky": ["natzu west (ricky)", "natzu east (ricky)"],
     "dimitri": ["natzu west (dimitri)", "natzu east (dimitri)"],
@@ -70,373 +72,372 @@ SECRET_REGIONS = [
     "natzu deku",
     "deku secret",
 ]
-REGIONS = [
-    "impa's house",
-    "horon village",
-    "horon village portal",
-    "horon village tree",
-    "horon village SE chest",
-    "horon village SW chest",
-    "horon heart piece",
-    "dr. left reward",
-    "old man trade",
-    "malon trade",
-    "talon trade",
-    "syrup trade",
-    "syrup shop",
-    "mrs. ruul trade",
-    "maple encounter",
-    "maple trade",
-    "subrosian chef trade",
-    "biggoron trade",
-    "tick tock trade",
-    "ingo trade",
-    "guru-guru trade",
-    "mayor's gift",
-    "vasu's gift",
-    "mayor's house secret room",
-    "maku tree",
-    "maku tree, 3 essences",
-    "maku tree, 5 essences",
-    "maku tree, 7 essences",
-    "horon shop",
-    "member's shop",
-    "western coast",
-    "black beast's chest",
-    "d0 entrance",
-    "western coast after ship",
-    "coast stump",
-    "graveyard heart piece",
-    "d7 entrance",
-    "suburbs",
-    "windmill heart piece",
-    "eastern suburbs portal",
-    "suburbs fairy fountain",
-    "suburbs fairy fountain (winter)",
-    "sunken city entrance",
-    "sunken city",
-    "moblin road",
-    "holly's house",
-    "central woods of winter",
-    "mystery owl",
-    "woods of winter tree",
-    "woods of winter heart piece",
-    "d2 entrance",
-    "d2 stump",
-    "d2 roof",
-    "cave outside D2",
-    "woods of winter, 1st cave",
-    "woods of winter, 2nd cave",
-    "eastern suburbs spring cave",
-    "spool swamp north",
-    "spool swamp middle",
-    "spool swamp south",
-    "spool swamp south (winter)",
-    "spool swamp south (summer)",
-    "spool swamp south (spring)",
-    "spool swamp south (autumn)",
-    "spool swamp south near gasha spot",
-    "spool swamp portal",
-    "spool swamp cave",
-    "spool swamp heart piece",
-    "spool swamp digging spot",
-    "ghastly stump",
-    "north horon",
-    "d1 stump",
-    "goron mountain entrance",
-    "goron blocked cave entrance",
-    "blaino prize",
-    "underwater item below natzu bridge",
-    "north horon tree",
-    "old man in treehouse",
-    "cave south of mrs. ruul",
-    "cave north of D1",
-    "spool swamp tree",
-    "floodgate keeper's house",
-    "floodgate owl",
-    "floodgate keyhole",
-    "spool stump",
-    "d3 entrance",
-    "d1 island",
-    "eyeglass lake portal",
-    "d1 entrance",
-    "d5 stump",
-    "d5 entrance",
-    "eyeglass lake, across bridge",
-    "dry eyeglass lake, east cave",
-    "eyeglass lake (default)",
-    "eyeglass lake (frozen)",
-    "eyeglass lake (dry)",
-    "dry eyeglass lake, west cave",
-    "natzu west",
-    "natzu river bank",
-    "moblin keep bridge",
-    "moblin keep",
-    "moblin keep chest",
-    "natzu region, across water",
-    "mount cucco",
-    "sunken city tree",
-    "sunken city dimitri",
-    "master diver's challenge",
-    "master diver's reward",
-    "chest in master diver's cave",
-    "sunken city, summer cave",
-    "mt. cucco portal",
-    "goron mountain",
-    "goron's gift",
-    "rightmost rooster ledge",
-    "spring banana tree",
-    "mt. cucco, platform cave",
-    "goron mountain, across pits",
-    "mt. cucco, talon's cave entrance",
-    "mt. cucco heart piece",
-    "diving spot outside D4",
-    "dragon keyhole",
-    "d4 entrance",
-    "chest in goron mountain",
-    "tarm ruins",
-    "lost woods top statue",
-    "lost woods deku",
-    "lost woods phonograph",
-    "lost woods stump",
-    "lost woods",
-    "d6 sector",
-    "tarm ruins tree",
-    "d6 entrance",
-    "tarm ruins, under tree",
-    "samasa desert",
-    "samasa desert pit",
-    "samasa desert chest",
-    "temple remains lower stump",
-    "temple remains upper stump",
-    "temple remains lower portal",
-    "temple remains lower portal access",
-    "temple remains upper portal",
-    "temple remains heart piece",
-    "maku seed",
-    "d9 entrance",
-    "onox beaten",
-    "ganon beaten",
-    "volcanoes east portal",
-    "subrosia temple sector",
-    "subrosia market portal",
-    "subrosia market sector",
-    "strange brothers portal",
-    "subrosia hide and seek sector",
-    "house of pirates portal",
-    "subrosia pirates sector",
-    "great furnace portal",
-    "subrosia furnace sector",
-    "volcanoes west portal",
-    "subrosia volcano sector",
-    "bomb temple remains",
-    "d8 entrance portal",
-    "d8 entrance",
-    "subrosia east junction",
-    "subrosia bridge sector",
-    "subrosian dance hall",
-    "subrosian smithy ore",
-    "subrosian smithy bell",
-    "subrosian house",
-    "subrosian 2d cave",
-    "subrosian buried bomb flower",
-    "subrosia hide and seek",
-    "temple of seasons",
-    "tower of winter",
-    "tower of summer",
-    "tower of autumn",
-    "subrosia seaside",
-    "subrosia market star ore",
-    "subrosia market ore chunks",
-    "tower of spring",
-    "subrosian wilds chest",
-    "subrosian wilds digging spot",
-    "subrosia, open cave",
-    "subrosia, locked cave",
-    "subrosia village chest",
-    "great furnace",
-    "pirates after bell",
-    "enter d0",
-    "d0 key chest",
-    "d0 rupee chest",
-    "d0 hidden 2d section",
-    "d0 sword chest",
-    "enter d1",
-    "d1 stalfos drop",
-    "d1 floormaster room",
-    "d1 boss",
-    "d1 stalfos chest",
-    "d1 goriya chest",
-    "d1 lever room",
-    "d1 block-pushing room",
-    "d1 railway chest",
-    "d1 button chest",
-    "d1 basement",
-    "enter d2",
-    "d2 torch room",
-    "d2 left from entrance",
-    "d2 rope drop",
-    "d2 arrow room",
-    "d2 rupee room",
-    "d2 rope chest",
-    "d2 blade chest",
-    "d2 alt entrances",
-    "d2 roller chest",
-    "d2 spiral chest",
-    "d2 spinner",
-    "dodongo owl",
-    "d2 boss",
-    "d2 hardhat room",
-    "d2 pot chest",
-    "d2 wild bombs",
-    "d2 moblin chest",
-    "d2 terrace chest",
-    "enter d3",
-    "spiked beetles owl",
-    "d3 center",
-    "d3 water room",
-    "d3 mimic stairs",
-    "trampoline owl",
-    "d3 trampoline chest",
-    "d3 zol chest",
-    "d3 roller chest",
-    "d3 quicksand terrace",
-    "omuai owl",
-    "d3 moldorm chest",
-    "d3 bombed wall chest",
-    "d3 mimic chest",
-    "d3 omuai stairs",
-    "d3 giant blade room",
-    "d3 boss",
-    "enter d4",
-    "d4 north of entrance",
-    "d4 pot puzzle",
-    "d4 maze chest",
-    "d4 dark room",
-    "d4 water ring room",
-    "d4 roller minecart",
-    "d4 pool",
-    "greater distance owl",
-    "d4 stalfos stairs",
-    "d4 terrace",
-    "d4 miniboss room",
-    "d4 final minecart",
-    "d4 torch chest",
-    "d4 cracked floor room",
-    "d4 dive spot",
-    "d4 basement stairs",
-    "gohma owl",
-    "enter gohma",
-    "d4 boss",
-    "enter d5",
-    "d5 left chest",
-    "d5 spiral chest",
-    "d5 terrace chest",
-    "armos knights owl",
-    "d5 armos chest",
-    "d5 cart bay",
-    "d5 cart chest",
-    "d5 pot room",
-    "d5 spinner chest",
-    "d5 drop ball",
-    "d5 gibdo/zol chest",
-    "d5 stalfos room",
-    "d5 magnet ball chest",
-    "d5 syger lobby",
-    "d5 post syger",
-    "d5 basement",
-    "d5 boss",
-    "enter d6",
-    "d6 1F east",
-    "d6 rupee room",
-    "d6 1F terrace",
-    "d6 magnet ball drop",
-    "d6 crystal trap room",
-    "d6 U-room",
-    "d6 torch stairs",
-    "d6 escape room",
-    "d6 vire chest",
-    "d6 beamos room",
-    "d6 2F gibdo chest",
-    "d6 2F armos chest",
-    "d6 armos hall",
-    "d6 spinner north",
-    "d6 enter vire",
-    "d6 pre-boss room",
-    "d6 boss",
-    "enter d7",
-    "poe curse owl",
-    "d7 wizzrobe chest",
-    "d7 bombed wall chest",
-    "enter poe A",
-    "d7 pot room",
-    "d7 zol button",
-    "d7 armos puzzle",
-    "d7 magunesu chest",
-    "d7 quicksand chest",
-    "enter poe B",
-    "d7 water stairs",
-    "d7 darknut bridge trampolines",
-    "d7 past darknut bridge",
-    "d7 spike chest",
-    "d7 maze chest",
-    "d7 B2F drop",
-    "d7 stalfos chest",
-    "shining blue owl",
-    "d7 right of entrance",
-    "d7 boss",
-    "enter d8",
-    "d8 eye drop",
-    "d8 three eyes chest",
-    "d8 hardhat room",
-    "d8 hardhat drop",
-    "d8 spike room",
-    "d8 spinner",
-    "silent watch owl",
-    "d8 magnet ball room",
-    "d8 armos chest",
-    "d8 spinner chest",
-    "frypolar entrance",
-    "frypolar room",
-    "frypolar room wild mystery",
-    "frypolar owl",
-    "beat frypolar",
-    "d8 darknut chest",
-    "d8 ice puzzle room",
-    "d8 pols voice chest",
-    "d8 crystal room",
-    "magical ice owl",
-    "d8 ghost armos drop",
-    "d8 NE crystal",
-    "d8 SE crystal",
-    "d8 SW lava chest",
-    "d8 SE lava chest",
-    "d8 spark chest",
-    "d8 NW crystal",
-    "d8 SW crystal",
-    "d8 boss",
-    "old man in horon",
-    "old man near d1",
-    "old man near blaino",
-    "old man in goron mountain",
-    "old man near western coast house",
-    "old man near holly's house",
-    "old man near mrs. ruul",
-    "old man near d6",
-    "golden beasts old man",
-    "golden darknut",
-    "golden lynel",
-    "golden moblin",
-    "golden octorok",
-    "d4 miniboss room wild embers",
-    "d7 entrance wild embers",
-    "subrosian sign guy",
-    "subrosia bath digging spot",
-    "subrosia market digging spot",
-    "subrosia temple digging spot",
-    "subrosia bridge digging spot",
-    "maple rare item 1",
-    "maple rare item 2",
-    "maple rare item 3",
-    "maple rare item 4",
-]
+class RegionNames(StrEnum):
+    impas_house = "impa's house"
+    horon_village = "horon village"
+    horon_village_portal = "horon village portal"
+    horon_village_tree = "horon village tree"
+    horon_village_SE_chest = "horon village SE chest"
+    horon_village_SW_chest = "horon village SW chest"
+    horon_heart_piece = "horon heart piece"
+    dr_left_reward = "dr. left reward"
+    old_man_trade = "old man trade"
+    malon_trade = "malon trade"
+    talon_trade = "talon trade"
+    syrup_trade = "syrup trade"
+    syrup_shop = "syrup shop"
+    mrs_ruul_trade = "mrs. ruul trade"
+    maple_encounter = "maple encounter"
+    maple_trade = "maple trade"
+    subrosian_chef_trade = "subrosian chef trade"
+    biggoron_trade = "biggoron trade"
+    tick_tock_trade = "tick tock trade"
+    ingo_trade = "ingo trade"
+    guru_guru_trade = "guru-guru trade"
+    mayors_gift = "mayor's gift"
+    vasus_gift = "vasu's gift"
+    mayors_house_secret_room = "mayor's house secret room"
+    maku_tree = "maku tree"
+    maku_tree_3_essences = "maku tree, 3 essences"
+    maku_tree_5_essences = "maku tree, 5 essences"
+    maku_tree_7_essences = "maku tree, 7 essences"
+    horon_shop = "horon shop"
+    members_shop = "member's shop"
+    western_coast = "western coast"
+    black_beasts_chest = "black beast's chest"
+    d0_entrance = "d0 entrance"
+    western_coast_after_ship = "western coast after ship"
+    coast_stump = "coast stump"
+    graveyard_heart_piece = "graveyard heart piece"
+    d7_entrance = "d7 entrance"
+    suburbs = "suburbs"
+    windmill_heart_piece = "windmill heart piece"
+    eastern_suburbs_portal = "eastern suburbs portal"
+    suburbs_fairy_fountain = "suburbs fairy fountain"
+    suburbs_fairy_fountain_winter = "suburbs fairy fountain (winter)"
+    sunken_city_entrance = "sunken city entrance"
+    sunken_city = "sunken city"
+    moblin_road = "moblin road"
+    hollys_house = "holly's house"
+    central_woods_of_winter = "central woods of winter"
+    mystery_owl = "mystery owl"
+    woods_of_winter_tree = "woods of winter tree"
+    woods_of_winter_heart_piece = "woods of winter heart piece"
+    d2_entrance = "d2 entrance"
+    d2_stump = "d2 stump"
+    d2_roof = "d2 roof"
+    cave_outside_D2 = "cave outside D2"
+    woods_of_winter_1st_cave = "woods of winter, 1st cave"
+    woods_of_winter_2nd_cave = "woods of winter, 2nd cave"
+    eastern_suburbs_spring_cave = "eastern suburbs spring cave"
+    spool_swamp_north = "spool swamp north"
+    spool_swamp_middle = "spool swamp middle"
+    spool_swamp_south = "spool swamp south"
+    spool_swamp_south_winter = "spool swamp south (winter)"
+    spool_swamp_south_summer = "spool swamp south (summer)"
+    spool_swamp_south_spring = "spool swamp south (spring)"
+    spool_swamp_south_autumn = "spool swamp south (autumn)"
+    spool_swamp_south_near_gasha_spot = "spool swamp south near gasha spot"
+    spool_swamp_portal = "spool swamp portal"
+    spool_swamp_cave = "spool swamp cave"
+    spool_swamp_heart_piece = "spool swamp heart piece"
+    spool_swamp_digging_spot = "spool swamp digging spot"
+    ghastly_stump = "ghastly stump"
+    north_horon = "north horon"
+    d1_stump = "d1 stump"
+    goron_mountain_entrance = "goron mountain entrance"
+    goron_blocked_cave_entrance = "goron blocked cave entrance"
+    blaino_prize = "blaino prize"
+    underwater_item_below_natzu_bridge = "underwater item below natzu bridge"
+    north_horon_tree = "north horon tree"
+    old_man_in_treehouse = "old man in treehouse"
+    cave_south_of_mrs_ruul = "cave south of mrs. ruul"
+    cave_north_of_D1 = "cave north of D1"
+    spool_swamp_tree = "spool swamp tree"
+    floodgate_keepers_house = "floodgate keeper's house"
+    floodgate_owl = "floodgate owl"
+    floodgate_keyhole = "floodgate keyhole"
+    spool_stump = "spool stump"
+    d3_entrance = "d3 entrance"
+    d1_island = "d1 island"
+    eyeglass_lake_portal = "eyeglass lake portal"
+    d1_entrance = "d1 entrance"
+    d5_stump = "d5 stump"
+    d5_entrance = "d5 entrance"
+    eyeglass_lake_across_bridge = "eyeglass lake, across bridge"
+    dry_eyeglass_lake_east_cave = "dry eyeglass lake, east cave"
+    eyeglass_lake_default = "eyeglass lake (default)"
+    eyeglass_lake_frozen = "eyeglass lake (frozen)"
+    eyeglass_lake_dry = "eyeglass lake (dry)"
+    dry_eyeglass_lake_west_cave = "dry eyeglass lake, west cave"
+    natzu_west = "natzu west"
+    natzu_river_bank = "natzu river bank"
+    moblin_keep_bridge = "moblin keep bridge"
+    moblin_keep = "moblin keep"
+    moblin_keep_chest = "moblin keep chest"
+    natzu_region_across_water = "natzu region, across water"
+    mount_cucco = "mount cucco"
+    sunken_city_tree = "sunken city tree"
+    sunken_city_dimitri = "sunken city dimitri"
+    master_divers_challenge = "master diver's challenge"
+    master_divers_reward = "master diver's reward"
+    chest_in_master_divers_cave = "chest in master diver's cave"
+    sunken_city_summer_cave = "sunken city, summer cave"
+    mt_cucco_portal = "mt. cucco portal"
+    goron_mountain = "goron mountain"
+    gorons_gift = "goron's gift"
+    rightmost_rooster_ledge = "rightmost rooster ledge"
+    spring_banana_tree = "spring banana tree"
+    mt_cucco_platform_cave = "mt. cucco, platform cave"
+    goron_mountain_across_pits = "goron mountain, across pits"
+    mt_cucco_talons_cave_entrance = "mt. cucco, talon's cave entrance"
+    mt_cucco_heart_piece = "mt. cucco heart piece"
+    diving_spot_outside_D4 = "diving spot outside D4"
+    dragon_keyhole = "dragon keyhole"
+    d4_entrance = "d4 entrance"
+    chest_in_goron_mountain = "chest in goron mountain"
+    tarm_ruins = "tarm ruins"
+    lost_woods_top_statue = "lost woods top statue"
+    lost_woods_deku = "lost woods deku"
+    lost_woods_phonograph = "lost woods phonograph"
+    lost_woods_stump = "lost woods stump"
+    lost_woods = "lost woods"
+    d6_sector = "d6 sector"
+    tarm_ruins_tree = "tarm ruins tree"
+    d6_entrance = "d6 entrance"
+    tarm_ruins_under_tree = "tarm ruins, under tree"
+    samasa_desert = "samasa desert"
+    samasa_desert_pit = "samasa desert pit"
+    samasa_desert_chest = "samasa desert chest"
+    temple_remains_lower_stump = "temple remains lower stump"
+    temple_remains_upper_stump = "temple remains upper stump"
+    temple_remains_lower_portal = "temple remains lower portal"
+    temple_remains_lower_portal_access = "temple remains lower portal access"
+    temple_remains_upper_portal = "temple remains upper portal"
+    temple_remains_heart_piece = "temple remains heart piece"
+    maku_seed = "maku seed"
+    d9_entrance = "d9 entrance"
+    onox_beaten = "onox beaten"
+    ganon_beaten = "ganon beaten"
+    volcanoes_east_portal = "volcanoes east portal"
+    subrosia_temple_sector = "subrosia temple sector"
+    subrosia_market_portal = "subrosia market portal"
+    subrosia_market_sector = "subrosia market sector"
+    strange_brothers_portal = "strange brothers portal"
+    subrosia_hide_and_seek_sector = "subrosia hide and seek sector"
+    house_of_pirates_portal = "house of pirates portal"
+    subrosia_pirates_sector = "subrosia pirates sector"
+    great_furnace_portal = "great furnace portal"
+    subrosia_furnace_sector = "subrosia furnace sector"
+    volcanoes_west_portal = "volcanoes west portal"
+    subrosia_volcano_sector = "subrosia volcano sector"
+    bomb_temple_remains = "bomb temple remains"
+    d8_entrance_portal = "d8 entrance portal"
+    d8_entrance = "d8 entrance"
+    subrosia_east_junction = "subrosia east junction"
+    subrosia_bridge_sector = "subrosia bridge sector"
+    subrosian_dance_hall = "subrosian dance hall"
+    subrosian_smithy_ore = "subrosian smithy ore"
+    subrosian_smithy_bell = "subrosian smithy bell"
+    subrosian_house = "subrosian house"
+    subrosian_2d_cave = "subrosian 2d cave"
+    subrosian_buried_bomb_flower = "subrosian buried bomb flower"
+    subrosia_hide_and_seek = "subrosia hide and seek"
+    temple_of_seasons = "temple of seasons"
+    tower_of_winter = "tower of winter"
+    tower_of_summer = "tower of summer"
+    tower_of_autumn = "tower of autumn"
+    subrosia_seaside = "subrosia seaside"
+    subrosia_market_star_ore = "subrosia market star ore"
+    subrosia_market_ore_chunks = "subrosia market ore chunks"
+    tower_of_spring = "tower of spring"
+    subrosian_wilds_chest = "subrosian wilds chest"
+    subrosian_wilds_digging_spot = "subrosian wilds digging spot"
+    subrosia_open_cave = "subrosia, open cave"
+    subrosia_locked_cave = "subrosia, locked cave"
+    subrosia_village_chest = "subrosia village chest"
+    great_furnace = "great furnace"
+    pirates_after_bell = "pirates after bell"
+    enter_d0 = "enter d0"
+    d0_key_chest = "d0 key chest"
+    d0_rupee_chest = "d0 rupee chest"
+    d0_hidden_2d_section = "d0 hidden 2d section"
+    d0_sword_chest = "d0 sword chest"
+    enter_d1 = "enter d1"
+    d1_stalfos_drop = "d1 stalfos drop"
+    d1_floormaster_room = "d1 floormaster room"
+    d1_boss = "d1 boss"
+    d1_stalfos_chest = "d1 stalfos chest"
+    d1_goriya_chest = "d1 goriya chest"
+    d1_lever_room = "d1 lever room"
+    d1_block_pushing_room = "d1 block-pushing room"
+    d1_railway_chest = "d1 railway chest"
+    d1_button_chest = "d1 button chest"
+    d1_basement = "d1 basement"
+    enter_d2 = "enter d2"
+    d2_torch_room = "d2 torch room"
+    d2_left_from_entrance = "d2 left from entrance"
+    d2_rope_drop = "d2 rope drop"
+    d2_arrow_room = "d2 arrow room"
+    d2_rupee_room = "d2 rupee room"
+    d2_rope_chest = "d2 rope chest"
+    d2_blade_chest = "d2 blade chest"
+    d2_alt_entrances = "d2 alt entrances"
+    d2_roller_chest = "d2 roller chest"
+    d2_spiral_chest = "d2 spiral chest"
+    d2_spinner = "d2 spinner"
+    dodongo_owl = "dodongo owl"
+    d2_boss = "d2 boss"
+    d2_hardhat_room = "d2 hardhat room"
+    d2_pot_chest = "d2 pot chest"
+    d2_wild_bombs = "d2 wild bombs"
+    d2_moblin_chest = "d2 moblin chest"
+    d2_terrace_chest = "d2 terrace chest"
+    enter_d3 = "enter d3"
+    spiked_beetles_owl = "spiked beetles owl"
+    d3_center = "d3 center"
+    d3_water_room = "d3 water room"
+    d3_mimic_stairs = "d3 mimic stairs"
+    trampoline_owl = "trampoline owl"
+    d3_trampoline_chest = "d3 trampoline chest"
+    d3_zol_chest = "d3 zol chest"
+    d3_roller_chest = "d3 roller chest"
+    d3_quicksand_terrace = "d3 quicksand terrace"
+    omuai_owl = "omuai owl"
+    d3_moldorm_chest = "d3 moldorm chest"
+    d3_bombed_wall_chest = "d3 bombed wall chest"
+    d3_mimic_chest = "d3 mimic chest"
+    d3_omuai_stairs = "d3 omuai stairs"
+    d3_giant_blade_room = "d3 giant blade room"
+    d3_boss = "d3 boss"
+    enter_d4 = "enter d4"
+    d4_north_of_entrance = "d4 north of entrance"
+    d4_pot_puzzle = "d4 pot puzzle"
+    d4_maze_chest = "d4 maze chest"
+    d4_dark_room = "d4 dark room"
+    d4_water_ring_room = "d4 water ring room"
+    d4_roller_minecart = "d4 roller minecart"
+    d4_pool = "d4 pool"
+    greater_distance_owl = "greater distance owl"
+    d4_stalfos_stairs = "d4 stalfos stairs"
+    d4_terrace = "d4 terrace"
+    d4_miniboss_room = "d4 miniboss room"
+    d4_final_minecart = "d4 final minecart"
+    d4_torch_chest = "d4 torch chest"
+    d4_cracked_floor_room = "d4 cracked floor room"
+    d4_dive_spot = "d4 dive spot"
+    d4_basement_stairs = "d4 basement stairs"
+    gohma_owl = "gohma owl"
+    enter_gohma = "enter gohma"
+    d4_boss = "d4 boss"
+    enter_d5 = "enter d5"
+    d5_left_chest = "d5 left chest"
+    d5_spiral_chest = "d5 spiral chest"
+    d5_terrace_chest = "d5 terrace chest"
+    armos_knights_owl = "armos knights owl"
+    d5_armos_chest = "d5 armos chest"
+    d5_cart_bay = "d5 cart bay"
+    d5_cart_chest = "d5 cart chest"
+    d5_pot_room = "d5 pot room"
+    d5_spinner_chest = "d5 spinner chest"
+    d5_drop_ball = "d5 drop ball"
+    d5_gibdo_zol_chest = "d5 gibdo/zol chest"
+    d5_stalfos_room = "d5 stalfos room"
+    d5_magnet_ball_chest = "d5 magnet ball chest"
+    d5_syger_lobby = "d5 syger lobby"
+    d5_post_syger = "d5 post syger"
+    d5_basement = "d5 basement"
+    d5_boss = "d5 boss"
+    enter_d6 = "enter d6"
+    d6_1F_east = "d6 1F east"
+    d6_rupee_room = "d6 rupee room"
+    d6_1F_terrace = "d6 1F terrace"
+    d6_magnet_ball_drop = "d6 magnet ball drop"
+    d6_crystal_trap_room = "d6 crystal trap room"
+    d6_U_room = "d6 U-room"
+    d6_torch_stairs = "d6 torch stairs"
+    d6_escape_room = "d6 escape room"
+    d6_vire_chest = "d6 vire chest"
+    d6_beamos_room = "d6 beamos room"
+    d6_2F_gibdo_chest = "d6 2F gibdo chest"
+    d6_2F_armos_chest = "d6 2F armos chest"
+    d6_armos_hall = "d6 armos hall"
+    d6_spinner_north = "d6 spinner north"
+    d6_enter_vire = "d6 enter vire"
+    d6_pre_boss_room = "d6 pre-boss room"
+    d6_boss = "d6 boss"
+    enter_d7 = "enter d7"
+    poe_curse_owl = "poe curse owl"
+    d7_wizzrobe_chest = "d7 wizzrobe chest"
+    d7_bombed_wall_chest = "d7 bombed wall chest"
+    enter_poe_A = "enter poe A"
+    d7_pot_room = "d7 pot room"
+    d7_zol_button = "d7 zol button"
+    d7_armos_puzzle = "d7 armos puzzle"
+    d7_magunesu_chest = "d7 magunesu chest"
+    d7_quicksand_chest = "d7 quicksand chest"
+    enter_poe_B = "enter poe B"
+    d7_water_stairs = "d7 water stairs"
+    d7_darknut_bridge_trampolines = "d7 darknut bridge trampolines"
+    d7_past_darknut_bridge = "d7 past darknut bridge"
+    d7_spike_chest = "d7 spike chest"
+    d7_maze_chest = "d7 maze chest"
+    d7_B2F_drop = "d7 B2F drop"
+    d7_stalfos_chest = "d7 stalfos chest"
+    shining_blue_owl = "shining blue owl"
+    d7_right_of_entrance = "d7 right of entrance"
+    d7_boss = "d7 boss"
+    enter_d8 = "enter d8"
+    d8_eye_drop = "d8 eye drop"
+    d8_three_eyes_chest = "d8 three eyes chest"
+    d8_hardhat_room = "d8 hardhat room"
+    d8_hardhat_drop = "d8 hardhat drop"
+    d8_spike_room = "d8 spike room"
+    d8_spinner = "d8 spinner"
+    silent_watch_owl = "silent watch owl"
+    d8_magnet_ball_room = "d8 magnet ball room"
+    d8_armos_chest = "d8 armos chest"
+    d8_spinner_chest = "d8 spinner chest"
+    frypolar_entrance = "frypolar entrance"
+    frypolar_room = "frypolar room"
+    frypolar_room_wild_mystery = "frypolar room wild mystery"
+    frypolar_owl = "frypolar owl"
+    beat_frypolar = "beat frypolar"
+    d8_darknut_chest = "d8 darknut chest"
+    d8_ice_puzzle_room = "d8 ice puzzle room"
+    d8_pols_voice_chest = "d8 pols voice chest"
+    d8_crystal_room = "d8 crystal room"
+    magical_ice_owl = "magical ice owl"
+    d8_ghost_armos_drop = "d8 ghost armos drop"
+    d8_NE_crystal = "d8 NE crystal"
+    d8_SE_crystal = "d8 SE crystal"
+    d8_SW_lava_chest = "d8 SW lava chest"
+    d8_SE_lava_chest = "d8 SE lava chest"
+    d8_spark_chest = "d8 spark chest"
+    d8_NW_crystal = "d8 NW crystal"
+    d8_SW_crystal = "d8 SW crystal"
+    d8_boss = "d8 boss"
+    old_man_in_horon = "old man in horon"
+    old_man_near_d1 = "old man near d1"
+    old_man_near_blaino = "old man near blaino"
+    old_man_in_goron_mountain = "old man in goron mountain"
+    old_man_near_western_coast_house = "old man near western coast house"
+    old_man_near_hollys_house = "old man near holly's house"
+    old_man_near_mrs_ruul = "old man near mrs. ruul"
+    old_man_near_d6 = "old man near d6"
+    golden_beasts_old_man = "golden beasts old man"
+    golden_darknut = "golden darknut"
+    golden_lynel = "golden lynel"
+    golden_moblin = "golden moblin"
+    golden_octorok = "golden octorok"
+    d4_miniboss_room_wild_embers = "d4 miniboss room wild embers"
+    d7_entrance_wild_embers = "d7 entrance wild embers"
+    subrosian_sign_guy = "subrosian sign guy"
+    subrosia_bath_digging_spot = "subrosia bath digging spot"
+    subrosia_market_digging_spot = "subrosia market digging spot"
+    subrosia_temple_digging_spot = "subrosia temple digging spot"
+    subrosia_bridge_digging_spot = "subrosia bridge digging spot"
+    maple_rare_item_1 = "maple rare item 1"
+    maple_rare_item_2 = "maple rare item 2"
+    maple_rare_item_3 = "maple rare item 3"
+    maple_rare_item_4 = "maple rare item 4"
