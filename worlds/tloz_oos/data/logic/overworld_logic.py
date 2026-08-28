@@ -1013,6 +1013,10 @@ def make_holodrum_logic(world: OracleOfSeasonsWorld, options: OracleOfSeasonsOpt
             ),
         ),
         (
+            # Go back to the entrance, usseful when starting/coming from Sunken
+            "sunken city dimity", "sunken city entrance", False, True_()
+        ),
+        (
             "sunken city",
             "ingo trade",
             False,
