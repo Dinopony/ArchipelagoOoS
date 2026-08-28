@@ -113,6 +113,7 @@ REGIONS = [
     "eastern suburbs portal",
     "suburbs fairy fountain",
     "suburbs fairy fountain (winter)",
+    "sunken city entrance",
     "sunken city",
     "moblin road",
     "holly's house",

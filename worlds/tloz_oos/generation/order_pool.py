@@ -1,18 +1,22 @@
+from typing import cast
+
 from BaseClasses import Item, MultiWorld
 
 from ..data.Constants import SEASON_WINTER
+from ..options import OracleOfSeasonsStartingPosition
 from ..world import OracleOfSeasonsWorld
 
 
 def order_pool(multiworld: MultiWorld, progitempool: list[Item]):
-    players = multiworld.get_game_players(OracleOfSeasonsWorld.game)
+    players = [player for player in multiworld.get_game_players(OracleOfSeasonsWorld.game)
+               if cast(OracleOfSeasonsWorld, multiworld.worlds[player]).options.start_position == OracleOfSeasonsStartingPosition.option_horon_village]
     if not players:
         return
     weight_dict = {}
     for player in players:
         possible_items = [["Flippers", "Bush Breaker"], ["Power Bracelet"]]
         bush_breakers = [["Progressive Sword"], ["Biggoron's Sword"]]
-        world: OracleOfSeasonsWorld = multiworld.worlds[player]
+        world: OracleOfSeasonsWorld = cast(OracleOfSeasonsWorld, multiworld.worlds[player])
         portal_connections = {world.portal_connections[key]: key for key in world.portal_connections}
         portal_connections.update(world.portal_connections)
 

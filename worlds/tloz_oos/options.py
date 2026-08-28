@@ -151,7 +151,7 @@ class OracleOfSeasonsDefaultSeedType(Choice):
     Determines which of the 5 seed types will be the "default seed type", which is given:
     - when obtaining Seed Satchel
     - when obtaining Slingshot
-    - by Horon Seed Tree
+    - by the seed tree next to the starting position, if any
     """
 
     display_name = "Default Seed Type"
@@ -186,6 +186,22 @@ class OracleOfSeasonsDuplicateSeedTree(Choice):
     option_tarm_ruins = 5
 
     default = 5
+
+class OracleOfSeasonsStartingPosition(Choice):
+    """
+    Where the game starts:
+    - Horon: The vanilla starting position
+    - Sunken city: Next to the house at the entrance of Sunken City
+    """
+
+    display_name = "Starting Position"
+
+    option_horon_village = 0
+    option_sunken_city = 1
+
+    default = 0
+    include_in_patch = True
+    include_in_slot_data = True
 
 
 class OracleOfSeasonsDungeonShuffle(Toggle):
@@ -873,6 +889,7 @@ class OracleOfSeasonsOptions(PerGameCommonOptions):
     normalize_horon_village_season: OracleOfSeasonsHoronSeason
 
     # Overworld layout options
+    start_position: OracleOfSeasonsStartingPosition
     animal_companion: OracleOfSeasonsAnimalCompanion
     shuffle_portals: OracleOfSeasonsPortalShuffle
     shuffle_dungeons: OracleOfSeasonsDungeonShuffle
@@ -971,6 +988,7 @@ oos_option_groups = [
     OptionGroup(
         "Overworld Layout Options",
         [
+            OracleOfSeasonsStartingPosition,
             OracleOfSeasonsAnimalCompanion,
             OracleOfSeasonsPortalShuffle,
             OracleOfSeasonsDungeonShuffle,

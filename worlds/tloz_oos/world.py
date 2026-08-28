@@ -2,7 +2,7 @@ import os
 from threading import Event
 from typing import Any, ClassVar, TextIO, cast
 
-from BaseClasses import CollectionState, Item, Location, MultiWorld
+from BaseClasses import CollectionState, Item, Location, MultiWorld, ItemClassification
 from Options import Option
 from rule_builder.rules import Has
 from worlds.AutoWorld import World
@@ -107,6 +107,9 @@ class OracleOfSeasonsWorld(World):
         self.item_hints: list[Item | None] = []
         self.num_prog: int = 1 # initialized at 1 so that before pre_fill, any prog counts as all the progs
 
+        self.inventory_location: Location | None = None
+        self.nothing_item: Item | None = None
+
     def generate_early(self) -> None:
         from .generation.GenerateEarly import generate_early
 
@@ -190,9 +193,28 @@ class OracleOfSeasonsWorld(World):
         filleritempool: list[Item],
         fill_locations: list[Location],
     ):
-        from .generation.OrderPool import order_pool
+        from .generation.order_pool import order_pool
 
         order_pool(multiworld, progitempool)
+
+    def post_fill(self) -> None:
+        if self.inventory_location is not None:
+            inventory_item = cast(Item, self.inventory_location.item)
+            empty_location = cast(Location, cast(Item, self.nothing_item).location)
+
+            self.inventory_location.item = self.nothing_item
+            self.inventory_location.address = None
+            self.nothing_item.location = self.inventory_location
+            self.nothing_item.code = None
+
+            if inventory_item.advancement:
+                self.multiworld.push_precollected(inventory_item)
+                new_filler = self.create_filler()
+                empty_location.item = new_filler
+                new_filler.location = empty_location
+            else:
+                empty_location.item = inventory_item
+                inventory_item.location = empty_location
 
     def pre_output(self) -> None:
         from .generation.hints import create_item_hints, create_region_hints

@@ -363,15 +363,15 @@ def make_holodrum_logic(world: OracleOfSeasonsWorld, options: OracleOfSeasonsOpt
         ("suburbs", "suburbs fairy fountain (winter)", True, oos_season_in_eastern_suburbs(SEASON_WINTER)),
         ("suburbs fairy fountain (winter)", "maple encounter", False, oos_can_meet_maple()),
         ("suburbs fairy fountain (winter)", "suburbs fairy fountain", False, oos_can_remove_season(SEASON_WINTER)),
-        ("suburbs fairy fountain", "sunken city", False, oos_season_in_eastern_suburbs(SEASON_SPRING)),
-        ("sunken city", "suburbs fairy fountain", False, oos_not_season_in_eastern_suburbs(SEASON_WINTER)),
-        ("sunken city", "suburbs fairy fountain (winter)", False, oos_season_in_eastern_suburbs(SEASON_WINTER)),
+        ("suburbs fairy fountain", "sunken city entrance", False, oos_season_in_eastern_suburbs(SEASON_SPRING)),
+        ("sunken city entrance", "suburbs fairy fountain", False, oos_not_season_in_eastern_suburbs(SEASON_WINTER)),
+        ("sunken city entrance", "suburbs fairy fountain (winter)", False, oos_season_in_eastern_suburbs(SEASON_WINTER)),
         # WOODS OF WINTER / 2D SECTOR ################################################################################
         ("suburbs fairy fountain (winter)", "moblin road", False, True_()),
         ("moblin road", "suburbs fairy fountain (winter)", False, oos_season_in_eastern_suburbs(SEASON_WINTER)),
         ("moblin road", "maple encounter", False, oos_can_meet_maple()),
         (
-            "sunken city",
+            "sunken city entrance",
             "moblin road",
             False,
             And(
@@ -966,7 +966,7 @@ def make_holodrum_logic(world: OracleOfSeasonsWorld, options: OracleOfSeasonsOpt
         ("north horon", "natzu west", True, True_()),
         ("moblin keep bridge", "moblin keep", True, Or(oos_has_flippers(), oos_can_jump_4_wide_liquid(True))),
         ("moblin keep", "moblin keep chest", False, oos_has_bracelet()),
-        ("moblin keep", "sunken city", False, True_()),
+        ("moblin keep", "sunken city entrance", False, True_()),
         ("natzu river bank", "goron mountain entrance", True, oos_can_swim(True)),
         # Access to natzu deku is companion specific
         (
@@ -985,16 +985,21 @@ def make_holodrum_logic(world: OracleOfSeasonsWorld, options: OracleOfSeasonsOpt
         ),
         # SUNKEN CITY ############################################################################################
         (
+            "sunken city entrance",
+            "sunken city",
+            True,
+            Or(
+                oos_has_feather(),
+                oos_has_flippers(),
+                oos_can_summon_dimitri(),
+                oos_is_default_season("SUNKEN_CITY", SEASON_WINTER),
+            ),
+        ),
+        (
             "sunken city",
             "sunken city tree",
             False,
             And(
-                Or(
-                    oos_has_feather(),
-                    oos_has_flippers(),
-                    oos_can_summon_dimitri(),
-                    oos_is_default_season("SUNKEN_CITY", SEASON_WINTER),
-                ),
                 oos_can_harvest_tree(True),
             ),
         ),
@@ -1004,25 +1009,14 @@ def make_holodrum_logic(world: OracleOfSeasonsWorld, options: OracleOfSeasonsOpt
             False,
             Or(
                 oos_can_summon_dimitri(),
-                And(
-                    oos_has_bombs(),
-                    Or(oos_has_feather(), oos_has_flippers(), oos_is_default_season("SUNKEN_CITY", SEASON_WINTER)),
-                ),
+                oos_has_bombs(),
             ),
         ),
         (
             "sunken city",
             "ingo trade",
             False,
-            And(
-                Or(
-                    oos_has_feather(),
-                    oos_has_flippers(),
-                    oos_can_summon_dimitri(),
-                    oos_is_default_season("SUNKEN_CITY", SEASON_WINTER),
-                ),
-                Or(Has("Goron Vase"), oos_self_locking_item("Sunken City: Ingo Trade", "Goron Vase")),
-            ),
+            Or(Has("Goron Vase"), oos_self_locking_item("Sunken City: Ingo Trade", "Goron Vase")),
         ),
         ("sunken city", "syrup trade", False, And(oos_season_in_sunken_city(SEASON_WINTER), Has("Mushroom"))),
         ("syrup trade", "syrup shop", False, oos_has_rupees_for_shop("syrupShop")),
@@ -1757,7 +1751,7 @@ def make_holodrum_logic(world: OracleOfSeasonsWorld, options: OracleOfSeasonsOpt
         ("north horon", "onox gasha spot", False, oos_has_shovel(), options.deterministic_gasha_locations >= 1),
         ("natzu west", "natzu west (ricky)", True, True_(), options.animal_companion == "ricky"),
         ("natzu west (ricky)", "natzu east (ricky)", True, oos_can_summon_ricky(), options.animal_companion == "ricky"),
-        ("natzu east (ricky)", "sunken city", True, True_(), options.animal_companion == "ricky"),
+        ("natzu east (ricky)", "sunken city entrance", True, True_(), options.animal_companion == "ricky"),
         ("natzu east (ricky)", "moblin keep bridge", False, True_(), options.animal_companion == "ricky"),
         ("natzu east (ricky)", "natzu river bank", True, oos_can_summon_ricky(), options.animal_companion == "ricky"),
         (
@@ -1777,7 +1771,7 @@ def make_holodrum_logic(world: OracleOfSeasonsWorld, options: OracleOfSeasonsOpt
         ),
         (
             "natzu east (dimitri)",
-            "sunken city",
+            "sunken city entrance",
             True,
             oos_can_jump_1_wide_pit(False),
             options.animal_companion == "dimitri",
@@ -1804,7 +1798,7 @@ def make_holodrum_logic(world: OracleOfSeasonsWorld, options: OracleOfSeasonsOpt
             oos_can_summon_dimitri(),
             bool(options.animal_companion == "dimitri" and options.secret_locations),
         ),
-        ("sunken city", "moblin keep", False, oos_can_dimitri_clip(), options.animal_companion == "dimitri"),
+        ("sunken city entrance", "moblin keep", False, oos_can_dimitri_clip(), options.animal_companion == "dimitri"),
         (
             "moblin keep bridge",
             "natzu east (dimitri)",
@@ -1825,7 +1819,7 @@ def make_holodrum_logic(world: OracleOfSeasonsWorld, options: OracleOfSeasonsOpt
         ),
         (
             "natzu east (moosh)",
-            "sunken city",
+            "sunken city entrance",
             True,
             Or(
                 oos_can_summon_moosh(),
@@ -1896,7 +1890,7 @@ def make_holodrum_logic(world: OracleOfSeasonsWorld, options: OracleOfSeasonsOpt
         ),
         (
             "rooster adventure",
-            "sunken city",
+            "sunken city entrance",
             False,
             oos_roosters("sunken", 0, 0, 0),
             options.logic_difficulty == OracleOfSeasonsLogicDifficulty.option_hell,

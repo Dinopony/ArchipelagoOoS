@@ -19,7 +19,7 @@ from ..options import (
     OracleOfSeasonsFoolsOre,
     OracleOfSeasonsLogicDifficulty,
     OracleOfSeasonsMasterKeys,
-    OracleOfSeasonsShopPrices,
+    OracleOfSeasonsShopPrices, OracleOfSeasonsStartingPosition,
 )
 from ..world import OracleOfSeasonsWorld
 
@@ -83,6 +83,13 @@ def create_items(world: OracleOfSeasonsWorld) -> None:
     item_pool_dict = build_item_pool_dict(world)
     items = [create_item(world, item_name) for item_name, quantity in item_pool_dict.items() for _ in range(quantity)]
     filter_confined_dungeon_items_from_pool(world, items)
+
+    if world.options.start_position == OracleOfSeasonsStartingPosition.option_sunken_city:
+        nothing_item = Item("Nothing", ItemClassification.useful, -1, world.player)
+        # Put it useful so that it can be swapped with anything
+        items.append(nothing_item)
+        world.nothing_item = nothing_item
+
     world.multiworld.itempool.extend(items)
     pre_fill_seeds(world)
 
@@ -384,16 +391,25 @@ def pre_fill_seeds(world: OracleOfSeasonsWorld) -> None:
 
     seeds_to_place = list(SEED_ITEMS)
 
-    manually_placed_trees = ["Horon Village: Seed Tree", duplicate_tree_name]
-    trees_to_process = [name for name in trees_table.values() if name not in manually_placed_trees]
+    manually_placed_trees = set()
 
-    # Place default seed type in Horon Village tree
-    place_seed(SEED_ITEMS[world.options.default_seed.value], "Horon Village: Seed Tree")
+    # Place default seed type
+    if world.options.start_position == OracleOfSeasonsStartingPosition.option_horon_village:
+        default_tree = "Horon Village: Seed Tree"
+    elif world.options.start_position == OracleOfSeasonsStartingPosition.option_sunken_city:
+        default_tree = "Sunken City: Seed Tree"
+    else:
+        raise NotImplementedError
+    place_seed(SEED_ITEMS[world.options.default_seed.value], default_tree)
+    manually_placed_trees.add(default_tree)
 
-    # If duplicate tree is not Horon's, remove Horon seed from the pool of placeable seeds
-    if duplicate_tree_name != "Horon Village: Seed Tree":
+    # If duplicate tree is not default's, remove default seed from the pool of placeable seeds
+    if duplicate_tree_name not in manually_placed_trees:
         del seeds_to_place[world.options.default_seed.value]
         place_seed(world.random.choice(SEED_ITEMS), duplicate_tree_name)
+        manually_placed_trees.add(duplicate_tree_name)
+
+    trees_to_process = [name for name in trees_table.values() if name not in manually_placed_trees]
 
     # Place remaining seeds on remaining trees
     world.random.shuffle(trees_to_process)

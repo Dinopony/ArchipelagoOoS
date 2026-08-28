@@ -117,3 +117,14 @@
     db $00,$00,$00,$00,$00,$00,$00,$00,$00
     db $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
     db $00,$00,$00
+    db $00,$00,$00,$00,$00,$00,$00,$00
+    ld h,d
+
+# Make impa in her house give refills
+11/6590/: db $00
+
+# Place an impa in sunken if this is the starting position
+11/6527/: |
+    /ifdef sunken_start
+    db $9d,$00
+    /endif

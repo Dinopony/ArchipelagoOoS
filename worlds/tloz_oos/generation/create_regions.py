@@ -19,7 +19,7 @@ from ..data.regions import (
     SCRUB_REGIONS,
     SECRET_REGIONS,
 )
-from ..options import OracleOfSeasonsGoal, OracleOfSeasonsLogicDifficulty, OracleOfSeasonsOldMenShuffle
+from ..options import OracleOfSeasonsGoal, OracleOfSeasonsLogicDifficulty, OracleOfSeasonsOldMenShuffle, OracleOfSeasonsStartingPosition
 from ..world import OracleOfSeasonsWorld
 
 
@@ -118,6 +118,13 @@ def create_regions(world: OracleOfSeasonsWorld) -> None:
 
     create_events(world)
     exclude_locations_automatically(world)
+
+    if world.options.start_position == OracleOfSeasonsStartingPosition.option_sunken_city:
+        world.origin_region_name = "sunken city"
+        inventory_location = create_location(world, world.origin_region_name, "Server", True, True)
+        inventory_location.address = -2
+        inventory_location.show_in_spoiler = False
+        world.inventory_location = inventory_location
 
 
 def create_event(world: OracleOfSeasonsWorld, region_name: str, event_item_name: str) -> None:

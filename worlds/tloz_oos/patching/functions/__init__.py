@@ -38,7 +38,7 @@ from ...options import (
     OracleOfSeasonsLinkedHerosCave,
     OracleOfSeasonsMasterKeys,
     OracleOfSeasonsOldMenShuffle,
-    OracleOfSeasonsShowDungeonsWithEssence,
+    OracleOfSeasonsShowDungeonsWithEssence, OracleOfSeasonsStartingPosition,
 )
 from ...world import OracleOfSeasonsWorld
 from ..asm import asm_files
@@ -63,7 +63,7 @@ from ..util import get_item_id_and_subid
 
 
 def define_foreign_item_data(
-    assembler: Z80Assembler, texts: dict[str, str], patch_data: dict[str, Any]
+        assembler: Z80Assembler, texts: dict[str, str], patch_data: dict[str, Any]
 ) -> dict[str, dict[str, Any]]:
     # Register all foreign items and save their text as TX_0cxx, id 0x41, subid xx
     item_data = ITEMS_DATA.copy()
@@ -145,7 +145,7 @@ def write_chest_contents(rom: RomData, patch_data: dict[str, Any], item_data: di
     locations_data = patch_data["locations"]
     for location_name, location_data in LOCATIONS_DATA.items():
         if (
-            location_data.get("collect", COLLECT_TOUCH) != COLLECT_CHEST and not location_data.get("is_chest", False)
+                location_data.get("collect", COLLECT_TOUCH) != COLLECT_CHEST and not location_data.get("is_chest", False)
         ) or location_name not in locations_data:
             continue
         chest_addr = rom.get_chest_addr(location_data["room"], 0x15, 0x4F6C)
@@ -208,7 +208,7 @@ def define_samasa_combination(assembler: Z80Assembler, patch_data: dict[str, Any
 
 
 def define_compass_rooms_table(
-    assembler: Z80Assembler, patch_data: dict[str, Any], item_data: dict[str, dict[str, Any]]
+        assembler: Z80Assembler, patch_data: dict[str, Any], item_data: dict[str, dict[str, Any]]
 ) -> None:
     table = []
     for location_name, item in patch_data["locations"].items():
@@ -233,7 +233,7 @@ def define_compass_rooms_table(
 
 
 def define_collect_properties_table(
-    assembler: Z80Assembler, patch_data: dict[str, Any], item_data: dict[str, dict[str, Any]]
+        assembler: Z80Assembler, patch_data: dict[str, Any], item_data: dict[str, dict[str, Any]]
 ) -> None:
     """
     Defines a table of (group, room, collect mode) entries for randomized items
@@ -302,7 +302,7 @@ def define_additional_tile_replacements(assembler: Z80Assembler, patch_data: dic
 
 
 def define_location_constants(
-    assembler: Z80Assembler, patch_data: dict[str, Any], item_data: dict[str, dict[str, Any]]
+        assembler: Z80Assembler, patch_data: dict[str, Any], item_data: dict[str, dict[str, Any]]
 ):
     # If golden ore spots are not shuffled, they are still reachable nonetheless, so we need to enforce their
     # vanilla item for systems to work
@@ -356,12 +356,21 @@ def define_option_constants(assembler: Z80Assembler, patch_data: dict[str, Any])
     assembler.define_byte("option.startingPosY", 0x58)
     assembler.define_byte("option.startingPosX", 0x58)
 
-    assembler.define_byte("option.warpingGroup", 0x00)
-    assembler.define_byte("option.warpingRoom", 0xB6)
-    assembler.define_byte("option.warpingPosY", 0x58)
-    assembler.define_byte("option.warpingPosX", 0x58)
-    assembler.define_byte("option.warpingPos", 0x55)
-    assembler.define_byte("option.warpingSeason", patch_data["default_seasons"]["EYEGLASS_LAKE"])
+    if options["start_position"] == OracleOfSeasonsStartingPosition.option_horon_village:
+        assembler.define_byte("option.warpingGroup", 0x00)
+        assembler.define_byte("option.warpingRoom", 0xB6)
+        assembler.define_byte("option.warpingPosY", 0x58)
+        assembler.define_byte("option.warpingPosX", 0x58)
+        assembler.define_byte("option.warpingPos", 0x55)
+        assembler.define_byte("option.warpingSeason", patch_data["default_seasons"]["EYEGLASS_LAKE"])
+    elif options["start_position"] == OracleOfSeasonsStartingPosition.option_sunken_city:
+        assembler.define_byte("option.warpingGroup", 0x00)
+        assembler.define_byte("option.warpingRoom", 0x5D)
+        assembler.define_byte("option.warpingPosY", 0x68)
+        assembler.define_byte("option.warpingPosX", 0x68)
+        assembler.define_byte("option.warpingPos", 0x66)
+        assembler.define_byte("option.warpingSeason", patch_data["default_seasons"]["SUNKEN_CITY"])
+        assembler.define_byte("sunken_start", 0x01)
 
     assembler.define_byte("option.animalCompanion", 0x0B + patch_data["options"]["animal_companion"])
     assembler.define_byte("option.defaultSeedType", 0x20 + patch_data["options"]["default_seed"])
@@ -471,7 +480,7 @@ def process_lost_woods_sequence(sequence: list[list[int]]) -> tuple[list[int], s
 
 
 def define_tree_sprites(
-    assembler: Z80Assembler, patch_data: dict[str, Any], item_data: dict[str, dict[str, Any]]
+        assembler: Z80Assembler, patch_data: dict[str, Any], item_data: dict[str, dict[str, Any]]
 ) -> None:
     tree_data = {  # Name: (map, position)
         "Horon Village: Seed Tree": (0xF8, 0x48),
@@ -512,12 +521,12 @@ def get_treasure_addr(rom: RomData, item_name: str, item_data: dict[str, dict[st
 
 
 def set_treasure_data(
-    rom: RomData,
-    item_data: dict[str, dict[str, Any]],
-    item_name: str,
-    text_id: int | None,
-    sprite_id: int | None = None,
-    param_value: int | None = None,
+        rom: RomData,
+        item_data: dict[str, dict[str, Any]],
+        item_name: str,
+        text_id: int | None,
+        sprite_id: int | None = None,
+        param_value: int | None = None,
 ) -> None:
     addr = get_treasure_addr(rom, item_name, item_data)
     if text_id is not None:
@@ -627,7 +636,7 @@ def set_player_start_inventory(assembler: Z80Assembler, patch_data: dict[str, An
                 if current_inventory_index == parse_hex_string_to_value(DEFINES["wInventoryB"]):
                     start_inventory_changes[current_inventory_index] = start_inventory_changes[
                         current_inventory_index + 1
-                    ] = item_id
+                        ] = item_id
                     current_inventory_index += 2
                 elif current_inventory_index == parse_hex_string_to_value(DEFINES["wInventoryB"]) + 1:
                     current_inventory_index += 1
@@ -661,7 +670,7 @@ def set_player_start_inventory(assembler: Z80Assembler, patch_data: dict[str, An
         elif item_id == 0x2D:  # Rings
             subid = ITEMS_DATA[item]["subid"] - 4
             start_inventory_changes[parse_hex_string_to_value(DEFINES["wRingsObtained"]) + subid // 8] |= (
-                0x01 << subid % 8
+                    0x01 << subid % 8
             )
         elif item_id == 0x40:  # Essences
             subid = ITEMS_DATA[item]["subid"]
@@ -896,7 +905,7 @@ def inject_slot_name(rom: RomData, slot_name: str) -> None:
 
 
 def set_dungeon_warps(
-    rom: RomData, patch_data: dict[str, Any], dungeon_entrances: dict[str, Any], dungeon_exits: dict[str, Any]
+        rom: RomData, patch_data: dict[str, Any], dungeon_entrances: dict[str, Any], dungeon_exits: dict[str, Any]
 ) -> None:
     warp_matchings = patch_data["dungeon_entrances"]
     enter_values = {name: rom.read_word(dungeon["addr"]) for name, dungeon in dungeon_entrances.items()}
@@ -972,7 +981,7 @@ def set_portal_warps(rom: RomData, patch_data: dict[str, Any]) -> None:
 
 
 def define_essence_sparkle_constants(
-    assembler: Z80Assembler, patch_data: dict[str, Any], dungeon_entrances: dict[str, Any]
+        assembler: Z80Assembler, patch_data: dict[str, Any], dungeon_entrances: dict[str, Any]
 ) -> None:
     byte_array = []
     show_dungeons_with_essence = patch_data["options"]["show_dungeons_with_essence"]
