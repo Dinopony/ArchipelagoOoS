@@ -268,7 +268,6 @@ DEFINES = {
     # Byte constants
     "INVENTORY_CAPACITY": "$14",
     "TEXT_WARP_PROTECTION_MARGIN": "$09",
-    "STARTING_TREE_MAP_INDEX": "$f8",
     "INTERACID_TREASURE": "$60",
     "BTN_A": "$01",
     "BTN_B": "$02",
