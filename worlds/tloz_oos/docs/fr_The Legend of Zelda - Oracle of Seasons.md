@@ -49,7 +49,7 @@ Lorsque vous le collectez, le jeu vous informe que vous venez d'envoyer un item 
 > 
 > En solo en revanche, après avoir patché le jeu, vous pouvez jouer sur n'importe quel émulateur ou même une console originale. Cependant, puisque vous ne pourrez pas vous connecter, Vous n'aurez accès ni au système d'indice, ni au journal des derniers objets obtenus, ni à un tracker, à moins de repasser à Bizhawk en apportant votre sauvegarde.
 > 
-> \*Zunawe a aussi créé un connecteur pour utiliser mgba à la place. Les instructions (en anglais) sur comment le télécharger sont [ici](https://discord.com/channels/731205301247803413/1192236871468711966/1193963132377374762), sur le serveur Discord d'Archipelago
+> \*Zunawe a aussi créé un connecteur pour utiliser mgba à la place. Les instructions (en anglais) sur comment le télécharger sont [ici](https://discord.com/channels/731205301247803413/1501334852556034059/1501334956549472436), sur le serveur Discord d'Archipelago
 
 **Comment est-ce que je peux directement changer la saison pour une saison particulière plutôt que de devoir faire le cycle complet à chaque fois ?**
 

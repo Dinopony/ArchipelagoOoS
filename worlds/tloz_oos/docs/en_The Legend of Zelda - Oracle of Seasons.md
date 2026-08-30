@@ -47,7 +47,7 @@ When collecting it, the game will inform you that you just sent an item to anoth
 > 
 > In solo however, after patching your game, you can play it on any emulator or even original hardware. However, since you will be unable to connect, you will not have access to the hint system, a log of what you collected previously and a tracker, unless you switch emulator back to Bizhawk, bringing your save.
 > 
-> \*Zunawe also made a connector to use mgba instead. Instructions on how to download and use it are [here](https://discord.com/channels/731205301247803413/1192236871468711966/1193963132377374762) on the Archipelago Discord server
+> \*Zunawe also made a connector to use mgba instead. Instructions on how to download and use it are [here](https://discord.com/channels/731205301247803413/1501334852556034059/1501334956549472436) on the Archipelago Discord server
 
 **How can I switch directly to a specific season instead of cycling all seasons everytime?**
 
