@@ -28,7 +28,7 @@ from ...data.Constants import (
     TREASURE_SET_ITEM_ROOM_FLAG,
     TREASURE_SPAWN_CHEST,
     TREASURE_SPAWN_INSTANT,
-    TREASURE_SPAWN_POOF,
+    TREASURE_SPAWN_POOF, SEASON_SUMMER,
 )
 from ...data.locations import LOCATIONS_DATA
 from ...options import (
@@ -373,6 +373,34 @@ def define_option_constants(assembler: Z80Assembler, patch_data: dict[str, Any])
         assembler.define_byte("option.warpingSeason", patch_data["default_seasons"]["SUNKEN_CITY"])
         assembler.define_byte("sunken_start", 0x01)
         assembler.define_byte("STARTING_TREE_MAP_INDEX", 0x5F)
+    elif options["start_position"] == OracleOfSeasonsStartingPosition.option_temple_of_seasons:
+        assembler.define_byte("option.warpingGroup", 0x01)
+        assembler.define_byte("option.warpingRoom", 0x05)
+        assembler.define_byte("option.warpingPosY", 0x38)
+        assembler.define_byte("option.warpingPosX", 0x48)
+        assembler.define_byte("option.warpingPos", 0x34)
+        assembler.define_byte("option.warpingSeason", patch_data["default_seasons"]["HORON_VILLAGE"])
+        assembler.define_byte("temple_start", 0x01)
+    elif options["start_position"] == OracleOfSeasonsStartingPosition.option_samasa_desert:
+        assembler.define_byte("option.warpingGroup", 0x00)
+        assembler.define_byte("option.warpingRoom", 0xEE)
+        assembler.define_byte("option.warpingPosY", 0x68)
+        assembler.define_byte("option.warpingPosX", 0x58)
+        assembler.define_byte("option.warpingPos", 0x65)
+        assembler.define_byte("option.warpingSeason", SEASON_SUMMER)
+        assembler.define_byte("desert_start", 0x01)
+    elif options["start_position"] == OracleOfSeasonsStartingPosition.option_tarm_entrance:
+        assembler.define_byte("option.warpingGroup", 0x00)
+        assembler.define_byte("option.warpingRoom", 0x83)
+        assembler.define_byte("option.warpingPosY", 0x28)
+        assembler.define_byte("option.warpingPosX", 0x58)
+        assembler.define_byte("option.warpingPos", 0x25)
+        assembler.define_byte("option.warpingSeason", patch_data["default_seasons"]["SPOOL_SWAMP"])
+        assembler.define_byte("STARTING_TREE_MAP_INDEX", 0x72)
+        assembler.define_byte("tarm_start", 0x01)
+    else:
+        raise NotImplementedError
+
 
     assembler.define_byte("option.animalCompanion", 0x0B + patch_data["options"]["animal_companion"])
     assembler.define_byte("option.defaultSeedType", 0x20 + patch_data["options"]["default_seed"])

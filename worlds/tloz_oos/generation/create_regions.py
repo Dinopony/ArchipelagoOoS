@@ -119,12 +119,39 @@ def create_regions(world: OracleOfSeasonsWorld) -> None:
     create_events(world)
     exclude_locations_automatically(world)
 
-    if world.options.start_position == OracleOfSeasonsStartingPosition.option_sunken_city:
-        world.origin_region_name = "sunken city"
+    if world.options.start_position == OracleOfSeasonsStartingPosition.option_horon_village:
+        world.origin_region_name = RegionNames.impas_house
+    elif world.options.start_position == OracleOfSeasonsStartingPosition.option_sunken_city:
+        world.origin_region_name = RegionNames.sunken_city
         inventory_location = create_location(world, world.origin_region_name, "Server", True, True)
         inventory_location.address = -2
         inventory_location.show_in_spoiler = False
-        world.inventory_location = inventory_location
+        inventory_location_2 = create_location(world, world.origin_region_name, "Cheat Console", True, True)
+        inventory_location_2.address = -1
+        inventory_location_2.show_in_spoiler = False
+        world.inventory_locations = [inventory_location, inventory_location_2]
+    elif world.options.start_position == OracleOfSeasonsStartingPosition.option_samasa_desert:
+        world.origin_region_name = RegionNames.samasa_desert
+        inventory_location = create_location(world, world.origin_region_name, "Server", True, True)
+        inventory_location.address = -2
+        inventory_location.show_in_spoiler = False
+        inventory_location_2 = create_location(world, world.origin_region_name, "Cheat Console", True, True)
+        inventory_location_2.address = -1
+        inventory_location_2.show_in_spoiler = False
+        world.inventory_locations = [inventory_location, inventory_location_2]
+    elif world.options.start_position == OracleOfSeasonsStartingPosition.option_temple_of_seasons:
+        world.origin_region_name = RegionNames.subrosia_temple_sector
+    elif world.options.start_position == OracleOfSeasonsStartingPosition.option_tarm_entrance:
+        world.origin_region_name = RegionNames.spool_swamp_north
+        inventory_location = create_location(world, world.origin_region_name, "Server", True, True)
+        inventory_location.address = -2
+        inventory_location.show_in_spoiler = False
+        inventory_location_2 = create_location(world, world.origin_region_name, "Cheat Console", True, True)
+        inventory_location_2.address = -1
+        inventory_location_2.show_in_spoiler = False
+        world.inventory_locations = [inventory_location, inventory_location_2]
+    else:
+        raise NotImplementedError
 
 
 def create_event(world: OracleOfSeasonsWorld, region_name: str, event_item_name: str) -> None:

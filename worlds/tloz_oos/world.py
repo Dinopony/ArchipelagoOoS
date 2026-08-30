@@ -107,8 +107,8 @@ class OracleOfSeasonsWorld(World):
         self.item_hints: list[Item | None] = []
         self.num_prog: int = 1 # initialized at 1 so that before pre_fill, any prog counts as all the progs
 
-        self.inventory_location: Location | None = None
-        self.nothing_item: Item | None = None
+        self.inventory_locations: list[Location] | None = None
+        self.nothing_items: list[Item] | None = None
 
     def generate_early(self) -> None:
         from .generation.GenerateEarly import generate_early
@@ -198,23 +198,29 @@ class OracleOfSeasonsWorld(World):
         order_pool(multiworld, progitempool)
 
     def post_fill(self) -> None:
-        if self.inventory_location is not None:
-            inventory_item = cast(Item, self.inventory_location.item)
-            empty_location = cast(Location, cast(Item, self.nothing_item).location)
+        if self.inventory_locations is not None:
+            inventory_locations = self.inventory_locations
+            nothing_items = cast(list[Item], self.nothing_items)
 
-            self.inventory_location.item = self.nothing_item
-            self.inventory_location.address = None
-            self.nothing_item.location = self.inventory_location
-            self.nothing_item.code = None
+            for i in range(len(inventory_locations)):
+                inventory_location = inventory_locations[i]
+                inventory_item = cast(Item, inventory_location.item)
+                nothing_item = nothing_items[i]
+                empty_location = cast(Location, nothing_item.location)
 
-            if inventory_item.advancement:
-                self.multiworld.push_precollected(inventory_item)
-                new_filler = self.create_filler()
-                empty_location.item = new_filler
-                new_filler.location = empty_location
-            else:
-                empty_location.item = inventory_item
-                inventory_item.location = empty_location
+                inventory_location.item = nothing_item
+                inventory_location.address = None
+                nothing_item.location = inventory_location
+                nothing_item.code = None
+
+                if inventory_item.advancement:
+                    self.multiworld.push_precollected(inventory_item)
+                    new_filler = self.create_filler()
+                    empty_location.item = new_filler
+                    new_filler.location = empty_location
+                else:
+                    empty_location.item = inventory_item
+                    inventory_item.location = empty_location
 
     def pre_output(self) -> None:
         from .generation.hints import create_item_hints, create_region_hints

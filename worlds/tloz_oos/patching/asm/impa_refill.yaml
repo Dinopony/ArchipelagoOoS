@@ -123,8 +123,31 @@
 # Make impa in her house give refills
 11/6590/: db $00
 
-# Place an impa in sunken if this is the starting position
+# Place an impa in the starting position
 11/6527/: |
     /ifdef sunken_start
     db $9d,$00
+    /endif
+
+11/6e80/: |
+    /ifdef temple_start
+    db $9d,$00,$28,$38
+    /endif
+
+11/6b78/: |
+    /ifdef desert_start
+    db $9d,$00,$58,$48
+    /endif
+
+# This one needs a new object data, since the vanilla only has a short (f1) interaction
+11/5c51/: |
+    /ifdef tarm_start
+    dw impaInTarm
+    /endif
+
+11//impaInTarm: |
+    /ifdef tarm_start
+    db $f2
+    db $9d,$00,$28,$18
+    db $ff
     /endif

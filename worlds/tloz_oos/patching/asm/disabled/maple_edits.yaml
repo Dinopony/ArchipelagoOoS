@@ -205,7 +205,7 @@
   ld a,(hl)
   and $0F
   ld hl,@mapTreasureToPart
-  rst_addAToHl
+  rst 10  ; rst_addAToHl
   ld a,(hl)
   ld (de),a
   pop af

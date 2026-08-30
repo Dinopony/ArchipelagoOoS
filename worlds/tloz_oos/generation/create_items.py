@@ -53,8 +53,8 @@ def create_item(world: OracleOfSeasonsWorld, name: str) -> Item:
         "Heart Ring L-2",
     ]
     if (
-        world.options.logic_difficulty >= OracleOfSeasonsLogicDifficulty.option_medium
-        and name in progression_items_in_medium_logic
+            world.options.logic_difficulty >= OracleOfSeasonsLogicDifficulty.option_medium
+            and name in progression_items_in_medium_logic
     ):
         classification = ItemClassification.progression
     elif world.options.logic_difficulty >= OracleOfSeasonsLogicDifficulty.option_hard and name == "Heart Ring L-1":
@@ -84,11 +84,15 @@ def create_items(world: OracleOfSeasonsWorld) -> None:
     items = [create_item(world, item_name) for item_name, quantity in item_pool_dict.items() for _ in range(quantity)]
     filter_confined_dungeon_items_from_pool(world, items)
 
-    if world.options.start_position == OracleOfSeasonsStartingPosition.option_sunken_city:
+    if world.options.start_position == OracleOfSeasonsStartingPosition.option_sunken_city \
+            or world.options.start_position == OracleOfSeasonsStartingPosition.option_samasa_desert \
+            or world.options.start_position == OracleOfSeasonsStartingPosition.option_tarm_entrance:
         nothing_item = Item("Nothing", ItemClassification.useful, -1, world.player)
+        nothing_item_2 = Item("Nothing", ItemClassification.useful, -1, world.player)
         # Put it useful so that it can be swapped with anything
         items.append(nothing_item)
-        world.nothing_item = nothing_item
+        items.append(nothing_item_2)
+        world.nothing_items = [nothing_item, nothing_item_2]
 
     world.multiworld.itempool.extend(items)
     pre_fill_seeds(world)
@@ -133,8 +137,8 @@ def build_item_pool_dict(world: OracleOfSeasonsWorld) -> dict[str, int]:
             continue
         if item_name.startswith("Ore Chunks ("):
             if (
-                world.options.shop_prices == OracleOfSeasonsShopPrices.option_free
-                or not world.options.shuffle_golden_ore_spots
+                    world.options.shop_prices == OracleOfSeasonsShopPrices.option_free
+                    or not world.options.shuffle_golden_ore_spots
             ):
                 filler_item_count += 1
             else:
@@ -269,7 +273,7 @@ def build_item_pool_dict(world: OracleOfSeasonsWorld) -> dict[str, int]:
 
 
 def build_rupee_item_dict(
-    world: OracleOfSeasonsWorld, rupee_item_count: int, filler_item_count: int
+        world: OracleOfSeasonsWorld, rupee_item_count: int, filler_item_count: int
 ) -> tuple[dict[str, int], int]:
     sorted_shop_values = sorted(world.shop_rupee_requirements.values())
     total_cost = sorted_shop_values[-1]
@@ -280,7 +284,7 @@ def build_rupee_item_dict(
 
 
 def build_ore_item_dict(
-    world: OracleOfSeasonsWorld, ore_item_count: int, filler_item_count: int
+        world: OracleOfSeasonsWorld, ore_item_count: int, filler_item_count: int
 ) -> tuple[dict[str, int], int]:
     total_cost = sum([world.shop_prices[loc] for loc in MARKET_LOCATIONS])
 
@@ -290,12 +294,12 @@ def build_ore_item_dict(
 
 
 def build_currency_item_dict(
-    world: OracleOfSeasonsWorld,
-    currency_item_count: int,
-    filler_item_count: int,
-    total_cost: int,
-    currency_name: str,
-    valid_currency_item_values: list[int],
+        world: OracleOfSeasonsWorld,
+        currency_item_count: int,
+        filler_item_count: int,
+        total_cost: int,
+        currency_name: str,
+        valid_currency_item_values: list[int],
 ) -> tuple[dict[str, int], int]:
     average_value = total_cost / currency_item_count
     deviation = average_value / 2.5
@@ -398,14 +402,18 @@ def pre_fill_seeds(world: OracleOfSeasonsWorld) -> None:
         default_tree = "Horon Village: Seed Tree"
     elif world.options.start_position == OracleOfSeasonsStartingPosition.option_sunken_city:
         default_tree = "Sunken City: Seed Tree"
+    elif world.options.start_position == OracleOfSeasonsStartingPosition.option_tarm_entrance:
+        default_tree = "Spool Swamp: Seed Tree"
     else:
-        raise NotImplementedError
-    place_seed(SEED_ITEMS[world.options.default_seed.value], default_tree)
-    manually_placed_trees.add(default_tree)
+        default_tree = None
+    if default_tree is not None:
+        place_seed(SEED_ITEMS[world.options.default_seed.value], default_tree)
+        manually_placed_trees.add(default_tree)
+        if duplicate_tree_name != default_tree:
+            # If duplicate tree is not default's, remove default seed from the pool of placeable seeds
+            del seeds_to_place[world.options.default_seed.value]
 
-    # If duplicate tree is not default's, remove default seed from the pool of placeable seeds
     if duplicate_tree_name not in manually_placed_trees:
-        del seeds_to_place[world.options.default_seed.value]
         place_seed(world.random.choice(SEED_ITEMS), duplicate_tree_name)
         manually_placed_trees.add(duplicate_tree_name)
 
@@ -415,3 +423,5 @@ def pre_fill_seeds(world: OracleOfSeasonsWorld) -> None:
     world.random.shuffle(trees_to_process)
     for seed in seeds_to_place:
         place_seed(seed, trees_to_process.pop())
+
+    assert not trees_to_process, "Not all trees were filled with seeds"

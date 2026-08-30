@@ -66,13 +66,19 @@ def order_pool(multiworld: MultiWorld, progitempool: list[Item]):
                 if world.dungeon_entrances["d2 entrance"] == "enter d0" \
                         or world.dungeon_entrances["d5 entrance"] == "enter d0" \
                         or world.dungeon_entrances["d7 entrance"] == "enter d0" \
-                        or (world.dungeon_entrances["d8 entrance"] == "enter d0" and portal_connections["d8 entrance portal"] not in bad_portals):
+                        or (world.dungeon_entrances["d8 entrance"] == "enter d0"
+                            and portal_connections["d8 entrance portal"] not in bad_portals):
                     possible_items.append(["Bush Breaker"])
         elif world.options.start_position == OracleOfSeasonsStartingPosition.option_sunken_city:
             possible_items = [["Flippers"], ["Progressive Feather"], ["Bombs (10)", "Bombs (20)"]]
 
             if world.options.animal_companion == "dimitri":
                 possible_items.append(["Dimitri's Flute"])
+        elif (world.options.start_position == OracleOfSeasonsStartingPosition.option_temple_of_seasons
+              or world.options.start_position == OracleOfSeasonsStartingPosition.option_samasa_desert):
+            possible_items = [["Bush Breaker"]]
+        elif world.options.start_position == OracleOfSeasonsStartingPosition.option_tarm_entrance:
+            possible_items = [[]] # That one is pretty restrictive but has 2 starting items
         else:
             raise NotImplementedError
 

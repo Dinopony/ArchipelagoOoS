@@ -1,8 +1,12 @@
 02//checkTreeVisited: |
+  /ifdef STARTING_TREE_MAP_INDEX
   cp STARTING_TREE_MAP_INDEX
   jp nz,$6560     ; _mapMenu_checkRoomVisited
   or a
   ret
+  /else
+  jp $6560     ; _mapMenu_checkRoomVisited
+  /endif
 02/5ec8/: call checkTreeVisited
 02/65e1/: call checkTreeVisited
 
@@ -11,6 +15,37 @@
   ld a,(wMapMenuCursorIndex)
   jp checkTreeVisited
 02/609b/: call checkCursorVisited
+
+# If no starting tree seed exists, then only allow to warp with gale if some tree is visited
+07/4f45/: |
+  /ifdef STARTING_TREE_MAP_INDEX
+  /else
+  call checkCanWarp
+  nop
+  /endif
+
+07//checkCanWarp: |
+  /ifdef STARTING_TREE_MAP_INDEX
+  /else
+  ld a,($cc50) ; (wTilesetFlags)
+  dec a
+  ret nz
+  ld bc,$c700 ; wGroup0RoomFlags
+  ld hl,treewarps
+  @loop:
+  ld c,(hl)
+  ld a,(bc)
+  cpl
+  bit 4,a
+  ret z
+  ld a,$04
+  rst 10  ; rst_addAToHl
+  ld a,(hl)
+  or a
+  jr @loop
+  inc a
+  ret
+  /endif
 
 # warp to starting tile if holding start when opening the map screen.
 02//checkWarpToStart: |

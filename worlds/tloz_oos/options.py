@@ -192,6 +192,9 @@ class OracleOfSeasonsStartingPosition(Choice):
     Where the game starts:
     - Horon: The vanilla starting position
     - Sunken city: Next to the house at the entrance of Sunken City
+    - Temple of seasons: On the portal in the area of the temple of seasons
+    - Samasa Desert: At the pirate ship
+    - Tarm Entrance: Close to the entrance of tarm ruins
 
     Note: Not starting in Horon may add items to your starting inventory
     """
@@ -200,6 +203,9 @@ class OracleOfSeasonsStartingPosition(Choice):
 
     option_horon_village = 0
     option_sunken_city = 1
+    option_temple_of_seasons = 2
+    option_samasa_desert = 3
+    option_tarm_entrance = 4
 
     default = 0
     include_in_patch = True
