@@ -24,6 +24,7 @@ CAVE_DATA: list[int | list[int | list[int]]] = [
         0x3FC0,  # End of bank
     ],
     [
+        [0x191E, 0x1BE5],  # Cutscenes making the d8 ice freeze
         [0x2E6D, 0x2EAE],  # Ricky giving his flute
         0x3F4E,  # 09
     ],
@@ -108,6 +109,7 @@ CAVE_DATA: list[int | list[int | list[int]]] = [
     0x4000,  # 3d
     0x4000,  # 3e
     [  # 3f - also here
+        [0x053A, 0x054D], # Extra item/Remove item tables for treasures
         [0x314B, 0x3FBF],
         0x4000,  # Slot name takes the last 40 bytes
     ],
@@ -362,6 +364,8 @@ DEFINES = {
     "TREASURE_WOODEN_BIRD": "$3d",  # Rando specific ID
     "TREASURE_ENGINE_GREASE": "$3e",  # Rando specific ID
     "TREASURE_PHONOGRAPH": "$3f",  # Rando specific ID
+    "TREASURE_BOMB_UPGRADE": "$61",
+    "TREASURE_BOMBCHU_UPGRADE": "$5f", # Rando specific ID
     # Scripting
     "scriptend": "$00",
     "loadscript": "$83",

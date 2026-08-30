@@ -153,3 +153,40 @@
   ret z
   ld e,COLLECT_CHEST_NOFLAG
   ret
+
+# Add behavior to bomb upgrade and bombchus,
+# given that in vanilla, bombchus is always max 99 and bombs upgrades do nothing
+# This overwrites the part where getting items remove items (44cd - 44e2) : $15 bytes
+3f/44cd/: |
+  push bc
+  ld hl,bombUpgradeTable
+  call $44f0 ; @findItemInTable
+  jr z,@end
+  
+  ld h,c
+  call upgradeBombBombchus
+  ld a,(hl)
+  dec l ; current item count
+  ld (hl),a
+
+  @end:
+  pop bc
+
+3f//bombUpgradeTable: |
+  db TREASURE_BOMB_UPGRADE
+  dw wMaxBombs
+  db TREASURE_BOMBCHU_UPGRADE
+  dw wMaxBombchus
+  db $00
+
+3f//upgradeBombBombchus: |
+  ld l,a
+  ld a,(hl)
+  cp $20
+  ld (hl),$20
+  ret c
+  cp $50
+  ld (hl),$50
+  ret c
+  ld (hl),$99
+  ret

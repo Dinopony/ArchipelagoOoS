@@ -407,7 +407,15 @@ def oos_has_rod() -> Rule:
 
 def oos_has_bombs(amount: int = 1) -> Rule:
     return Or(
-        Has("Bombs", amount),
+        And(
+            from_bool(amount <= 2),
+            Has("Bomb Upgrade", 1),
+        ),
+        And(
+            from_bool(amount <= 5),
+            Has("Bomb Upgrade", 2),
+        ),
+        Has("Bomb Upgrade", 3),
         And(
             # With medium logic is expected to know they can get free bombs
             # from D2 moblin room even if they never had bombs before
@@ -431,7 +439,17 @@ def oos_has_bombs_for_bombjump() -> Rule:
 
 
 def oos_has_bombchus(amount: int = 1) -> Rule:
-    return Has("Bombchus", amount)
+    return Or(
+        And(
+            from_bool(amount <= 2),
+            Has("Bombchu Upgrade", 1),
+        ),
+        And(
+            from_bool(amount <= 5),
+            Has("Bombchu Upgrade", 2),
+        ),
+        Has("Bombchu Upgrade", 3),
+    )
 
 
 def oos_has_bombchus_to_fight() -> Rule:

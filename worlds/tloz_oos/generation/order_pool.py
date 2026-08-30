@@ -25,7 +25,7 @@ def order_pool(multiworld: MultiWorld, progitempool: list[Item]):
 
         if world.options.logic_difficulty > 0:
             if multiworld.random.random() < 0.5:
-                bush_breakers.append(["Bombs (10)", "Bombs (10)", "Bombs (20)"])
+                bush_breakers.append(["Bomb Upgrade"])
             if world.options.default_seed == "gale":
                 bush_breakers.append(["Progressive Slingshot"])
                 if world.options.cross_items:
@@ -70,7 +70,7 @@ def order_pool(multiworld: MultiWorld, progitempool: list[Item]):
                             and portal_connections["d8 entrance portal"] not in bad_portals):
                     possible_items.append(["Bush Breaker"])
         elif world.options.start_position == OracleOfSeasonsStartingPosition.option_sunken_city:
-            possible_items = [["Flippers"], ["Progressive Feather"], ["Bombs (10)", "Bombs (20)"]]
+            possible_items = [["Flippers"], ["Progressive Feather"], ["Bomb Upgrade"]]
 
             if world.options.animal_companion == "dimitri":
                 possible_items.append(["Dimitri's Flute"])

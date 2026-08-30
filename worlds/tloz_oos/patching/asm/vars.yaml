@@ -5,14 +5,18 @@
 # 02/6666/jewelCoordsXShaped: db $f4
 
 # set initial season correctly in the init variables.
-07/4188/initialSeason: db $2d,defaultSeason.EYEGLASS_LAKE
+07/4188/initialSeason: db $2d,option.warpingSeason
 
-# Edit @extraItemsToAddTable to set seed type given with the Seed Satchel
-3f/453b/: db option.defaultSeedType
-# Add a new entry to @extraItemsToAddTable to give the player seeds when they
-# get the slingshot. This overwrites the beginning of @itemsToRemoveTable,
-# but that table is useless in rando.
-3f/4543/: |
+3f/44e3/: ld hl,extraItemsToAddTable
+
+# New table to add extra items to give seed with any thrower, and explosives with upgrades
+3f//extraItemsToAddTable: |
+    /copy s,$3f,$453d,$06
+    
+    db TREASURE_SEED_SATCHEL
+    db option.defaultSeedType
+    db $20
+    
     db TREASURE_SLINGSHOT
     db option.defaultSeedType
     db $20
@@ -21,10 +25,15 @@
     db option.defaultSeedType
     db $20
     
+    db TREASURE_BOMB_UPGRADE
+    db TREASURE_BOMBS
+    db $00
+    
+    db TREASURE_BOMBCHU_UPGRADE
+    db TREASURE_BOMBCHUS
+    db $00
+    
     db $00  ; End of table
-# Change the pointer of @itemsToRemoveTable to point to its end of table byte,
-# virtually emptying the table (I told you it was useless!)
-3f/44ce/: ld hl,$454d
 
 15/6233/oldManRupeeValues: |
     db $10    ; Goron mountain

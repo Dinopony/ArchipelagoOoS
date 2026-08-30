@@ -55,7 +55,7 @@ DUNGEON_NAMES = [
 ]
 
 VALID_RUPEE_PRICE_VALUES = [1, 2, 5, 10, 20, 25, 30, 40, 50, 60, 70, 80, 100, 150, 200, 300, 400, 500, 900, 999]
-VALID_RUPEE_ITEM_VALUES = [1, 5, 10, 20, 30, 50, 100, 200]
+VALID_RUPEE_ITEM_VALUES = [5, 10, 20, 30, 50, 100, 200] # Exclude 1 from the valid values to be generated
 VALID_ORE_ITEM_VALUES = [10, 25, 50]
 MARKET_LOCATIONS = ["subrosianMarket2", "subrosianMarket3", "subrosianMarket4", "subrosianMarket5"]
 

@@ -152,3 +152,6 @@
   call playSound
 
   jp interactionDelete
+
+# Remove the d8 lava freezing cutscenes
+09/591d/: ret

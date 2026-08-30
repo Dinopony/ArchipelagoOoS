@@ -351,56 +351,54 @@ def define_location_constants(
 def define_option_constants(assembler: Z80Assembler, patch_data: dict[str, Any]) -> None:
     options = patch_data["options"]
 
-    assembler.define_byte("option.startingGroup", 0x00)
-    assembler.define_byte("option.startingRoom", 0xB6)
-    assembler.define_byte("option.startingPosY", 0x58)
-    assembler.define_byte("option.startingPosX", 0x58)
-
     if options["start_position"] == OracleOfSeasonsStartingPosition.option_horon_village:
-        assembler.define_byte("option.warpingGroup", 0x00)
-        assembler.define_byte("option.warpingRoom", 0xB6)
-        assembler.define_byte("option.warpingPosY", 0x58)
-        assembler.define_byte("option.warpingPosX", 0x58)
-        assembler.define_byte("option.warpingPos", 0x55)
         assembler.define_byte("option.warpingSeason", patch_data["default_seasons"]["EYEGLASS_LAKE"])
         assembler.define_byte("STARTING_TREE_MAP_INDEX", 0xF8)
+        group = 0x05
+        room = 0x84
+        pos_y = 0x58
+        pos_x = 0x58
     elif options["start_position"] == OracleOfSeasonsStartingPosition.option_sunken_city:
-        assembler.define_byte("option.warpingGroup", 0x00)
-        assembler.define_byte("option.warpingRoom", 0x5D)
-        assembler.define_byte("option.warpingPosY", 0x68)
-        assembler.define_byte("option.warpingPosX", 0x68)
-        assembler.define_byte("option.warpingPos", 0x66)
         assembler.define_byte("option.warpingSeason", patch_data["default_seasons"]["SUNKEN_CITY"])
         assembler.define_byte("sunken_start", 0x01)
         assembler.define_byte("STARTING_TREE_MAP_INDEX", 0x5F)
+        group = 0x00
+        room = 0x5D
+        pos_y = 0x68
+        pos_x = 0x68
     elif options["start_position"] == OracleOfSeasonsStartingPosition.option_temple_of_seasons:
-        assembler.define_byte("option.warpingGroup", 0x01)
-        assembler.define_byte("option.warpingRoom", 0x05)
-        assembler.define_byte("option.warpingPosY", 0x38)
-        assembler.define_byte("option.warpingPosX", 0x48)
-        assembler.define_byte("option.warpingPos", 0x34)
         assembler.define_byte("option.warpingSeason", patch_data["default_seasons"]["HORON_VILLAGE"])
         assembler.define_byte("temple_start", 0x01)
+        group = 0x01
+        room = 0x05
+        pos_y = 0x38
+        pos_x = 0x48
     elif options["start_position"] == OracleOfSeasonsStartingPosition.option_samasa_desert:
-        assembler.define_byte("option.warpingGroup", 0x00)
-        assembler.define_byte("option.warpingRoom", 0xEE)
-        assembler.define_byte("option.warpingPosY", 0x68)
-        assembler.define_byte("option.warpingPosX", 0x58)
-        assembler.define_byte("option.warpingPos", 0x65)
         assembler.define_byte("option.warpingSeason", SEASON_SUMMER)
         assembler.define_byte("desert_start", 0x01)
+        group = 0x00
+        room = 0xEE
+        pos_y = 0x68
+        pos_x = 0x58
     elif options["start_position"] == OracleOfSeasonsStartingPosition.option_tarm_entrance:
-        assembler.define_byte("option.warpingGroup", 0x00)
-        assembler.define_byte("option.warpingRoom", 0x83)
-        assembler.define_byte("option.warpingPosY", 0x28)
-        assembler.define_byte("option.warpingPosX", 0x58)
-        assembler.define_byte("option.warpingPos", 0x25)
         assembler.define_byte("option.warpingSeason", patch_data["default_seasons"]["SPOOL_SWAMP"])
         assembler.define_byte("STARTING_TREE_MAP_INDEX", 0x72)
         assembler.define_byte("tarm_start", 0x01)
+        group = 0x00
+        room = 0x83
+        pos_y = 0x28
+        pos_x = 0x58
     else:
         raise NotImplementedError
-
+    assembler.define_byte("option.startingGroup", group)
+    assembler.define_byte("option.warpingGroup", group)
+    assembler.define_byte("option.startingRoom", room)
+    assembler.define_byte("option.warpingRoom", room)
+    assembler.define_byte("option.startingPosY", pos_y)
+    assembler.define_byte("option.warpingPosY", pos_y)
+    assembler.define_byte("option.startingPosX", pos_x)
+    assembler.define_byte("option.warpingPosX", pos_x)
+    assembler.define_byte("option.warpingPos", pos_y // 0x10 * 0x10 + pos_x // 0x10)
 
     assembler.define_byte("option.animalCompanion", 0x0B + patch_data["options"]["animal_companion"])
     assembler.define_byte("option.defaultSeedType", 0x20 + patch_data["options"]["default_seed"])
@@ -595,8 +593,14 @@ def set_player_start_inventory(assembler: Z80Assembler, patch_data: dict[str, An
     bombs = 0
     if "Bombs (10)" in start_inventory_data:
         bombs += start_inventory_data["Bombs (10)"] * 0x10
-    if "Bombs (20)" in start_inventory_data:
-        bombs += start_inventory_data["Bombs (20)"] * 0x20
+    if "Bomb Upgrade" in start_inventory_data:
+        max_bombchus_level = start_inventory_data["Bomb Upgrade"]
+        if max_bombchus_level == 1:
+            bombs = max(bombs, 0x20)
+        elif max_bombchus_level == 2:
+            bombs = max(bombs, 0x50)
+        else:
+            bombs = max(bombs, 0x99)
     if bombs > 0:
         start_inventory_changes[parse_hex_string_to_value(DEFINES["wCurrentBombs"])] = start_inventory_changes[
             parse_hex_string_to_value(DEFINES["wMaxBombs"])
@@ -626,8 +630,14 @@ def set_player_start_inventory(assembler: Z80Assembler, patch_data: dict[str, An
     bombchus = 0
     if "Bombchus (10)" in start_inventory_data:
         bombchus += start_inventory_data["Bombchus (10)"] * 0x10
-    if "Bombchus (20)" in start_inventory_data:
-        bombchus += start_inventory_data["Bombchus (20)"] * 0x20
+    if "Bombchu Upgrade" in start_inventory_data:
+        max_bombchus_level = start_inventory_data["Bomb Upgrade"]
+        if max_bombchus_level == 1:
+            bombchus = max(bombs, 0x20)
+        elif max_bombchus_level == 2:
+            bombchus = max(bombs, 0x50)
+        else:
+            bombchus = max(bombs, 0x99)
     if bombchus > 0:
         start_inventory_changes[parse_hex_string_to_value(DEFINES["wNumBombchus"])] = start_inventory_changes[
             parse_hex_string_to_value(DEFINES["wMaxBombchus"])
@@ -750,17 +760,12 @@ def alter_treasure_types(rom: RomData, item_data: dict[str, dict[str, Any]]) -> 
     set_treasure_data(rom, item_data, "Member's Card", 0x45, 0x48)
     set_treasure_data(rom, item_data, "Potion", 0x6D, 0x4B)
 
-    # Make bombs increase max carriable quantity when obtained from treasures,
-    # not drops (see asm/seasons/bomb_bag_behavior)
-    set_treasure_data(rom, item_data, "Bombs (10)", None, None, 0x90)
-    set_treasure_data(rom, item_data, "Bombs (20)", 0x94, None, 0xA0)
-    set_treasure_data(rom, item_data, "Bombchus (10)", None, None, 0x90)
-    set_treasure_data(rom, item_data, "Bombchus (20)", None, None, 0xA0)
-
     # Colored Rod of Seasons to make them recognizable
     set_treasure_data(rom, item_data, "Rod of Seasons (Spring)", None, 0x4F)
     set_treasure_data(rom, item_data, "Rod of Seasons (Autumn)", None, 0x50)
     set_treasure_data(rom, item_data, "Rod of Seasons (Winter)", None, 0x51)
+
+    set_treasure_data(rom, item_data, "Bombchu Upgrade", 0x71, 0x24)
 
 
 def set_old_men_rupee_values(rom: RomData, patch_data: dict[str, Any]) -> None:

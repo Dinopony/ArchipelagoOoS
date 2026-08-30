@@ -73,10 +73,6 @@ class OracleOfSeasonsWorld(World):
         "Ore Chunks (10)": "Ore Chunks",
         "Ore Chunks (25)": "Ore Chunks",
         "Ore Chunks (50)": "Ore Chunks",
-        "Bombs (10)": "Bombs",
-        "Bombs (20)": "Bombs",
-        "Bombchus (10)": "Bombchus",
-        "Bombchus (20)": "Bombchus",
     }
 
     @classmethod
@@ -151,13 +147,11 @@ class OracleOfSeasonsWorld(World):
 
     def get_filler_item_name(self) -> str:
         filler_item_names = [
-            "Rupees (1)",
             "Rupees (5)",
-            "Rupees (10)",
             "Rupees (10)",
             "Rupees (20)",
             "Rupees (30)",
-            "Ore Chunks (10)",
+            "Rupees (50)",
             "Ore Chunks (10)",
             "Ore Chunks (25)",
             "Random Ring",
@@ -166,6 +160,8 @@ class OracleOfSeasonsWorld(World):
             "Gasha Seed",
             "Gasha Seed",
             "Potion",
+            "Bombs (10)",
+            "Bombchus (10)",
         ]
 
         item_name = self.random.choice(filler_item_names)
