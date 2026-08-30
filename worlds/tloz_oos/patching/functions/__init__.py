@@ -601,6 +601,7 @@ def set_player_start_inventory(assembler: Z80Assembler, patch_data: dict[str, An
             bombs = max(bombs, 0x50)
         else:
             bombs = max(bombs, 0x99)
+        start_inventory_data["Bombs (10)"] = bombs // 0x10
     if bombs > 0:
         start_inventory_changes[parse_hex_string_to_value(DEFINES["wCurrentBombs"])] = start_inventory_changes[
             parse_hex_string_to_value(DEFINES["wMaxBombs"])
@@ -633,11 +634,12 @@ def set_player_start_inventory(assembler: Z80Assembler, patch_data: dict[str, An
     if "Bombchu Upgrade" in start_inventory_data:
         max_bombchus_level = start_inventory_data["Bomb Upgrade"]
         if max_bombchus_level == 1:
-            bombchus = max(bombs, 0x20)
+            bombchus = max(bombchus, 0x20)
         elif max_bombchus_level == 2:
-            bombchus = max(bombs, 0x50)
+            bombchus = max(bombchus, 0x50)
         else:
-            bombchus = max(bombs, 0x99)
+            bombchus = max(bombchus, 0x99)
+        start_inventory_data["Bombchus (10)"] = bombchus // 0x10
     if bombchus > 0:
         start_inventory_changes[parse_hex_string_to_value(DEFINES["wNumBombchus"])] = start_inventory_changes[
             parse_hex_string_to_value(DEFINES["wMaxBombchus"])

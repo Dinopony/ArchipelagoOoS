@@ -206,6 +206,8 @@ class OracleOfSeasonsWorld(World):
 
                 inventory_location.item = nothing_item
                 inventory_location.address = None
+                inventory_location.show_in_spoiler = False
+                inventory_location.locked = True
                 nothing_item.location = inventory_location
                 nothing_item.code = None
 
@@ -217,6 +219,7 @@ class OracleOfSeasonsWorld(World):
                 else:
                     empty_location.item = inventory_item
                     inventory_item.location = empty_location
+        pass
 
     def pre_output(self) -> None:
         from .generation.hints import create_item_hints, create_region_hints
