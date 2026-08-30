@@ -104,6 +104,9 @@ def apply_text_edits(texts: dict[str, str]) -> None:
     texts["TX_0065"] = ("You got a\n"
                         "\\col(84)📻🟥 Phonograph⬜!\n"
                         "What a tune!")
+    texts["TX_0071"] = ("You can now hold\n"
+                        "more 🟥Bombchus⬜\n"
+                        "than before!")
 
     # Appraisal text
     texts["TX_301c"] = ("You got the\n"
@@ -238,7 +241,7 @@ def apply_text_edits(texts: dict[str, str]) -> None:
     texts_to_blank.append("TX_3031")
     texts_to_blank.append("TX_303d")
     # There is probably more
-    texts_to_blank.append("TX_5200") # Prophet interupting when going first to suburb
+    texts_to_blank.append("TX_5200")  # Prophet interupting when going first to suburb
 
     # Maku tree talking texts are too big to be left there (unused)
     texts_to_blank.append("TX_1704")
