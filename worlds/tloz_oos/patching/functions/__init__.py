@@ -354,8 +354,8 @@ def define_option_constants(assembler: Z80Assembler, patch_data: dict[str, Any])
     if options["start_position"] == OracleOfSeasonsStartingPosition.option_horon_village:
         assembler.define_byte("option.warpingSeason", patch_data["default_seasons"]["EYEGLASS_LAKE"])
         assembler.define_byte("STARTING_TREE_MAP_INDEX", 0xF8)
-        group = 0x05
-        room = 0x84
+        group = 0x00
+        room = 0xB6
         pos_y = 0x58
         pos_x = 0x58
     elif options["start_position"] == OracleOfSeasonsStartingPosition.option_sunken_city:
