@@ -75,7 +75,7 @@
 09/6381/: call staticItemsReplacementsLookup
 # staticGashaSeed (0x26608)
 # Replace the staticGashaSeed by staticHeartPiece
-11/63da/: db $0a
+11/65da/: db $0a ; mayor's house
 11/7031/: db $0a
 11/7067/: db $0a
 # Replace the underwaterGashaSeed by staticHeartPiece
