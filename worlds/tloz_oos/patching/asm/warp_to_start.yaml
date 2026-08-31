@@ -30,21 +30,22 @@
   ld a,($cc50) ; (wTilesetFlags)
   dec a
   ret nz
-  ld bc,$c700 ; wGroup0RoomFlags
-  ld hl,treewarps
+  ld b,$c7 ; <wGroup0RoomFlags
+  ld hl,@treeWarpList
   @loop:
   ld c,(hl)
   ld a,(bc)
   cpl
   bit 4,a
   ret z
-  ld a,$04
-  rst 10  ; rst_addAToHl
+  inc l
   ld a,(hl)
   or a
-  jr @loop
+  jr nz,@loop
   inc a
   ret
+  @treeWarpList:
+  db $10,$2d,$5f,$67,$72,$9e,$f8,$00
   /endif
 
 # warp to starting tile if holding start when opening the map screen.
