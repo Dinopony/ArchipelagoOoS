@@ -264,6 +264,7 @@ class OracleOfSeasonsClient(BizHawkClient):
                 get_settings()._changed = True
 
             await ctx.send_msgs([{"cmd": "StatusUpdate", "status": ClientStatus.CLIENT_GOAL}])
+            ctx.finished_game = True
 
     async def process_deathlink(self, ctx: "BizHawkClientContext", is_dead):
         if ctx.last_death_link > self.last_deathlink and not is_dead:
